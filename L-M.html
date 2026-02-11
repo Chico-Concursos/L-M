@@ -917,8 +917,9 @@
       flex-direction: column;
       align-items: flex-start; /* Alinha tudo à esquerda para o scroll funcionar */
       
-      background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
-      background-size: 20px 20px;
+      /* REMOVIDO: background-image e background-size (os pontinhos sumiram) */
+      background-color: #f8f9fa; /* Um fundo cinza super suave (quase branco) para conforto */
+      
       cursor: grab;
       user-select: none;
       
@@ -968,44 +969,63 @@
       top: 50%;
       width: 50px;
       height: 2px;
-      background: #bdc3c7;
+      background: #666;
     }
 
     .tree>ul>li::before {
       display: none;
     }
 
+   /* --- CONEXÕES HORIZONTAIS (Mantido) --- */
+    .tree li::before {
+      content: '';
+      position: absolute;
+      left: -50px;
+      top: 50%;
+      height: 2px; /* Espessura sólida */
+      width: 50px;
+      background: #666;
+    }
+    
+    .tree>ul>li::before {
+      display: none;
+    }
+
+    /* --- CONEXÕES VERTICAIS (TÉCNICA SUPER COLA) --- */
+    /* Removemos altura fixa. Usaremos Top e Bottom para esticar a linha */
     .tree li::after {
       content: '';
       position: absolute;
       left: -50px;
-      bottom: 50%;
-      top: 50%;
-      width: 2px;
-      background: #bdc3c7;
-      border-left: 2px solid #bdc3c7;
+      width: 2px; /* Espessura sólida */
+      background: #666;
     }
 
+    /* 1. O PRIMEIRO FILHO: Começa no meio e desce até o limite */
     .tree li:first-child::after {
       top: 50%;
-      bottom: 0;
-      height: auto;
+      bottom: -1px; /* Vai até o finalzinho do item */
+      height: auto; /* Deixa o navegador calcular a altura necessária */
     }
 
+    /* 2. O ÚLTIMO FILHO: Sobe MUITO (-20px) para encontrar o vizinho de cima */
     .tree li:last-child::after {
-      top: 0;
-      bottom: 50%;
+      top: -20px;   /* Sobe 20 pixels para dentro do item anterior */
+      bottom: 50%;  /* Para exatamente no meio do texto */
       height: auto;
     }
 
+    /* 3. FILHOS DO MEIO: A Solução Definitiva */
+    /* Começa 20px acima e vai até o final. A sobreposição garante zero falhas */
+    .tree li:not(:first-child):not(:last-child)::after {
+      top: -20px;   /* Invade a área do vizinho de cima */
+      bottom: -1px; /* Vai até o limite para o vizinho de baixo pegar */
+      height: auto;
+    }
+
+    /* Exceção: Item sozinho não tem linha vertical */
     .tree li:only-child::after {
       display: none;
-    }
-
-    .tree li:not(:first-child):not(:last-child)::after {
-      top: 0;
-      bottom: 0;
-      height: 100%;
     }
 
     /* SETAS */
@@ -1017,7 +1037,7 @@
       transform: translateY(-50%);
       border-width: 6px 0 6px 8px;
       border-style: solid;
-      border-color: transparent transparent transparent #bdc3c7;
+      border-color: transparent transparent transparent #666;
     }
 
     .tree>ul>li>a::before {
@@ -1072,8 +1092,8 @@
 
     .tree>ul>li>ul>li>a {
       color: #fff;
-      background-color: #2980b9;
-      border-color: #2980b9;
+      background-color: #111184;
+      border-color: #162b75;
     }
 
     .tree>ul>li>ul>li>ul>li>a {
@@ -1144,7 +1164,7 @@
       width: 16px;
       height: 16px;
       background-color: #fff;
-      border: 1px solid #bdc3c7;
+      border: 1px solid #666;
       border-radius: 50%;
       color: #7f8c8d;
       font-size: 14px;
