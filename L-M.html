@@ -2183,6 +2183,32 @@
 
     /* Remove estilos antigos que podem atrapalhar */
     .map-search-btn { padding: 0 5px !important; }
+	/* --- READEQUAÇÃO EXCLUSIVA DAS CAIXAS MOBILE (V60 - PURE) --- */
+    @media (max-width: 768px) {
+      
+      /* 1. Força o tamanho clássico (220px) nas caixas */
+      .tree li > a {
+        max-width: 220px !important;    /* A TRAVA: Volta ao tamanho antigo */
+        min-width: 120px !important;
+        width: auto !important;         /* Permite encolher se for texto curto */
+        
+        white-space: normal !important; /* IMPORTANTE: Obriga o texto a quebrar linha */
+        padding: 8px 12px !important;   /* Conforto para o dedo */
+        font-size: 0.85rem !important;  /* Letra legível */
+      }
+      
+      /* 2. Ajusta apenas o espaçamento ao redor do mapa */
+      .tree {
+        padding: 10px 15px 60px 15px !important; /* Menos borda para caber na tela */
+      }
+      
+      /* 3. Garante que o container do mapa aceite a altura */
+      .mindmap-content {
+        padding: 10px !important;
+        height: auto !important;
+        min-height: 500px; /* Garante que o fundo cinza/pontilhado apareça */
+      }
+    }
   </style>
 </head>
 
