@@ -1387,15 +1387,17 @@
 
     @media (max-width: 768px) {
 
-      /* --- CORREÇÃO CRÍTICA DE ALTURA (TELA PRETA/CORTADA) --- */
+      /* --- CORREÇÃO CRÍTICA DE ALTURA E LATERAIS (V48) --- */
       html,
       body {
         height: auto !important;
         min-height: 100% !important;
         overflow-y: auto !important;
-        /* Permite rolagem natural da página */
-        overflow-x: hidden !important;
+        overflow-x: auto !important; /* MUDANÇA: Permite rolagem lateral se necessário */
         position: static !important;
+        width: 100% !important; /* Garante que não ultrapasse a tela */
+        margin: 0 !important;
+        padding: 0 !important;
       }
 
       .main-wrapper {
@@ -1409,10 +1411,11 @@
       .content {
         height: auto !important;
         overflow: visible !important;
-        /* Remove rolagem interna dupla */
-        padding: 15px !important;
-        /* Ganha espaço lateral/vertical */
+        /* Aumentado de 15px para 20px para afastar o texto da borda */
+        padding: 20px 20px !important; 
         max-height: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important; /* Garante que o padding não estoure a largura */
       }
 
       /* Login mais compacto */
