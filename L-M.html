@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leitor Universal V28 (Segurança Integrada)</title>
+  <title>Leitor Universal</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700&display=swap"
     rel="stylesheet">
@@ -464,8 +464,9 @@
       /* MUDANÇA: Agora usa o PRETO da sua marca */
       background-color: var(--cor-menu-fundo);
       border-bottom: 1px solid #333;
-      /* Borda escura discreta */
-      padding: 10px 20px;
+/* MUDANÇA: Reduzi drásticamente o espaço vertical */
+      padding: 5px 20px !important; 
+      height: 45px !important; /* Força a barra a ser fina (era variavel/maior) */
       display: flex;
       align-items: center;
       gap: 10px;
@@ -481,29 +482,34 @@
     .study-label {
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--cor-destaque);
+      color:#F2E782 !important;
       text-transform: uppercase;
       margin-right: 5px;
     }
 
     /* Botões Base (Dark Mode) */
-    .tool-btn {
+    .tool-btn, .dropbtn, #seletor-conteudo {
       border: 1px solid #444;
       /* Borda cinza escuro */
       background-color: #1a1a1a;
       /* Fundo quase preto */
       color: #fff;
-      /* Texto branco */
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
+	  
+      height: 23px !important;      /* Força a altura exata da caixa */
+      min-height: 23px !important;  /* Garante que não diminua mais que isso */
+      padding: 0 10px !important;   /* Zero em cima/baixo, 10px nas laterais */
+	  /* A MÁGICA DO ARREDONDAMENTO: Metade da altura (26/2 = 13) */
+      border-radius: 13px !important;
       font-size: 0.85rem;
       display: flex;
       align-items: center;
       gap: 8px;
       transition: all 0.2s;
     }
-
+/* Ajuste específico para o seletor (dropdown da matéria) para não cortar texto */
+    #seletor-conteudo {
+      padding-right: 5px !important;
+    }
     /* Ao passar o mouse: Fundo Preto Absoluto + Texto Dourado */
     .tool-btn:hover {
       background-color: #000;
@@ -641,11 +647,16 @@
       color: #555;
     }
 
-    p {
+   /* --- FONTE DO TEXTO MAIOR (V55) --- */
+    p, li {
       line-height: 1.7;
       margin-bottom: 15px;
       text-align: justify;
       color: #444;
+      
+      /* AQUI ESTÁ A MUDANÇA: */
+      font-size: 1.15rem !important; /* Aumenta 15% em relação ao padrão */
+      /* Se ainda achar pequeno, mude 1.15rem para 1.2rem ou 19px */
     }
 
     .destaque-artigo {
@@ -900,30 +911,36 @@
 
     .mindmap-content {
       flex-grow: 1;
-      overflow: auto;
-
-      /* MUDANÇA CRUCIAL AQUI: */
+      overflow: auto; /* Rolagem em todas as direções */
+      
       display: flex;
       flex-direction: column;
-      /* Força os itens a ficarem um embaixo do outro (Topo -> Baixo) */
-      align-items: flex-start;
-      justify-content: flex-start;
-      /* Garante que comece no TOPO absoluto */
-
+      align-items: flex-start; /* Alinha tudo à esquerda para o scroll funcionar */
+      
       background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
       background-size: 20px 20px;
       cursor: grab;
       user-select: none;
+      
+      /* Garante que o container ocupe a área correta */
+      position: relative;
+      width: 100%;
     }
 
     .mindmap-content:active {
       cursor: grabbing;
     }
 
-    /* ÁRVORE */
+    /* --- ESTRUTURA DA ÁRVORE COM RESPIRO (V58) --- */
     .tree {
       display: flex;
-      margin: 0 auto;
+      margin: 0;           /* Remove centralização automática que pode travar o scroll */
+      padding: 10px 40px 60px 40px;
+      
+      /* Garante que o mapa tenha espaço para crescer */
+      width: fit-content;  
+      min-width: 100%;     /* Ocupa pelo menos a tela toda */
+      box-sizing: border-box;
     }
 
     .tree ul {
@@ -1007,11 +1024,11 @@
       display: none;
     }
 
-    /* CARDS */
+    /* --- CARDS DO MAPA INTELIGENTES (V56) --- */
     .tree li>a {
       background: white;
       border: 1px solid #ccc;
-      padding: 12px 18px;
+      padding: 10px 18px; /* Padding equilibrado */
       border-radius: 8px;
       text-decoration: none;
       color: #333;
@@ -1021,14 +1038,19 @@
       transition: all 0.2s;
       z-index: 2;
       position: relative;
-      white-space: normal;
-      max-width: 220px;
-      text-align: center;
-      line-height: 1.35;
-      text-wrap: balance;
-      display: flex;
+      
+      /* A MÁGICA DO TAMANHO: */
+      display: inline-flex;  /* Flexível, mas respeita conteúdo */
       align-items: center;
       justify-content: center;
+      
+      width: max-content;    /* Tenta crescer para caber o texto numa linha só */
+      min-width: 120px;      /* Garante que caixas com "Oi" não fiquem minúsculas */
+      max-width: 350px;      /* Limite aumentado (era 220px) para frases longas */
+      
+      white-space: normal;   /* Permite quebrar linha SÓ se passar de 350px */
+      text-align: center;
+      line-height: 1.4;
     }
 
     .tree li>a:hover {
@@ -1173,11 +1195,16 @@
       background-color: #2c3e50;
     }
 
+    /* --- CORREÇÃO POSIÇÃO MENU FILTRAR (V54) --- */
     .map-nav-dropdown {
       display: none;
       position: absolute;
-      top: 60px;
-      left: 30px;
+      
+      /* AQUI ESTÁ A MÁGICA DA POSIÇÃO: */
+      top: 100% !important;       /* Fica logo abaixo do container do botão */
+      margin-top: 8px !important; /* Um pequeno respiro estético (pode diminuir para 5px se quiser mais perto) */
+      left: 0 !important;         /* Alinha perfeitamente à esquerda do botão */
+      
       width: 300px;
       max-height: 70vh;
       overflow-y: auto;
@@ -2071,6 +2098,91 @@
       animation: spin 1s linear infinite;
       margin-bottom: 20px;
     }
+	/* --- HARMONIZAÇÃO TOTAL DO MAPA (V52) --- */
+
+    /* 1. Barra do Mapa (Réplica da Principal) */
+    .mindmap-header {
+      height: 26px !important;          /* Mesma altura da barra principal */
+      padding: 5px 20px !important;     /* Mesmo espaçamento */
+      background-color: var(--cor-menu-fundo) !important;
+      border-bottom: 1px solid #333 !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 2. Título "Mapa Mental" (Réplica do "Matéria:") */
+    .map-title-desktop {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      color: #F2E782 !important;        /* Amarelo Brilhante Solicitado */
+      text-transform: uppercase !important;
+      margin-right: 10px !important;
+      letter-spacing: 0.5px;
+    }
+
+    /* 3. Botões do Mapa (Filtrar, Zoom, Fechar, Busca) 
+       Forçando o estilo "Tool-Btn" neles */
+    .map-nav-btn, 
+    .map-search-container,
+    .map-toolbar-extras .tool-btn, 
+    .btn-close-map {
+      /* Estilo Base */
+      background-color: #1a1a1a !important;
+      border: 1px solid #444 !important;
+      color: #fff !important;
+      
+      /* Geometria Pílula (Igual V51) */
+      height: 26px !important;
+      min-height: 26px !important;
+      border-radius: 13px !important;
+      padding: 0 10px !important;
+      
+      /* Texto e Alinhamento */
+      font-size: 0.85rem !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s !important;
+      box-shadow: none !important;
+      margin: 0 !important; /* Remove margens antigas */
+    }
+
+    /* Efeito Hover (Mouse em cima) - Dourado */
+    .map-nav-btn:hover,
+    .btn-close-map:hover,
+    .map-toolbar-extras .tool-btn:hover {
+      background-color: #000 !important;
+      color: var(--cor-destaque) !important;
+      border-color: var(--cor-destaque) !important;
+      box-shadow: 0 0 10px rgba(176, 141, 40, 0.2) !important;
+    }
+
+    /* Ajuste Fino para a Caixa de Busca do Mapa */
+    .map-search-container {
+      /* A busca precisa de um pouco de flexibilidade interna */
+      width: auto !important; 
+      padding: 0 5px !important;
+    }
+    
+   /* --- CORREÇÃO DE LEITURA NA BUSCA (V53) --- */
+    
+    /* Quando a busca está aberta, o texto deve ser BRANCO */
+    .map-search-container.ativo .map-search-input {
+      width: 180px !important;
+      padding: 5px 8px !important;
+      color: #fff !important;  /* MUDANÇA: Texto Branco Brilhante */
+      font-weight: 500;
+      background-color: transparent !important; /* Garante fundo limpo */
+    }
+
+    /* Cor do texto de ajuda "Buscar..." */
+    .map-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.5) !important; /* Branco semi-transparente */
+    }
+
+    /* Remove estilos antigos que podem atrapalhar */
+    .map-search-btn { padding: 0 5px !important; }
   </style>
 </head>
 
@@ -2447,6 +2559,19 @@
 
     // --- INICIALIZAÇÃO INTELIGENTE ---
     document.addEventListener("DOMContentLoaded", function () {
+	// --- LÓGICA DE BOAS-VINDAS (ABRE E FECHA EM 5s) ---
+      
+      // 1. Força o menu a começar ABERTO (remove a classe que o esconde)
+      document.body.classList.remove('menu-fechado');
+
+      // 2. Agenda o fechamento automático
+      setTimeout(() => {
+        // Só fecha se ele ainda estiver aberto (caso o usuário não tenha fechado manualmente antes)
+        if (!document.body.classList.contains('menu-fechado')) {
+          alternarMenu(); // Chama a função que fecha o menu
+          mostrarNotificacao("Menu recolhido para leitura."); // Avisa o usuário (opcional)
+        }
+      }, 5000); // 5 segundos
       const savedAuth = localStorage.getItem('isAuthenticated');
       const savedEmail = localStorage.getItem('userEmail');
       if (savedAuth === 'true' && savedEmail) {
@@ -2803,12 +2928,32 @@
       else mostrarNotificacao("Artigo " + n + " não encontrado.", "error");
     };
 
-    // --- MAPA MENTAL (V39 RESTAURADO) ---
+    // --- MAPA MENTAL (V59 - COM AUTO-FOCO) ---
     function abrirMapaMental() {
       if (!textoMapaAtual) { mostrarNotificacao("Sem mapa disponível", "error"); return; }
-      document.getElementById('modal-mapa').classList.add('open');
+      
+      const modal = document.getElementById('modal-mapa');
+      modal.classList.add('open');
+      
+      // 1. Gera o mapa
       document.getElementById('arvore-visual').innerHTML = converterTextoParaArvore(textoMapaAtual);
       popularFiltroMapa(textoMapaAtual);
+      aplicarInteracaoNosNodes(); // Garante que os botões +/- funcionem
+
+      // 2. O PULO DO GATO: Auto-Foco no Tema Central
+      // Espera 300ms para o mapa renderizar e então centraliza a câmera
+      setTimeout(() => {
+        // Pega o primeiro nó (a Raiz do mapa)
+        const noRaiz = document.querySelector('.tree > ul > li > a');
+        if (noRaiz) {
+           // Centraliza suavemente na tela
+           noRaiz.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+           
+           // Destaque visual rápido para chamar atenção
+           noRaiz.classList.add('node-focado');
+           setTimeout(() => noRaiz.classList.remove('node-focado'), 2000);
+        }
+      }, 300);
     }
 
     function converterTextoParaArvore(texto) {
