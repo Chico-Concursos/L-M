@@ -42,11 +42,17 @@
       padding: 0 !important;
       /* FORÇA ZERO DE ESPAÇO NO TOPO */
       display: flex;
-      height: 100vh;
-      /* Ocupa 100% da altura do iframe */
+      flex-direction: column;
+      height: auto !important;
+      /* V84 STRATEGY: Altura automática para crescer com conteúdo */
+      min-height: 100vh;
+      /* Garante o fundo */
       background-color: #f8f9fa;
       color: var(--cor-texto);
-      overflow: hidden;
+      overflow-y: auto !important;
+      /* Scroll na janela principal */
+      overflow-x: hidden;
+      position: static !important;
     }
 
     #loginModal {
@@ -444,10 +450,12 @@
 
     /* --- ÁREA PRINCIPAL --- */
     .main-wrapper {
-      flex-grow: 1;
+      width: 100%;
+      height: auto !important;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible !important;
     }
 
     /* --- ÁREA PRINCIPAL (ATUALIZADA PARA CHICO DARK) --- */
@@ -599,16 +607,19 @@
     }
 
     /* CONTEÚDO RENDERIZADO */
+    /* CONTEÚDO RENDERIZADO */
     .content {
       flex-grow: 1;
       padding: 40px 80px;
-      overflow-y: auto;
+      height: auto !important;
+      overflow: visible !important;
+      /* Remove barra de rolagem interna */
       background-color: white;
       max-width: 100%;
       margin: 0 auto;
-      scroll-behavior: smooth;
       width: 100%;
       box-sizing: border-box;
+      padding-bottom: 50px;
     }
 
     h1 {
@@ -1385,67 +1396,28 @@
       animation: fadeIn 1s;
     }
 
+    /* Responsividade do Login */
     @media (max-width: 768px) {
-
-      /* --- CORREÇÃO CRÍTICA DE ALTURA (TELA PRETA/CORTADA) --- */
-      html,
-      body {
-        height: auto !important;
-        min-height: 100% !important;
-        overflow-y: auto !important;
-        /* Permite rolagem natural da página */
-        overflow-x: hidden !important;
-        position: static !important;
-      }
-
-      .main-wrapper {
-        height: auto !important;
-        min-height: 100vh;
-        overflow: visible !important;
-        display: flex !important;
-        flex-direction: column;
-      }
-
-      .content {
-        height: auto !important;
-        overflow: visible !important;
-        /* Remove rolagem interna dupla */
-        padding: 15px !important;
-        /* Ganha espaço lateral/vertical */
-        max-height: none !important;
-      }
-
-      /* Login mais compacto */
       .login-container {
         width: 95%;
-        padding: 25px 20px;
-        /* Reduzido de 40px */
-        margin-top: 10px;
+        padding: 30px 20px;
       }
 
       .login-logo {
         font-size: 1.5em;
-        margin-bottom: 15px;
       }
 
-      .login-container-clean {
-        padding: 25px 20px;
-        margin-top: 20px;
+      .content {
+        padding: 40px 20px !important;
       }
 
+      /* Ajuste de padding mobile */
       /* NOVO: AJUSTE DO MAPA PARA TELAS PEQUENAS */
       .mindmap-content {
-        padding: 10px !important;
-        height: auto !important;
-        min-height: 500px;
-        /* Garante altura mínima para o mapa */
-      }
-
-      .mindmap-modal {
-        position: fixed !important;
-        height: 100% !important;
-        /* Mapa ainda precisa ser fixo quando aberto */
-        overflow-y: auto !important;
+        padding: 15px !important;
+        /* Ganha espaço nas bordas */
+        align-items: flex-start !important;
+        /* Garante que começa na esquerda */
       }
 
       /* CORREÇÃO: MENU FILTRAR CENTRALIZADO NO MOBILE */
@@ -1585,21 +1557,16 @@
         top: 80px !important;
       }
 
-      /* 1. BARRA DE FERRAMENTAS PRINCIPAL OTIMIZADA */
+      /* 1. BARRA DE FERRAMENTAS PRINCIPAL */
       .study-toolbar {
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        padding: 5px 10px 5px 45px !important;
-        /* Mais compacta */
+        padding: 8px 10px 8px 45px !important;
         gap: 8px;
-        height: 50px;
-        /* Altura fixa menor */
+        height: 55px;
         box-sizing: border-box;
-        position: sticky;
-        /* Mantém fixa no topo mesmo com body scroll */
-        top: 0;
-        z-index: 1000;
+        position: relative;
       }
 
       .study-label {
