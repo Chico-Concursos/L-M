@@ -1385,28 +1385,72 @@
       animation: fadeIn 1s;
     }
 
-    /* Responsividade do Login */
     @media (max-width: 768px) {
+     /* --- CORREÇÃO V49: TEXTO INTEIRO NA PRÓXIMA LINHA --- */
+      html, body {
+        overflow-x: hidden !important; /* Trava a rolagem lateral */
+        width: 100% !important;
+        position: relative !important;
+      }
+
+      .content {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important; /* Importante para o padding não estourar */
+        padding: 20px 25px !important; /* Margem confortável */
+        
+        /* A MÁGICA DA LEITURA: */
+        white-space: normal !important;       /* Permite pular linha */
+        word-break: normal !important;        /* NUNCA quebra palavra no meio (padrão) */
+        overflow-wrap: break-word !important; /* Só quebra se for um link gigante sem espaços */
+        hyphens: auto !important;             /* Adiciona hífen (-) se precisar quebrar (estilo livro) */
+      }
+
+      /* Garante que parágrafos e títulos obedeçam o pai */
+      .content p, .content h1, .content h2, .content h3, .content li {
+        max-width: 100% !important;
+        width: auto !important;
+        word-break: normal !important; /* Reforça: não quebrar palavras */
+      }
+      
+      /* Imagens e tabelas responsivas */
+      .content img, .content table, .content iframe {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block; /* Evita comportamentos estranhos de linha */
+      }
+
+      /* Login mais compacto */
       .login-container {
         width: 95%;
-        padding: 30px 20px;
+        padding: 25px 20px;
+        /* Reduzido de 40px */
+        margin-top: 10px;
       }
 
       .login-logo {
         font-size: 1.5em;
+        margin-bottom: 15px;
       }
 
-      .content {
-        padding: 40px 20px !important;
+      .login-container-clean {
+        padding: 25px 20px;
+        margin-top: 20px;
       }
 
-      /* Ajuste de padding mobile */
       /* NOVO: AJUSTE DO MAPA PARA TELAS PEQUENAS */
       .mindmap-content {
-        padding: 15px !important;
-        /* Ganha espaço nas bordas */
-        align-items: flex-start !important;
-        /* Garante que começa na esquerda */
+        padding: 10px !important;
+        height: auto !important;
+        min-height: 500px;
+        /* Garante altura mínima para o mapa */
+      }
+
+      .mindmap-modal {
+        position: fixed !important;
+        height: 100% !important;
+        /* Mapa ainda precisa ser fixo quando aberto */
+        overflow-y: auto !important;
       }
 
       /* CORREÇÃO: MENU FILTRAR CENTRALIZADO NO MOBILE */
@@ -1546,16 +1590,21 @@
         top: 80px !important;
       }
 
-      /* 1. BARRA DE FERRAMENTAS PRINCIPAL */
+      /* 1. BARRA DE FERRAMENTAS PRINCIPAL OTIMIZADA */
       .study-toolbar {
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        padding: 8px 10px 8px 45px !important;
+        padding: 5px 10px 5px 45px !important;
+        /* Mais compacta */
         gap: 8px;
-        height: 55px;
+        height: 50px;
+        /* Altura fixa menor */
         box-sizing: border-box;
-        position: relative;
+        position: sticky;
+        /* Mantém fixa no topo mesmo com body scroll */
+        top: 0;
+        z-index: 1000;
       }
 
       .study-label {
