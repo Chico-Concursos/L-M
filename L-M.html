@@ -40,13 +40,13 @@
       font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0 !important;
+      /* FORÇA ZERO DE ESPAÇO NO TOPO */
       display: flex;
-      flex-direction: column;
-      height: 100vh; /* Força a ocupar exatamente a altura da tela (PC ou Mobile) */
+      height: 100vh;
+      /* Ocupa 100% da altura do iframe */
       background-color: #f8f9fa;
       color: var(--cor-texto);
-      overflow: hidden; /* Impede que a página inteira role, apenas o conteúdo interno rolará */
-      position: relative;
+      overflow: hidden;
     }
 
     #loginModal {
@@ -444,12 +444,10 @@
 
     /* --- ÁREA PRINCIPAL --- */
     .main-wrapper {
-      width: 100%;
-      height: auto !important;
-      min-height: 100vh;
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
-      overflow: visible !important;
+      overflow: hidden;
     }
 
     /* --- ÁREA PRINCIPAL (ATUALIZADA PARA CHICO DARK) --- */
@@ -461,19 +459,22 @@
     }
 
     .study-toolbar {
-      position: relative; /* Mudamos de sticky para relative para trabalhar em conjunto com o flex do body */
+      position: sticky;
       top: 0;
+      /* MUDANÇA: Agora usa o PRETO da sua marca */
       background-color: var(--cor-menu-fundo);
       border-bottom: 1px solid #333;
+      /* Borda escura discreta */
       padding: 10px 20px;
       display: flex;
       align-items: center;
       gap: 10px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      /* Sombra mais elegante */
       z-index: 1000;
+      flex-wrap: wrap;
       width: 100%;
       box-sizing: border-box;
-      flex-shrink: 0; /* Impede que a barra seja espremida */
     }
 
     /* Texto "MATÉRIA:" agora em DOURADO */
@@ -601,13 +602,13 @@
     .content {
       flex-grow: 1;
       padding: 40px 80px;
-      overflow-y: auto !important; /* Só o texto vai rolar aqui dentro */
+      overflow-y: auto;
       background-color: white;
       max-width: 100%;
       margin: 0 auto;
+      scroll-behavior: smooth;
       width: 100%;
       box-sizing: border-box;
-      padding-bottom: 50px;
     }
 
     h1 {
@@ -1384,28 +1385,67 @@
       animation: fadeIn 1s;
     }
 
-    /* Responsividade do Login */
     @media (max-width: 768px) {
+
+      /* --- CORREÇÃO CRÍTICA DE ALTURA (TELA PRETA/CORTADA) --- */
+      html,
+      body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-y: auto !important;
+        /* Permite rolagem natural da página */
+        overflow-x: hidden !important;
+        position: static !important;
+      }
+
+      .main-wrapper {
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column;
+      }
+
+      .content {
+        height: auto !important;
+        overflow: visible !important;
+        /* Remove rolagem interna dupla */
+        padding: 15px !important;
+        /* Ganha espaço lateral/vertical */
+        max-height: none !important;
+      }
+
+      /* Login mais compacto */
       .login-container {
         width: 95%;
-        padding: 30px 20px;
+        padding: 25px 20px;
+        /* Reduzido de 40px */
+        margin-top: 10px;
       }
 
       .login-logo {
         font-size: 1.5em;
+        margin-bottom: 15px;
       }
 
-      .content {
-        padding: 40px 20px !important;
+      .login-container-clean {
+        padding: 25px 20px;
+        margin-top: 20px;
       }
 
-      /* Ajuste de padding mobile */
       /* NOVO: AJUSTE DO MAPA PARA TELAS PEQUENAS */
       .mindmap-content {
-        padding: 15px !important;
-        /* Ganha espaço nas bordas */
-        align-items: flex-start !important;
-        /* Garante que começa na esquerda */
+        padding: 10px !important;
+        height: auto !important;
+        min-height: 500px;
+        /* Garante altura mínima para o mapa */
+      }
+
+      .mindmap-modal {
+        position: fixed !important;
+        height: 100% !important;
+        /* Mapa ainda precisa ser fixo quando aberto */
+        overflow-y: auto !important;
       }
 
       /* CORREÇÃO: MENU FILTRAR CENTRALIZADO NO MOBILE */
@@ -1545,16 +1585,21 @@
         top: 80px !important;
       }
 
-      /* 1. BARRA DE FERRAMENTAS PRINCIPAL */
+      /* 1. BARRA DE FERRAMENTAS PRINCIPAL OTIMIZADA */
       .study-toolbar {
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        padding: 8px 10px 8px 45px !important;
+        padding: 5px 10px 5px 45px !important;
+        /* Mais compacta */
         gap: 8px;
-        height: 55px;
+        height: 50px;
+        /* Altura fixa menor */
         box-sizing: border-box;
-        position: relative;
+        position: sticky;
+        /* Mantém fixa no topo mesmo com body scroll */
+        top: 0;
+        z-index: 1000;
       }
 
       .study-label {
