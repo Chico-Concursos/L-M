@@ -1,0 +1,3459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leitor Universal V28 (Segurança Integrada)</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- VARIÁVEIS GERAIS (SISTEMA DE LEITURA) --- */
+    :root {
+      --cor-menu-fundo: #121212;
+      /* Fundo do Menu (Igual ao Card de Login) */
+      --cor-titulo-fundo: #000000;
+      /* Preto Absoluto para divisões do menu */
+      --cor-destaque: #b08d28;
+      /* Dourado Nobre (Legível no fundo branco) */
+      --cor-texto: #1a1a1a;
+      /* Texto quase preto (Mais conforto visual) */
+      --cor-highlight: #f1c40f;
+      --cor-grifo-usuario: #fff176;
+      --cor-grifo-auto: #c8e6c9;
+      --cor-schema-bg: #e3f2fd;
+      --cor-schema-border: #90caf9;
+      --cor-schema-text: #1565c0;
+      --largura-menu: 340px;
+
+      /* VARIÁVEIS DO LOGIN (CHICO CONCURSOS) */
+      --gold-main: #FFD700;
+      --gold-gradient: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
+      --bg-body-login: #050505;
+      --bg-card-login: #121212;
+    }
+
+    body {
+      font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0 !important;
+      /* FORÇA ZERO DE ESPAÇO NO TOPO */
+      display: flex;
+      height: 100vh;
+      /* Ocupa 100% da altura do iframe */
+      background-color: #f8f9fa;
+      color: var(--cor-texto);
+      overflow: hidden;
+    }
+
+    #loginModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-body-login);
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      /* Ajuste para o Topo */
+      justify-content: flex-start;
+      padding-top: 20px;
+      /* Distância fixa do topo para não grudar na borda */
+      overflow-y: auto;
+
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-bottom: 40px;
+      box-sizing: border-box;
+    }
+
+    .login-container {
+      background-color: var(--bg-card-login);
+      padding: 40px 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+      text-align: center;
+      border: 1px solid #333;
+      position: relative;
+    }
+
+    /* Detalhe dourado no topo */
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gold-gradient);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .login-logo {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 900;
+      font-size: 1.8em;
+      color: white;
+      /* Cor do "CHICO" */
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+      /* Um pouco mais espaçado fica mais elegante */
+    }
+
+    /* Aplica o efeito Dourado APENAS na palavra dentro do <span> (CONCURSOS) */
+    .login-logo span {
+      background: var(--gold-gradient);
+      /* O mesmo degradê do botão */
+      -webkit-background-clip: text;
+      /* Recorta o fundo no formato da letra */
+      -webkit-text-fill-color: transparent;
+      /* Deixa a letra transparente para ver o fundo */
+      background-clip: text;
+
+      /* Garante que se o navegador for antigo, fique amarelo sólido */
+      color: var(--gold-main);
+    }
+
+    .login-subtitle {
+      color: #b0b0b0;
+      font-size: 0.9em;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      color: #ccc;
+      margin-bottom: 8px;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 15px;
+      /* Reduzido de 15px para 10px (mais fino) */
+      border-radius: 6px;
+      /* Bordas levemente mais quadradas (mais moderno) */
+      border: 1px solid #333;
+      background-color: #0a0a0a;
+      color: white;
+      box-sizing: border-box;
+      font-size: 0.95em;
+      /* Fonte levemente menor */
+      outline: none;
+      transition: all 0.3s;
+      height: 42px;
+      /* Altura fixa controlada */
+    }
+
+    /* --- CORREÇÃO DO FUNDO AMARELO (AUTOFILL) --- */
+    /* Isso força o fundo a ficar preto mesmo quando o navegador preenche a senha */
+    .form-group input:-webkit-autofill,
+    .form-group input:-webkit-autofill:hover,
+    .form-group input:-webkit-autofill:focus,
+    .form-group input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+      -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--gold-main);
+    }
+
+    .login-button {
+      width: 80%;
+      /* Reduzido de 100% para 80% (mais elegante) */
+      padding: 10px;
+      /* Reduzido de 15px para 10px */
+      background: var(--gold-gradient);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      font-weight: 800;
+      /* Peso da fonte ajustado */
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 20px;
+      /* Mais espaço entre a senha e o botão */
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 1rem;
+      /* Fonte menor */
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+      /* Sombra mais suave */
+      letter-spacing: 1px;
+    }
+
+    .login-button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Estado do botão quando clicado (Carregando) */
+    .login-button:disabled {
+      background: #000 !important;
+      /* Fundo PRETO */
+      color: var(--gold-main);
+      /* Texto DOURADO (se houver) */
+      border: 1px solid var(--gold-main);
+      /* Borda fina DOURADA */
+      opacity: 1;
+      /* Mantém visibilidade total */
+      cursor: wait;
+      /* Cursor de "aguarde" */
+      filter: none;
+      /* REMOVE O CINZA (Importante!) */
+      transform: scale(1) !important;
+      /* Impede que o botão aumente de tamanho */
+      box-shadow: none;
+      /* Remove brilho externo para focar no spinner */
+    }
+
+    #loginError {
+      color: #ff5555;
+      margin-top: 20px;
+      display: none;
+      font-weight: bold;
+      background: rgba(255, 85, 85, 0.1);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      width: 24px;
+      height: 24px;
+      /* O círculo base (trilha) em dourado bem clarinho/transparente */
+      border: 3px solid rgba(255, 215, 0, 0.1);
+      border-radius: 50%;
+      /* A parte que gira (cabeça) em DOURADO PURO */
+      border-top-color: var(--gold-main);
+      animation: spin 0.8s ease-in-out infinite;
+      /* Rotação um pouco mais rápida */
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* --- MENU LATERAL (ORIGINAL V27) --- */
+    .sidebar {
+      width: var(--largura-menu);
+      background-color: var(--cor-menu-fundo);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 100;
+      transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+      padding: 15px 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .sidebar-title {
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-close-sidebar {
+      background: none;
+      border: none;
+      color: #bdc3c7;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+      transition: 0.2s;
+    }
+
+    .btn-close-sidebar:hover {
+      color: white;
+      transform: scale(1.1);
+    }
+
+    /* Busca */
+    .search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 35px 8px 10px;
+      color: white;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+
+    .search-input:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--cor-destaque);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* Lista do Menu */
+    .menu-items {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding: 0;
+    }
+
+    .menu-items::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .menu-items::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .menu-grupo-titulo {
+      background-color: var(--cor-titulo-fundo);
+      color: #fff;
+      padding: 12px 15px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .menu-grupo-titulo:hover {
+      background-color: #000;
+    }
+
+    .menu-seta {
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+      opacity: 0.7;
+    }
+
+    .menu-grupo-titulo.ativo .menu-seta {
+      transform: rotate(90deg);
+    }
+
+    .menu-lista-filhos {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .menu-lista-filhos.aberto {
+      display: block;
+    }
+
+    .menu-link {
+      display: block;
+      color: #bdc3c7;
+      text-decoration: none;
+      padding: 8px 15px 8px 25px;
+      font-size: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .menu-link:hover {
+      background-color: rgba(255, 215, 0, 0.1);
+      color: var(--gold-main);
+      border-left-color: var(--gold-main);
+    }
+
+    .menu-meta {
+      font-size: 0.7rem;
+      opacity: 0.5;
+      margin-left: 5px;
+      font-weight: normal;
+    }
+
+    .btn-open-sidebar {
+      position: fixed;
+      left: 0;
+      top: 75px;
+      background-color: var(--cor-menu-fundo);
+      color: white;
+      border: none;
+      border-radius: 0 50% 50% 0;
+      padding: 10px 15px 10px 10px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 90;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+    }
+
+    body.menu-fechado .sidebar {
+      margin-left: calc(var(--largura-menu) * -1);
+    }
+
+    body.menu-fechado .btn-open-sidebar {
+      transform: translateX(0);
+    }
+
+    /* --- ÁREA PRINCIPAL --- */
+    .main-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* --- ÁREA PRINCIPAL (ATUALIZADA PARA CHICO DARK) --- */
+    .main-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .study-toolbar {
+      position: sticky;
+      top: 0;
+      /* MUDANÇA: Agora usa o PRETO da sua marca */
+      background-color: var(--cor-menu-fundo);
+      border-bottom: 1px solid #333;
+      /* Borda escura discreta */
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      /* Sombra mais elegante */
+      z-index: 1000;
+      flex-wrap: wrap;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Texto "MATÉRIA:" agora em DOURADO */
+    .study-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cor-destaque);
+      text-transform: uppercase;
+      margin-right: 5px;
+    }
+
+    /* Botões Base (Dark Mode) */
+    .tool-btn {
+      border: 1px solid #444;
+      /* Borda cinza escuro */
+      background-color: #1a1a1a;
+      /* Fundo quase preto */
+      color: #fff;
+      /* Texto branco */
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    /* Ao passar o mouse: Fundo Preto Absoluto + Texto Dourado */
+    .tool-btn:hover {
+      background-color: #000;
+      color: var(--cor-destaque);
+      border-color: var(--cor-destaque);
+      box-shadow: 0 0 10px rgba(176, 141, 40, 0.2);
+    }
+
+    /* Mantém compatibilidade com botões ativos (não apague as linhas abaixo no seu arquivo original, apenas substitua até aqui) */
+    .tool-btn:hover {
+      background-color: #e9ecef;
+    }
+
+    .tool-btn.active-tool {
+      background-color: var(--cor-menu-fundo);
+      color: white;
+      border-color: var(--cor-menu-fundo);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .tool-btn.highlight-btn.active-tool {
+      background-color: #fbc02d;
+      color: #333;
+      border-color: #fbc02d;
+    }
+
+    .tool-btn.clear-btn.active-tool {
+      background-color: #c0392b;
+      color: white;
+      border-color: #c0392b;
+    }
+
+    .tool-btn.magic-btn {
+      color: #2e7d32;
+      border-color: #a5d6a7;
+      background-color: #e8f5e9;
+    }
+
+    .tool-btn.magic-btn.active-tool {
+      background-color: #2e7d32;
+      color: white;
+      border-color: #1b5e20;
+    }
+
+    .tool-btn.schema-btn {
+      color: #1565c0;
+      border-color: #90caf9;
+      background-color: #e3f2fd;
+    }
+
+    .tool-btn.schema-btn.active-tool {
+      background-color: #1565c0;
+      color: white;
+      border-color: #0d47a1;
+    }
+
+    .tool-btn.mindmap-btn {
+      color: #8e44ad;
+      border-color: #d2b4de;
+      background-color: #f4ecf7;
+    }
+
+    .tool-btn.mindmap-btn:hover {
+      background-color: #e8daef;
+    }
+
+    .tool-btn.reset-btn {
+      margin-left: auto;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: #999;
+      border: none;
+      background: none;
+    }
+
+    .tool-btn.reset-btn:hover {
+      color: #c0392b;
+      text-decoration: underline;
+    }
+
+    /* --- BOTÃO DE SAIR (LOGOUT) --- */
+    .tool-btn.logout-btn {
+      margin-left: 5px;
+      color: #c0392b;
+      border: 1px solid #e74c3c;
+      font-weight: bold;
+    }
+
+    .tool-btn.logout-btn:hover {
+      background-color: #c0392b;
+      color: white;
+      box-shadow: 0 2px 5px rgba(192, 57, 43, 0.4);
+    }
+
+    /* CONTEÚDO RENDERIZADO */
+    .content {
+      flex-grow: 1;
+      padding: 40px 80px;
+      overflow-y: auto;
+      background-color: white;
+      max-width: 100%;
+      margin: 0 auto;
+      scroll-behavior: smooth;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: var(--cor-destaque);
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .lei-titulo-TITULO {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      text-align: center;
+      margin-top: 60px;
+      border-bottom: 4px solid #2c3e50;
+      padding-bottom: 10px;
+    }
+
+    .lei-titulo-CAPÍTULO {
+      font-size: 1.4rem;
+      color: var(--cor-destaque);
+      margin-top: 40px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .lei-descricao {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    p {
+      line-height: 1.7;
+      margin-bottom: 15px;
+      text-align: justify;
+      color: #444;
+    }
+
+    .destaque-artigo {
+      font-weight: 700;
+      color: var(--cor-destaque);
+      border-bottom: 1px dotted var(--cor-destaque);
+      cursor: pointer;
+      padding-bottom: 2px;
+    }
+
+    mark {
+      background-color: var(--cor-highlight);
+      color: black;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    .user-highlight {
+      background-color: var(--cor-grifo-usuario);
+      border-bottom: 2px solid #fdd835;
+      cursor: pointer;
+    }
+
+    .auto-keyword {
+      background-color: var(--cor-grifo-auto);
+      border-bottom: 2px solid #aed581;
+      padding: 0 2px;
+      border-radius: 2px;
+      cursor: help;
+    }
+
+    .schema-chip {
+      display: inline-block;
+      background-color: var(--cor-schema-bg);
+      color: var(--cor-schema-text);
+      border: 1px solid var(--cor-schema-border);
+      padding: 2px 8px;
+      margin: 3px 2px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+
+    .schema-chip:hover {
+      transform: scale(1.05);
+      background-color: #bbdefb;
+      cursor: default;
+    }
+
+    .lei-link-interno {
+      color: var(--cor-destaque);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--cor-destaque);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .lei-link-interno:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      border-bottom: 1px solid var(--cor-destaque);
+    }
+
+    /* Notificações */
+    .notification-toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background-color: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      font-size: 0.95rem;
+      font-weight: 500;
+      z-index: 5000;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.4s;
+    }
+
+    .notification-toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .notification-toast.error {
+      background-color: #e74c3c;
+    }
+
+    .notification-toast.success {
+      background-color: #27ae60;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 3000;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 5vh;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-modal {
+      background: white;
+      width: 300px;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      transform: translateY(-20px);
+      transition: 0.3s;
+    }
+
+    .modal-overlay.open .custom-modal {
+      transform: translateY(0);
+    }
+
+    .modal-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .modal-text {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-modal {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-cancel {
+      background-color: #eee;
+      color: #333;
+    }
+
+    .btn-confirm {
+      background-color: #c0392b;
+      color: white;
+    }
+
+    /* --- MAPA MENTAL --- */
+    .mindmap-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      z-index: 4000;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mindmap-modal.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* HEADER MAIS FINO E COM TRANSIÇÃO */
+    .mindmap-header {
+      padding: 5px 15px;
+      /* Reduzido de 15px para 5px */
+      height: 50px;
+      /* Altura fixa compacta */
+      background: var(--cor-menu-fundo);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+      z-index: 20;
+      transition: transform 0.3s ease-in-out;
+      /* Animação suave */
+    }
+
+    /* CLASSE PARA OCULTAR O HEADER (SOBE PARA FORA DA TELA) */
+    .mindmap-header.recolhido {
+      transform: translateY(-100%);
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+
+    /* BOTÃO FLUTUANTE PARA REABRIR O MENU */
+    .btn-reabrir-header {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cor-menu-fundo);
+      color: white;
+      border: none;
+      border-radius: 0 0 10px 10px;
+      padding: 2px 15px;
+      cursor: pointer;
+      z-index: 19;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      display: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .mindmap-header.recolhido~.btn-reabrir-header {
+      display: block;
+      animation: slideDown 0.3s forwards;
+    }
+
+    @keyframes slideDown {
+      from {
+        top: -20px;
+      }
+
+      to {
+        top: 0;
+      }
+    }
+
+    .mindmap-content {
+      flex-grow: 1;
+      overflow: auto;
+
+      /* MUDANÇA CRUCIAL AQUI: */
+      display: flex;
+      flex-direction: column;
+      /* Força os itens a ficarem um embaixo do outro (Topo -> Baixo) */
+      align-items: flex-start;
+      justify-content: flex-start;
+      /* Garante que comece no TOPO absoluto */
+
+      background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
+      background-size: 20px 20px;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .mindmap-content:active {
+      cursor: grabbing;
+    }
+
+    /* ÁRVORE */
+    .tree {
+      display: flex;
+      margin: 0 auto;
+    }
+
+    .tree ul {
+      position: relative;
+      padding-left: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      list-style: none;
+    }
+
+    .tree li {
+      position: relative;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    /* CONEXÕES */
+    .tree li::before {
+      content: '';
+      position: absolute;
+      left: -50px;
+      top: 50%;
+      width: 50px;
+      height: 2px;
+      background: #bdc3c7;
+    }
+
+    .tree>ul>li::before {
+      display: none;
+    }
+
+    .tree li::after {
+      content: '';
+      position: absolute;
+      left: -50px;
+      bottom: 50%;
+      top: 50%;
+      width: 2px;
+      background: #bdc3c7;
+      border-left: 2px solid #bdc3c7;
+    }
+
+    .tree li:first-child::after {
+      top: 50%;
+      bottom: 0;
+      height: auto;
+    }
+
+    .tree li:last-child::after {
+      top: 0;
+      bottom: 50%;
+      height: auto;
+    }
+
+    .tree li:only-child::after {
+      display: none;
+    }
+
+    .tree li:not(:first-child):not(:last-child)::after {
+      top: 0;
+      bottom: 0;
+      height: 100%;
+    }
+
+    /* SETAS */
+    .tree li>a::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 6px 0 6px 8px;
+      border-style: solid;
+      border-color: transparent transparent transparent #bdc3c7;
+    }
+
+    .tree>ul>li>a::before {
+      display: none;
+    }
+
+    /* CARDS */
+    .tree li>a {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 12px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+      z-index: 2;
+      position: relative;
+      white-space: normal;
+      max-width: 220px;
+      text-align: center;
+      line-height: 1.35;
+      text-wrap: balance;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tree li>a:hover {
+      transform: scale(1.05);
+      z-index: 10;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border-color: #999;
+    }
+
+    /* CORES */
+    .tree>ul>li>a {
+      background: #e74c3c;
+      color: white;
+      border-color: #c0392b;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+    }
+
+    .tree>ul>li>ul>li>a {
+      color: #fff;
+      background-color: #2980b9;
+      border-color: #2980b9;
+    }
+
+    .tree>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #27ae60;
+      color: #444;
+    }
+
+    .tree>ul>li>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #f39c12;
+      color: #444;
+    }
+
+    /* Estilos para o Modo Livro */
+    body.modo-livro-ativo .content {
+      background-color: #f4ecd8 !important;
+      color: #433422 !important;
+      max-width: 850px !important;
+      margin: 0 auto !important;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+      padding: 60px 100px !important;
+    }
+
+    body.modo-livro-ativo .content p {
+      color: #433422 !important;
+      font-family: 'Georgia', serif;
+      font-size: 1.1em;
+    }
+
+    .tool-btn.active-book {
+      background-color: #795548 !important;
+      color: white !important;
+    }
+
+    /* Animação para o nó focado */
+    @keyframes pulse-red {
+      0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        transform: scale(1);
+      }
+
+      70% {
+        box-shadow: 0 0 0 15px rgba(231, 76, 60, 0);
+        transform: scale(1.1);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+        transform: scale(1);
+      }
+    }
+
+    .node-focado {
+      animation: pulse-red 1.5s infinite;
+      background-color: #fff3e0 !important;
+      border-color: #e67e22 !important;
+      border-width: 3px !important;
+      z-index: 100 !important;
+    }
+
+    /* --- BOTÃO DE EXPANDIR/RETRAIR --- */
+    .mindmap-toggler {
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background-color: #fff;
+      border: 1px solid #bdc3c7;
+      border-radius: 50%;
+      color: #7f8c8d;
+      font-size: 14px;
+      line-height: 14px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 50;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .mindmap-toggler:hover {
+      background-color: var(--cor-destaque);
+      color: white;
+      border-color: var(--cor-destaque);
+      transform: translateY(-50%) scale(1.2);
+    }
+
+    .filhos-ocultos>ul {
+      display: none !important;
+    }
+
+    .filhos-ocultos>a>.mindmap-toggler {
+      background-color: #95a5a6;
+      color: white;
+      border-color: #7f8c8d;
+    }
+
+    /* Navegação Mapa */
+    .map-nav-btn {
+      background-color: #34495e;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.2s;
+    }
+
+    .map-nav-btn:hover {
+      background-color: #2c3e50;
+    }
+
+    .map-nav-dropdown {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 30px;
+      width: 300px;
+      max-height: 70vh;
+      overflow-y: auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      z-index: 5000;
+      border: 1px solid #eee;
+    }
+
+    .map-nav-dropdown.ativo {
+      display: block;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      border-bottom: 1px solid #f1f1f1;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .nav-nivel-1 {
+      font-weight: 800;
+      background-color: #f8f9fa;
+      color: #c0392b;
+      border-left: 4px solid #c0392b;
+    }
+
+    .nav-nivel-2 {
+      font-weight: 600;
+      padding-left: 25px;
+      border-left: 4px solid #2980b9;
+    }
+
+    .nav-nivel-3 {
+      font-weight: 400;
+      padding-left: 40px;
+      border-left: 4px solid #27ae60;
+    }
+
+    .nav-nivel-4 {
+      font-style: italic;
+      padding-left: 55px;
+      border-left: 4px solid #f39c12;
+    }
+
+    .nav-seta {
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      margin-right: 5px;
+    }
+
+    .nav-seta:hover {
+      color: var(--cor-destaque);
+      font-weight: bold;
+    }
+
+    .nav-seta.aberto {
+      transform: rotate(90deg);
+    }
+
+    .nav-oculto {
+      display: none !important;
+    }
+
+    .nav-texto {
+      flex-grow: 1;
+      padding-left: 5px;
+    }
+
+    .nav-btn-ir {
+      opacity: 0.4;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-left: 10px;
+      background: #eee;
+    }
+
+    .nav-item:hover .nav-btn-ir {
+      opacity: 1;
+      background: #dfe6e9;
+      color: var(--cor-destaque);
+    }
+
+    .nav-btn-ir:hover {
+      background: var(--cor-destaque) !important;
+      color: white !important;
+      transform: scale(1.1);
+    }
+
+    /* Busca Mapa */
+    .map-search-container {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 0 10px;
+      margin-right: 10px;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+    }
+
+    .map-search-container.ativo {
+      background: white;
+      border-color: var(--cor-destaque);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .map-search-input {
+      background: transparent;
+      border: none;
+      color: white;
+      width: 0;
+      padding: 0;
+      transition: all 0.3s;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .map-search-container.ativo .map-search-input {
+      width: 180px;
+      padding: 5px 8px;
+      color: #333;
+    }
+
+    .map-search-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 5px;
+    }
+
+    .map-search-container.ativo .map-search-btn {
+      color: var(--cor-destaque);
+    }
+
+    .search-match {
+      background-color: #ffeb3b !important;
+      color: #000 !important;
+      border-color: #fbc02d !important;
+      box-shadow: 0 0 15px rgba(253, 216, 53, 0.8);
+      transform: scale(1.1);
+      z-index: 100;
+    }
+
+    /* --- MODO ZEN --- */
+    body.modo-zen .sidebar {
+      display: none !important;
+    }
+
+    body.modo-zen .study-toolbar {
+      display: none !important;
+    }
+
+    body.modo-zen .btn-open-sidebar {
+      display: none !important;
+    }
+
+    body.modo-zen .content {
+      max-width: 900px !important;
+      margin: 0 auto !important;
+      border: none !important;
+    }
+
+    .btn-sair-zen {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 9999;
+      font-size: 0.85rem;
+      backdrop-filter: blur(4px);
+      transition: all 0.3s;
+    }
+
+    .btn-sair-zen:hover {
+      background: #c0392b;
+      transform: scale(1.05);
+    }
+
+    body.modo-zen .btn-sair-zen {
+      display: block;
+      animation: fadeIn 1s;
+    }
+
+    @media (max-width: 768px) {
+
+      /* --- CORREÇÃO CRÍTICA DE ALTURA (TELA PRETA/CORTADA) --- */
+      html,
+      body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-y: auto !important;
+        /* Permite rolagem natural da página */
+        overflow-x: hidden !important;
+        position: static !important;
+      }
+
+      .main-wrapper {
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column;
+      }
+
+      .content {
+        height: auto !important;
+        overflow: visible !important;
+        /* Remove rolagem interna dupla */
+        padding: 15px !important;
+        /* Ganha espaço lateral/vertical */
+        max-height: none !important;
+      }
+
+      /* Login mais compacto */
+      .login-container {
+        width: 95%;
+        padding: 25px 20px;
+        /* Reduzido de 40px */
+        margin-top: 10px;
+      }
+
+      .login-logo {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+
+      .login-container-clean {
+        padding: 25px 20px;
+        margin-top: 20px;
+      }
+
+      /* NOVO: AJUSTE DO MAPA PARA TELAS PEQUENAS */
+      .mindmap-content {
+        padding: 10px !important;
+        height: auto !important;
+        min-height: 500px;
+        /* Garante altura mínima para o mapa */
+      }
+
+      .mindmap-modal {
+        position: fixed !important;
+        height: 100% !important;
+        /* Mapa ainda precisa ser fixo quando aberto */
+        overflow-y: auto !important;
+      }
+
+      /* CORREÇÃO: MENU FILTRAR CENTRALIZADO NO MOBILE */
+      .map-nav-dropdown {
+        position: fixed !important;
+        /* Fixa na tela, independente do botão */
+        top: 70px !important;
+        /* Logo abaixo da barra do mapa */
+        left: 50% !important;
+        /* Posiciona no meio horizontal */
+        transform: translateX(-50%) !important;
+        /* Ajuste fino para centralizar exato */
+        width: 90% !important;
+        /* Ocupa 90% da largura da tela */
+        max-height: 60vh !important;
+        /* Evita que fique muito alto */
+      }
+    }
+
+    /* --- MENUS DROPDOWN (ORGANIZAÇÃO V29) --- */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* O botão principal do menu */
+    .dropbtn {
+      background-color: #fff;
+      color: #333;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dropbtn:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* O conteúdo da gaveta (escondido) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      border-radius: 8px;
+      padding: 5px;
+      border: 1px solid #eee;
+      top: 110%;
+      /* Posiciona logo abaixo */
+      left: 0;
+    }
+
+    /* Mostra a gaveta ao passar o mouse */
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s;
+    }
+
+    /* Estilo dos botões DENTRO da gaveta */
+    .dropdown-content .tool-btn {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 5px;
+      justify-content: flex-start;
+      /* Alinha texto à esquerda */
+      border: none;
+      background: transparent;
+      color: #333;
+      /* Força cor escura para contraste com fundo branco */
+    }
+
+    .dropdown-content .tool-btn:hover {
+      background-color: #f8f9fa;
+      color: var(--cor-destaque);
+    }
+
+
+
+    /* --- AJUSTE MOBILE GLOBAL (V38 - MENU HAMBÚRGUER NO MAPA) --- */
+
+    .toolbar-extras {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-mobile-ops {
+      display: none;
+    }
+
+    .mobile-search-box {
+      display: none;
+    }
+
+    /* Padrão Desktop: Menu do mapa escondido (botão hambúrguer), extras visíveis */
+    .btn-map-menu-mobile {
+      display: none;
+    }
+
+    .map-toolbar-extras {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .map-title-desktop {
+      display: inline-block;
+    }
+
+    .btn-close-map {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    @media (max-width: 768px) {
+
+      /* 0. ZONA DE SEGURANÇA GERAL */
+      #loginModal {
+        top: 0 !important;
+        z-index: 200000 !important;
+        padding-top: 20px;
+      }
+
+      .btn-open-sidebar {
+        top: 80px !important;
+      }
+
+      /* 1. BARRA DE FERRAMENTAS PRINCIPAL OTIMIZADA */
+      .study-toolbar {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        padding: 5px 10px 5px 45px !important;
+        /* Mais compacta */
+        gap: 8px;
+        height: 50px;
+        /* Altura fixa menor */
+        box-sizing: border-box;
+        position: sticky;
+        /* Mantém fixa no topo mesmo com body scroll */
+        top: 0;
+        z-index: 1000;
+      }
+
+      .study-label {
+        display: none;
+      }
+
+      #seletor-conteudo {
+        flex-grow: 1;
+        width: auto;
+        max-width: 100%;
+        font-size: 0.85rem;
+        height: 36px;
+      }
+
+      .mindmap-btn {
+        padding: 0 12px;
+        font-size: 0.8rem;
+        height: 36px;
+        white-space: nowrap;
+      }
+
+      /* 2. BOTÃO HAMBÚRGUER PRINCIPAL */
+      .btn-mobile-ops {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* 3. MENU SUSPENSO PRINCIPAL */
+      .toolbar-extras {
+        display: none;
+        position: absolute;
+        top: 55px;
+        right: 0;
+        left: 0;
+        background-color: white;
+        border-bottom: 2px solid #333;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        flex-direction: column;
+        padding: 15px;
+        z-index: 9999;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      .toolbar-extras.ativo {
+        display: flex;
+        animation: fadeIn 0.2s;
+      }
+
+      .toolbar-extras .dropdown {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .toolbar-extras .dropbtn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        justify-content: space-between;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+      }
+
+      .dropdown-content {
+        position: relative;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        top: 0;
+        padding-left: 10px;
+      }
+
+      .toolbar-extras .logout-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        justify-content: center;
+      }
+
+      /* 4. BUSCA NO MENU MOBILE */
+      .mobile-search-box {
+        display: flex;
+        width: 100%;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #f9f9f9;
+      }
+
+      .mobile-search-box input {
+        flex-grow: 1;
+        border: none;
+        padding: 10px 15px;
+        outline: none;
+        background: transparent;
+        font-size: 1rem;
+      }
+
+      .mobile-search-box button {
+        background: var(--gold-main);
+        border: none;
+        padding: 0 15px;
+        cursor: pointer;
+      }
+
+      /* 5. HEADER MAPA (V38 - HAMBÚRGUER) */
+      .mindmap-modal {
+        top: 0 !important;
+        height: 100% !important;
+        z-index: 5000 !important;
+      }
+
+      .mindmap-header {
+        padding: 10px;
+        gap: 5px;
+        position: relative;
+        justify-content: space-between;
+      }
+
+      /* Esconde título no mobile para caber a busca */
+      .map-title-desktop {
+        display: none;
+      }
+
+      /* Botão do Menu Mapa */
+      .btn-map-menu-mobile {
+        display: block;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      /* O Menu Extras (Zoom, Fechar) - Escondido por padrão */
+      .map-toolbar-extras {
+        display: none;
+        /* Escondido */
+        position: absolute;
+        top: 60px;
+        right: 10px;
+        background: var(--cor-menu-fundo);
+        border: 1px solid #555;
+        padding: 15px;
+        border-radius: 8px;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        gap: 15px;
+        z-index: 10000;
+      }
+
+      /* Quando ativo */
+      .map-toolbar-extras.ativo {
+        display: flex;
+        animation: fadeIn 0.2s;
+      }
+
+      /* Ajuste dos botões dentro do menu do mapa */
+      .map-toolbar-extras .btn-close-map {
+        background: #c0392b;
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .map-toolbar-extras>div {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .map-toolbar-extras .tool-btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 5px;
+      }
+    }
+
+    /* --- CORREÇÃO: TEXTO DO FILTRO DO MAPA --- */
+    .map-nav-dropdown .nav-item {
+      color: #333 !important;
+      /* Força cor escura */
+      background-color: white;
+      /* Garante fundo branco */
+    }
+
+    .map-nav-dropdown .nav-item:hover {
+      background-color: #e3f2fd;
+      /* Azul claro ao passar o mouse */
+      color: #1565c0 !important;
+      /* Azul escuro no texto */
+    }
+
+    /* === NOVO LAYOUT DE LOGIN (V84 Clean + V30 Gold) === */
+
+    /* 1. O Cartão de Login (Compacto e Centralizado) */
+    .login-container-clean {
+      background-color: #050505;
+      /* Fundo Preto Absoluto */
+      padding: 40px 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 360px;
+      /* Mais estreito, como no V84 */
+      border: 1px solid #222;
+      /* Borda sutil */
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Detalhe Dourado no Topo (Identidade V30) */
+    .login-container-clean::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #FFD700, transparent);
+    }
+
+    /* 2. Tipografia */
+    .login-logo-clean {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: white;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    .login-logo-clean span {
+      background: linear-gradient(135deg, #D2AC47, #F7EF8A, #AE8625);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #666;
+      margin-bottom: 30px;
+      border: 1px solid #333;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* 3. Inputs Modernos (Com Ícones) */
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #D2AC47;
+      /* Ícone Dourado */
+      font-size: 0.9rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .login-container-clean input {
+      width: 100%;
+      height: 45px;
+      /* Altura controlada */
+      padding: 0 15px 0 40px;
+      /* Espaço para o ícone na esquerda */
+      background-color: #111 !important;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white !important;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+
+    .login-container-clean input:focus {
+      border-color: #D2AC47;
+      /* Brilho Dourado ao digitar */
+      box-shadow: 0 0 10px rgba(210, 172, 71, 0.1);
+      background-color: #000 !important;
+    }
+
+    /* Remove o fundo amarelo do navegador */
+    .login-container-clean input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 30px #111 inset !important;
+      -webkit-text-fill-color: white !important;
+    }
+
+    /* 4. Botão Entrar (Ouro Profissional) */
+    .login-button-clean {
+      width: 100%;
+      height: 45px;
+      margin-top: 15px;
+      background: linear-gradient(135deg, #D2AC47, #F7EF8A, #AE8625);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(210, 172, 71, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-button-clean:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(210, 172, 71, 0.4);
+    }
+
+    /* Estado Carregando (Transformação em Círculo) */
+    .login-button-clean:disabled {
+      width: 45px !important;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 50%;
+      padding: 0;
+      background: transparent !important;
+      /* Fundo transparente */
+      border: 2px solid #D2AC47;
+      /* Apenas borda dourada */
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+      color: transparent;
+      /* Esconde texto */
+    }
+
+    /* Spinner ajustado */
+    .login-button-clean:disabled .spinner {
+      display: block !important;
+      border-color: rgba(210, 172, 71, 0.2);
+      border-top-color: #D2AC47;
+    }
+
+    /* --- CORREÇÃO DEFINITIVA DO SPINNER DOURADO --- */
+
+    /* 1. Garante que a animação de rotação existe */
+    @keyframes spinForce {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 2. O Botão quando está carregando (ESTÁTICO) */
+    .login-button-clean:disabled {
+      /* Vira uma argola parada */
+      width: 45px !important;
+      height: 45px !important;
+      border-radius: 50% !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 2px solid rgba(210, 172, 71, 0.3) !important;
+      /* Anel externo mais suave */
+
+      /* GARANTE QUE O BOTÃO NÃO GIRA */
+      transform: none !important;
+      animation: none !important;
+
+      /* Centraliza o conteúdo */
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: wait;
+      box-shadow: none !important;
+      position: relative !important;
+      /* Necessário para centralizar o spinner */
+    }
+
+    /* 3. Esconde absolutamente qualquer texto ou span antigo */
+    .login-button-clean:disabled span,
+    .login-button-clean:disabled #loginBtnText {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    /* 4. O Spinner interno (O ÚNICO QUE GIRA) */
+    .login-button-clean:disabled .spinner {
+      display: block !important;
+      /* Centralização absoluta para não "dançar" */
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      margin: auto !important;
+      /* O segredo para centralizar absoluto */
+
+      width: 24px !important;
+      height: 24px !important;
+
+      /* O visual do spinner */
+      border: 3px solid transparent !important;
+      /* Fundo transparente */
+      border-top-color: #D2AC47 !important;
+      /* Apenas a "cabeça" dourada gira */
+      border-radius: 50% !important;
+
+      /* APLICA A ANIMAÇÃO FORÇADA */
+      animation: spinForce 0.8s linear infinite !important;
+    }
+  </style>
+  <style>
+    /* LOADER API */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 50000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .loader-overlay.ativo {
+      display: flex;
+    }
+
+    .loader-spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader-api" class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div style="font-size:1.2rem; font-weight:bold;">Carregando Conteúdo...</div>
+  </div>
+
+
+  <div id="loginModal">
+    <div class="login-container-clean">
+      <div class="login-logo-clean">
+        CHICO <span>CONCURSOS</span>
+      </div>
+
+      <div class="login-badge">ACESSO RESTRITO</div>
+
+      <form id="loginForm" onsubmit="login(event)">
+
+        <div class="input-wrapper">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="loginEmail" required placeholder="Digite seu e-mail" autocomplete="off">
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="loginPassword" required placeholder="Sua senha de acesso">
+        </div>
+
+        <button type="submit" class="login-button-clean" id="loginSubmitBtn">
+          <span id="loginBtnText">ENTRAR</span>
+          <div class="spinner" id="loginSpinner"></div>
+        </button>
+      </form>
+
+      <div id="loginError"></div>
+    </div>
+  </div>
+  <button class="btn-sair-zen" onclick="alternarModoZen()">✕ Sair do Modo Zen (ESC)</button>
+  <div id="toast-msg" class="notification-toast">Mensagem</div>
+
+  <div id="modal-reset" class="modal-overlay">
+    <div class="custom-modal">
+      <div class="modal-title">Apagar tudo?</div>
+      <div class="modal-text">Você perderá todos os grifos manuais e anotações.</div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="fecharModalReset()">Cancelar</button>
+        <button class="btn-modal btn-confirm" onclick="confirmarReset()">Sim, apagar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-logout" class="modal-overlay">
+    <div class="custom-modal">
+      <div class="modal-title" style="color: #c0392b;"><i class="fas fa-sign-out-alt"></i> Sair do Sistema?</div>
+      <div class="modal-text">Você precisará digitar seu e-mail e senha novamente para entrar.</div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="fecharModalLogout()">Voltar</button>
+        <button class="btn-modal btn-confirm" onclick="confirmarLogout()">Sim, Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sessão Expirada -->
+  <div id="sessionExpiredModal" class="modal-overlay">
+    <div class="custom-modal">
+      <div class="modal-title" style="color:#c0392b;"><i class="fas fa-exclamation-triangle"></i> Sessão Expirada</div>
+      <div class="modal-text">Sua sessão expirou após 3 horas. Por favor, faça login novamente.</div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-confirm" onclick="location.reload()">Fazer Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sessão Concorrente -->
+  <div id="concurrentSessionModal" class="modal-overlay">
+    <div class="custom-modal">
+      <div class="modal-title" style="color:#c0392b;"><i class="fas fa-user-lock"></i> Acesso Interrompido</div>
+      <div class="modal-text">Sua conta foi conectada em outro dispositivo.<br><small>(Apenas um acesso simultâneo é
+          permitido)</small></div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-confirm" onclick="location.reload()">ENTENDI</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">▶</button>
+
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-top-row">
+        <span class="sidebar-title">Índice</span>
+        <button class="btn-close-sidebar" onclick="alternarMenu()" title="Recolher Menu">◀</button>
+      </div>
+      <div class="search-wrapper">
+        <input type="text" id="campoBusca" class="search-input" placeholder="Pesquisar..."
+          onkeypress="verificarEnter(event)">
+        <button class="search-btn" onclick="executarBusca()" title="Buscar">🔍</button>
+      </div>
+    </div>
+    <div class="menu-items" id="menu-dinamico"></div>
+  </nav>
+
+  <div class="main-wrapper">
+    <div class="study-toolbar">
+      <span class="study-label">Matéria:</span>
+
+      <select id="seletor-conteudo" onchange="trocarMateria(this.value)" class="tool-btn"
+        style="background:white; color:#2c3e50; font-weight:bold; cursor:pointer; max-width: 180px;">
+      </select>
+
+      <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
+
+      <button class="btn-mobile-ops" onclick="alternarMenuMobile()">☰</button>
+
+      <div class="toolbar-extras" id="toolbar-opcoes">
+
+        <div class="mobile-search-box">
+          <input type="text" id="campoBuscaMobile" placeholder="Pesquisar no texto..."
+            onkeypress="verificarEnterMobile(event)">
+          <button onclick="executarBuscaMobile()">🔍</button>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">👁️ Visual ▼</button>
+          <div class="dropdown-content">
+            <button onclick="mudarFonte(1)" class="tool-btn">A+ Aumentar Texto</button>
+            <button onclick="mudarFonte(-1)" class="tool-btn">A- Diminuir Texto</button>
+            <button id="btn-livro" onclick="alternarModoLivro()" class="tool-btn">📖 Modo Livro</button>
+            <button onclick="alternarModoZen()" class="tool-btn">🧘 Modo Zen</button>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropbtn">⚒️ Ferramentas ▼</button>
+          <div class="dropdown-content">
+            <button id="btn-schema" class="tool-btn schema-btn" onclick="alternarEsquematizacao()">🧩 Esquema</button>
+            <button id="btn-auto" class="tool-btn magic-btn" onclick="alternarAnaliseAutomatica()">✨ IA
+              Criminal</button>
+            <button id="btn-grifar" class="tool-btn highlight-btn" onclick="alternarModoGrifo()">🖊️ Grifar</button>
+            <button id="btn-borracha" class="tool-btn clear-btn" onclick="alternarModoBorracha()">🧹 Apagar</button>
+            <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
+            <button class="tool-btn reset-btn" onclick="abrirModalReset()">⚠️ Resetar Tudo</button>
+          </div>
+        </div>
+
+        <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema">🚪 Sair</button>
+      </div>
+    </div>
+    <main class="content" id="texto-renderizado"></main>
+  </div>
+  <div id="modal-mapa" class="mindmap-modal">
+    <div class="mindmap-header" id="header-mapa-conteudo">
+
+      <div style="display:flex; align-items:center; gap:10px; flex-grow:1;">
+
+        <button onclick="alternarHeaderMapa()" class="tool-btn"
+          style="padding: 2px 8px; border:none; background:transparent; color:#fff;" title="Recolher Barra">▲</button>
+
+        <span class="map-title-desktop" style="font-size:1.2rem; font-weight:bold;">Mapa Mental</span>
+
+        <div style="position:relative;">
+          <button onclick="alternarMenuMapa()" class="map-nav-btn">
+            📍 Filtrar ▼
+          </button>
+          <div id="dropdown-navegacao" class="map-nav-dropdown"></div>
+        </div>
+
+        <div class="map-search-container" id="box-busca-mapa">
+          <input type="text" id="input-busca-mapa" class="map-search-input" placeholder="Buscar..."
+            oninput="verificarBuscaDigita(event)" onkeydown="verificarEnterBusca(event)">
+          <button onclick="cliqueBotaoBusca(event)" class="map-search-btn" title="Pesquisar">🔍</button>
+        </div>
+      </div>
+
+      <button class="btn-map-menu-mobile" onclick="alternarMenuExtrasMapa()">☰</button>
+
+      <div class="map-toolbar-extras" id="map-extras">
+        <div
+          style="display:flex; gap:5px; background:rgba(255,255,255,0.1); padding:5px; border-radius:8px; align-items:center;">
+          <button onclick="ajustarZoomMapa(1.1)" class="tool-btn" style="padding:2px 10px;">🔍 +</button>
+          <button onclick="ajustarZoomMapa(0.9)" class="tool-btn" style="padding:2px 10px;">🔍 -</button>
+          <button onclick="resetarZoomMapa()" class="tool-btn" style="font-size:0.7rem;">Reset</button>
+        </div>
+        <button onclick="fecharMapaMental()" class="btn-close-map">✖</button>
+      </div>
+    </div>
+    <button class="btn-reabrir-header" onclick="alternarHeaderMapa()" title="Mostrar Menu">▼ MENU</button>
+    <div class="mindmap-content">
+      <div class="tree" id="arvore-visual"></div>
+    </div>
+  </div>
+
+  <div id="modal-confirmacao"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
+    <div
+      style="background:white; padding:25px; border-radius:12px; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+      <h3 style="margin-top:0; color:#2c3e50;">Confirmar Navegação?</h3>
+      <p id="confirm-msg" style="color:#7f8c8d; margin-bottom:25px;">Deseja sair do Mapa para ler este conteúdo?</p>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button id="btn-cancelar-nav" class="tool-btn"
+          style="background:#bdc3c7; color:black; padding:10px 20px;">Cancelar</button>
+        <button id="btn-confirmar-nav" class="tool-btn highlight-btn" style="padding:10px 20px;">Sim, Ir para
+          Texto</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // =================================================================
+    // ⚙️ CONFIGURAÇÃO UNIVERSAL (MODO URL)
+    // =================================================================
+
+    // URL DO APP SCRIPT (Mantenha o seu implantado)
+    const API_URL = "https://script.google.com/macros/s/AKfycbxAsaSIfCjlsohR-xlDGoIV4MbfeY5yHheoq9wjL6EQsBPRj0gfF9ZkK5LXZw5Myg/exec";
+    // URL do AppScript V13 para Login e Sessão (Mesmo do V84)
+    const LOGIN_URL = "https://script.google.com/macros/s/AKfycbzYpyzD80XnRBr_PpBYHALEYJyjuD9Y0Yx2dlzZvtA6ePM8ihcqMMInlgtorEB_I0_-sw/exec";
+
+    // =================================================================
+    // VARIÁVEIS GLOBAIS
+    const STORAGE_KEY = 'leitor_v42_universal';
+    const STOPWORDS = new Set(["a", "o", "as", "os", "um", "uma", "de", "do", "da", "em", "no", "na", "por", "para", "com", "e", "ou", "que", "se", "art", "lei"]);
+    let modoGrifoAtivo = false, modoBorrachaAtivo = false, analiseAutoAtiva = false, modoSchemaAtivo = false;
+    let tamanhoFonte = 100;
+    let textoMapaAtual = "";
+    let BIBLIOTECA_LOCAL = []; // Global para acesso no trocarMateria
+
+    // --- SEGURANÇA (SISTEMA V84) ---
+    const SESSION_DURATION = 3 * 60 * 60 * 1000; // 3 horas
+    let sessionTimer = null;
+    let sessionHeartbeat = null;
+    let isAuthenticated = false;
+    let userEmail = '';
+
+    // =================================================================
+    // 🔐 SISTEMA DE LOGIN E SEGURANÇA (V84)
+    // =================================================================
+
+    function showLoginError(message) {
+      const errorElement = document.getElementById('loginError');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+
+    function setLoginButtonLoading(isLoading) {
+      const button = document.getElementById('loginSubmitBtn');
+      const spinner = document.getElementById('loginSpinner');
+      const text = document.getElementById('loginBtnText');
+      if (isLoading) {
+        button.disabled = true;
+        text.style.visibility = 'hidden';
+        spinner.style.display = 'block';
+      } else {
+        button.disabled = false;
+        text.style.visibility = 'visible';
+        spinner.style.display = 'none';
+      }
+    }
+
+    function isSessionExpired() {
+      const loginTime = localStorage.getItem('loginTime');
+      if (!loginTime) return true;
+      return (Date.now() - parseInt(loginTime)) > SESSION_DURATION;
+    }
+
+    function startSessionTimer() {
+      if (sessionTimer) clearInterval(sessionTimer);
+      sessionTimer = setInterval(() => {
+        if (isSessionExpired()) {
+          clearInterval(sessionTimer);
+          expireSession();
+        }
+      }, 60000); // Verifica a cada 60 segundos
+    }
+
+    function expireSession() {
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('sessionToken');
+      localStorage.removeItem('loginTime');
+      isAuthenticated = false;
+      userEmail = '';
+      if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
+      document.getElementById('sessionExpiredModal').classList.add('open');
+    }
+
+    function startSessionHeartbeat() {
+      if (sessionHeartbeat) clearInterval(sessionHeartbeat);
+      sessionHeartbeat = setInterval(async () => {
+        const token = localStorage.getItem('sessionToken');
+        const email = localStorage.getItem('userEmail');
+        if (!token || !email) return;
+        try {
+          const formData = new URLSearchParams();
+          formData.append('action', 'checkStatus');
+          formData.append('email', email);
+          formData.append('sessionToken', token);
+          formData.append('originUrl', window.location.href);
+          const response = await fetch(LOGIN_URL, { method: 'POST', body: formData });
+          const result = await response.json();
+          if (!result.success) {
+            clearInterval(sessionHeartbeat);
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('sessionToken');
+            const modal = document.getElementById('concurrentSessionModal');
+            if (modal) {
+              modal.classList.add('open');
+            } else {
+              alert("Sua conta foi conectada em outro dispositivo. Sessão encerrada.");
+              location.reload();
+            }
+          }
+        } catch (e) {
+          console.log("Erro silencioso ao verificar sessão:", e);
+        }
+      }, 30000); // Verifica a cada 30 segundos
+    }
+
+    async function login(event) {
+      if (event) event.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!email || !password) {
+        showLoginError('Por favor, preencha todos os campos.');
+        return;
+      }
+      setLoginButtonLoading(true);
+      document.getElementById('loginError').style.display = 'none';
+      try {
+        const formData = new URLSearchParams();
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('originUrl', window.location.href);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const response = await fetch(LOGIN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        const result = await response.json();
+        if (result.success) {
+          userEmail = email;
+          isAuthenticated = true;
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('userEmail', userEmail);
+          localStorage.setItem('sessionToken', result.sessionToken);
+          localStorage.setItem('loginTime', Date.now().toString());
+          startSessionTimer();
+          startSessionHeartbeat();
+          unlockContent();
+        } else {
+          showLoginError(result.error || 'Erro durante a autenticação.');
+          setLoginButtonLoading(false);
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          showLoginError('Tempo limite excedido. Verifique sua conexão.');
+        } else {
+          showLoginError('Erro ao conectar com o servidor. Tente novamente.');
+        }
+        setLoginButtonLoading(false);
+      }
+    }
+
+    function unlockContent() {
+      isAuthenticated = true;
+      const modal = document.getElementById('loginModal');
+      modal.style.opacity = "0";
+      setTimeout(() => { modal.style.display = 'none'; }, 500);
+    }
+
+    // --- INICIALIZAÇÃO INTELIGENTE ---
+    document.addEventListener("DOMContentLoaded", function () {
+      const savedAuth = localStorage.getItem('isAuthenticated');
+      const savedEmail = localStorage.getItem('userEmail');
+      if (savedAuth === 'true' && savedEmail) {
+        if (isSessionExpired()) {
+          expireSession();
+        } else {
+          isAuthenticated = true;
+          userEmail = savedEmail;
+          unlockContent();
+          startSessionTimer();
+          startSessionHeartbeat();
+        }
+      } else {
+        document.getElementById('loginModal').style.display = 'flex';
+      }
+
+      // 1. CAPTURA PARÂMETROS DA URL (O SEGREDO DO V84)
+      const params = new URLSearchParams(window.location.search);
+      let urlSheetId = params.get('sheetId'); // Pega o ID da planilha do link
+      const urlIdConteudo = params.get('id');   // Pega o ID da linha ou SheetID alternativo
+
+      // LÓGICA INTELIGENTE: Se user passou ?id=LONG_ID e não passou sheetId, assume que é sheetId
+      if (!urlSheetId && urlIdConteudo && urlIdConteudo.length > 25) {
+        urlSheetId = urlIdConteudo;
+      }
+
+      if (urlSheetId) {
+        // --- MODO LINK DIRETO (GOOGLE SITES) ---
+        console.log("Modo URL Detectado: " + urlSheetId);
+
+        // Esconde o seletor de matérias (já que veio definido pelo link)
+        const seletor = document.getElementById('seletor-conteudo');
+        seletor.innerHTML = '<option selected>Carregando via Link...</option>';
+        seletor.disabled = true;
+
+        // Define um ID padrão (analise) exceto se o id original for curto (ex: ?sheetId=...&id=artigo1)
+        let idFinal = "analise";
+        if (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) {
+          idFinal = urlIdConteudo;
+        }
+
+        // Carrega direto
+        carregarDaNuvem(urlSheetId, idFinal, "Conteúdo Linkado");
+
+      } else {
+        // --- MODO TESTE/BIBLIOTECA (SEM LINK) ---
+        // Se abrir o HTML puro, carrega uma lista de exemplo
+        BIBLIOTECA_LOCAL = [
+          { nome: "⚠️ Nenhum Link Detectado", id: "", sheetId: "" }
+        ];
+
+        const seletor = document.getElementById('seletor-conteudo');
+        seletor.innerHTML = '<option value="" disabled selected>Selecione (Modo Teste)...</option>';
+        BIBLIOTECA_LOCAL.forEach((item, index) => {
+          const opt = document.createElement('option');
+          opt.value = index;
+          opt.textContent = item.nome;
+          seletor.appendChild(opt);
+        });
+      }
+
+      setupFerramentas();
+      ativarArrastarMapa();
+      iniciarAtalhos();
+    });
+
+    // --- FUNÇÃO DE CARREGAMENTO UNIVERSAL (COM SISTEMA "O VIGIA" DO V84) ---
+    async function carregarDaNuvem(sheetId, idConteudo, nomeDisplay) {
+      const loader = document.getElementById('loader-api');
+      loader.classList.add('ativo');
+
+      // Garante que o container de dados brutos exista antes de limpar
+      let divBruta = document.getElementById('dados-brutos-lei');
+      if (!divBruta) {
+        divBruta = document.createElement('div');
+        divBruta.id = 'dados-brutos-lei';
+        divBruta.style.display = 'none';
+        document.body.appendChild(divBruta);
+      }
+
+      // Limpa dados anteriores para evitar "fantasma"
+      textoMapaAtual = null;
+      divBruta.textContent = "";
+      document.getElementById('texto-renderizado').innerHTML = "";
+      document.getElementById('menu-dinamico').innerHTML = "";
+
+      // --- CHAVES DO CACHE LOCAL (Por documento) ---
+      const cacheKey = `cachedContent_${sheetId}_${idConteudo}`;
+      const versionKey = `version_${sheetId}_${idConteudo}`;
+      const localData = localStorage.getItem(cacheKey);
+      const localVersion = localStorage.getItem(versionKey);
+
+      let serverVersion = null;
+      let shouldUseCache = false;
+
+      // ========================================================
+      // ETAPA 1: O VIGIA (Pergunta ao servidor qual a versão atual)
+      // ========================================================
+      try {
+        if (navigator.onLine) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+
+          const vigiaUrl = `${API_URL}?action=checkVersion&_t=${new Date().getTime()}`;
+          const vigiaResponse = await fetch(vigiaUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
+          if (vigiaResponse.ok) {
+            const vigiaJson = await vigiaResponse.json();
+            if (vigiaJson.success && vigiaJson.version) {
+              serverVersion = vigiaJson.version;
+            } else if (vigiaJson.result === 'success' && vigiaJson.version) {
+              serverVersion = vigiaJson.version; // Formato alternativo do App Script
+            }
+            console.log(`📡 Vigia: Versão Servidor=${serverVersion} | Local=${localVersion}`);
+          }
+        }
+      } catch (e) {
+        console.warn("⚠️ O Vigia não conseguiu contatar o servidor (Offline ou timeout).", e.message);
+        // Se falhou a verificação mas temos cache, usamos ele
+        if (localData) shouldUseCache = true;
+      }
+
+      // ========================================================
+      // ETAPA 2: A DECISÃO (Cache local é válido?)
+      // ========================================================
+      if (localData && (localVersion === serverVersion || !serverVersion)) {
+        shouldUseCache = true;
+      }
+
+      // ========================================================
+      // ETAPA 3A: CAMINHO RÁPIDO (Cache Local - Instantâneo)
+      // ========================================================
+      if (shouldUseCache) {
+        try {
+          console.log("🚀 O Vigia liberou: Carregando do Cache Local (Instantâneo)");
+          const dadosCache = JSON.parse(localData);
+
+          divBruta.textContent = dadosCache.html || "";
+          textoMapaAtual = dadosCache.mapa || null;
+          if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+
+          processarLei();
+          mostrarNotificacao("⚡ Carregado da memória (Instantâneo)", "success");
+          document.getElementById('texto-renderizado').scrollTop = 0;
+
+          const seletor = document.getElementById('seletor-conteudo');
+          if (seletor) {
+            seletor.innerHTML = `<option selected>📂 ${dadosCache.titulo || nomeDisplay || "Documento"}</option>`;
+          }
+
+          loader.classList.remove('ativo');
+          return; // Encerra aqui, economizando dados!
+        } catch (e) {
+          console.error("Cache corrompido, forçando download...", e);
+          localStorage.removeItem(cacheKey);
+          localStorage.removeItem(versionKey);
+        }
+      }
+
+      // ========================================================
+      // ETAPA 3B: DOWNLOAD DA NUVEM (Versão mudou ou sem cache)
+      // ========================================================
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+        const timestamp = new Date().getTime();
+        const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(idConteudo)}&sheetId=${encodeURIComponent(sheetId)}&_t=${timestamp}`;
+        console.log("📥 Baixando da nuvem: ", urlFinal);
+
+        const response = await fetch(urlFinal, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        const json = await response.json();
+
+        if (!json.success) throw new Error(json.error || "Erro na API (Verifique o ID da Planilha)");
+
+        const dados = json.data;
+
+        // Injeta os dados
+        divBruta.textContent = dados.html;
+        textoMapaAtual = dados.mapa;
+        if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+
+        // Renderiza
+        processarLei();
+        mostrarNotificacao("Carregado: " + (dados.titulo || nomeDisplay), "success");
+        document.getElementById('texto-renderizado').scrollTop = 0;
+
+        // Atualiza título da página (Visual)
+        const seletor = document.getElementById('seletor-conteudo');
+        if (seletor) {
+          seletor.innerHTML = `<option selected>📂 ${dados.titulo || "Documento Carregado"}</option>`;
+        }
+
+        // --- SALVA NO CACHE LOCAL (Para próxima vez ser instantâneo) ---
+        try {
+          const dadosParaCache = { html: dados.html, mapa: dados.mapa, titulo: dados.titulo };
+          localStorage.setItem(cacheKey, JSON.stringify(dadosParaCache));
+          if (serverVersion) {
+            localStorage.setItem(versionKey, serverVersion);
+          }
+          console.log("💾 Dados salvos no cache local com sucesso.");
+        } catch (e) {
+          console.warn("Memória local cheia, seguindo sem salvar offline.", e);
+        }
+
+      } catch (error) {
+        // --- FALLBACK: Se falhar download mas tiver cache antigo, usa ele ---
+        if (localData) {
+          try {
+            console.warn("🔄 Download falhou, usando cache antigo como fallback.");
+            const dadosCache = JSON.parse(localData);
+            divBruta.textContent = dadosCache.html || "";
+            textoMapaAtual = dadosCache.mapa || null;
+            if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+
+            processarLei();
+            mostrarNotificacao("⚠️ Erro na conexão. Usando versão anterior.", "error");
+            document.getElementById('texto-renderizado').scrollTop = 0;
+
+            const seletor = document.getElementById('seletor-conteudo');
+            if (seletor) {
+              seletor.innerHTML = `<option selected>📂 ${dadosCache.titulo || nomeDisplay || "Versão Anterior"}</option>`;
+            }
+          } catch (e2) {
+            // Cache também falhou, mostra erro
+            document.getElementById('texto-renderizado').innerHTML = `
+              <div style="text-align:center; padding:50px; color:#555;">
+                <h2 style="color:#c0392b">Falha no Carregamento</h2>
+                <p>${error.message}</p>
+                <small>Verifique sua conexão e o parâmetro <b>sheetId</b> na URL.</small>
+              </div>`;
+          }
+        } else {
+          // Sem cache, mostra erro completo
+          mostrarNotificacao("Erro: " + error.message, "error");
+          document.getElementById('texto-renderizado').innerHTML = `
+            <div style="text-align:center; padding:50px; color:#555;">
+              <h2 style="color:#c0392b">Falha no Carregamento</h2>
+              <p>${error.message}</p>
+              <small>Verifique se o parâmetro <b>sheetId</b> está correto na URL.</small>
+            </div>`;
+        }
+      } finally {
+        loader.classList.remove('ativo');
+      }
+    }
+
+    // --- PROCESSAR LEI (VERSÃO HÍBRIDA 3.0) ---
+    // --- PROCESSAR LEI (VERSÃO HÍBRIDA 3.0) ---
+    function processarLei() {
+      const d = document.getElementById('dados-brutos-lei'); if (!d) return;
+      const txt = d.textContent.trim(), menu = document.getElementById('menu-dinamico'), c = document.getElementById('texto-renderizado');
+
+      // 1. TENTATIVA HTML (PRIORIDADE PARA CONTEÚDO DA NUVEM)
+      // Se parece HTML (começa com <), renderizamos e buscamos headers reais
+      if (txt.startsWith("<")) {
+        c.innerHTML = txt;
+        aplicarLinks(c); // Aplica links em artigos citados no HTML
+
+        const headers = c.querySelectorAll('h1, h2, h3, h4');
+
+        if (headers.length > 0) {
+          let htmlMenu = "";
+          headers.forEach((header, index) => {
+            if (!header.id) header.id = "header-" + index; // Garante ID
+            let indent = header.tagName === 'H1' ? '' : (header.tagName === 'H2' ? 'margin-left:10px;' : 'margin-left:20px; font-size:0.9em;');
+            htmlMenu += `<a class="menu-link" style="${indent}" onclick="document.getElementById('${header.id}').scrollIntoView({behavior:'smooth'})">${header.innerText}</a>`;
+          });
+          menu.innerHTML = htmlMenu;
+          return; // SUCESSO DO MODO HTML
+        }
+      }
+
+      // 2. MODO TEXTO (APRIMORADO — DETECTA APOSTILAS E LEIS AUTOMATICAMENTE)
+      const lin = txt.split('\n'); let h = '', cid = 0, bloco = null, contMenu = null; menu.innerHTML = "";
+
+      // Auto-detecção: Se o conteúdo tem padrões numéricos X.Y, é apostila
+      let modoApostila = lin[0].includes("MODO: APOSTILA") || lin.some(l => l.trim().match(/^[•○o\-]?\s*\d+\.\d+\s/));
+      let indexInicial = lin[0].includes("MODO: APOSTILA") ? 1 : 0;
+      let termoReferencia = modoApostila ? "Tópico" : "Art.";
+
+      function fimBloco() {
+        if (!bloco) return;
+        let it = "";
+        if (bloco.primeiroArt) {
+          it = (bloco.primeiroArt === bloco.ultimoArt) ? ` (${termoReferencia} ${bloco.primeiroArt})` : ` (${termoReferencia} ${bloco.primeiroArt}-${bloco.ultimoArt})`;
+        }
+
+        if (bloco.tipo === 'MAIOR') {
+          const bt = document.createElement('div'); bt.className = 'menu-grupo-titulo'; bt.innerHTML = `<span>${bloco.nome}</span> <span class="menu-seta">▶</span>`;
+          const cf = document.createElement('div'); cf.className = 'menu-lista-filhos';
+          bt.onclick = () => { cf.classList.toggle('aberto'); bt.classList.toggle('ativo'); };
+          menu.appendChild(bt); menu.appendChild(cf); contMenu = cf;
+        } else {
+          const l = document.createElement('a'); l.className = 'menu-link'; l.innerHTML = bloco.nome + `<span class='menu-meta'>${it}</span>`;
+          const idRef = bloco.id;
+          l.onclick = () => { document.getElementById(idRef)?.scrollIntoView({ behavior: 'smooth' }); };
+          if (contMenu) contMenu.appendChild(l); else menu.appendChild(l);
+        }
+        bloco = null;
+      }
+
+      for (let i = indexInicial; i < lin.length; i++) {
+        let l = lin[i].trim(); if (!l) continue;
+
+        // Limpa bullets e marcadores de lista para melhor detecção
+        let cleanLine = l.replace(/^[•●○◦▪▸►\-\*]\s*/g, '').trim();
+        // Remove "o" solto usado como sub-bullet (só quando seguido de número)
+        cleanLine = cleanLine.replace(/^o\s+(?=\d)/i, '').trim();
+
+        // Teste 1: Palavra-chave de seção (agora aceita após números e traços)
+        let m = cleanLine.match(/^(?:\d+[\.\d]*\s*[-–—]?\s*)?(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE)\s/i);
+
+        // Teste 2: Padrão numérico X.Y (sempre ativo, não depende de MODO: APOSTILA)
+        let mNumerico = cleanLine.match(/^(\d+\.\d+)\s/);
+
+        if (m || mNumerico) {
+          fimBloco(); cid++; const id = 'ref-' + cid;
+          let tipoBloco;
+          if (m) {
+            let palavraChave = m[1].toUpperCase();
+            tipoBloco = (['TÍTULO', 'MÓDULO', 'UNIDADE', 'PARTE'].includes(palavraChave)) ? 'MAIOR' : 'MENOR';
+          } else {
+            // X.0 = seção principal (grupo), X.Y = subseção (link)
+            tipoBloco = mNumerico[1].endsWith('.0') ? 'MAIOR' : 'MENOR';
+          }
+          if (tipoBloco === 'MAIOR') contMenu = null;
+          bloco = { id: id, tipo: tipoBloco, nome: cleanLine, primeiroArt: null, ultimoArt: null };
+          h += `<h3 id="${id}" class="lei-titulo-CAPÍTULO">${cleanLine}</h3>`;
+        } else if (cleanLine.match(/^(Art\.|Questão|Item)\s/i) || cleanLine.match(/^\d+\.\d+\.\d+\s/)) {
+          let match = cleanLine.match(/^([\d\.]+)/) || cleanLine.match(/(Art\.|Item)\s*([\d\wº\.]+)/i);
+          let numeroRef = match ? (match[2] || match[1]) : "";
+          if (bloco) { if (!bloco.primeiroArt) bloco.primeiroArt = numeroRef; bloco.ultimoArt = numeroRef; }
+          let idArt = "art_" + numeroRef.toString().replace(/\./g, '_');
+          h += `<p id="${idArt}">${cleanLine.replace(/^([\w\d\.]+\s?[-–]?)/, '<span class="destaque-artigo">$1</span>')}</p>`;
+        } else {
+          h += (i === indexInicial) ? `<h1>${l}</h1>` : `<p>${l}</p>`;
+        }
+      }
+      fimBloco();
+      c.innerHTML = h; aplicarLinks(c);
+    }
+
+    function aplicarLinks(c) {
+      c.innerHTML = c.innerHTML.replace(/\b(art\.?|artigo)\s*(\d+[º]?)/gi, '<a class="lei-link-interno" onclick="irParaArtigo(\'$2\')">$1 $2</a>');
+    }
+
+    window.irParaArtigo = function (n) {
+      const el = document.getElementById('art_id_' + n.replace(/[º\.]/g, '').trim()) || document.getElementById('art_' + n.replace(/\./g, '_'));
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.style.transition = "background 0.5s"; el.style.backgroundColor = "#fff9c4"; setTimeout(() => el.style.backgroundColor = "", 1500); }
+      else mostrarNotificacao("Artigo " + n + " não encontrado.", "error");
+    };
+
+    // --- MAPA MENTAL (V39 RESTAURADO) ---
+    function abrirMapaMental() {
+      if (!textoMapaAtual) { mostrarNotificacao("Sem mapa disponível", "error"); return; }
+      document.getElementById('modal-mapa').classList.add('open');
+      document.getElementById('arvore-visual').innerHTML = converterTextoParaArvore(textoMapaAtual);
+      popularFiltroMapa(textoMapaAtual);
+    }
+
+    function converterTextoParaArvore(texto) {
+      if (!texto) return "";
+      const linhas = texto.split('\n').filter(l => l.trim() !== '');
+      const raiz = []; const niveis = { 0: raiz };
+      linhas.forEach(linha => {
+        const match = linha.match(/^((#+)\s*(.*))/);
+        if (!match) return;
+        const prof = match[2].length; const cont = match[3];
+        const no = { texto: cont, filhos: [] };
+        if (prof === 1) { raiz.push(no); niveis[1] = [no]; }
+        else {
+          const listaPai = niveis[prof - 1];
+          if (listaPai && listaPai.length > 0) {
+            const pai = listaPai[listaPai.length - 1];
+            pai.filhos.push(no);
+            if (!niveis[prof]) niveis[prof] = []; niveis[prof].push(no);
+          }
+        }
+      });
+      function gerarHTML(nos) {
+        if (!nos || nos.length === 0) return '';
+        let html = '<ul>';
+        nos.forEach(no => {
+          const matchArt = no.texto.match(/Art\.?\s*(\d+)/i);
+          let linkAction = 'javascript:void(0)', classeLink = '';
+          if (matchArt) { linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchArt[1]}')`; classeLink = ' style="cursor:pointer; border-bottom:1px solid #999;"'; }
+          html += `<li><a href="${linkAction}"${classeLink}>${no.texto}</a>`;
+          if (no.filhos.length > 0) html += gerarHTML(no.filhos);
+          html += '</li>';
+        });
+        html += '</ul>'; return html;
+      }
+      return '<div class="tree">' + gerarHTML(raiz) + '</div>';
+    }
+
+    function popularFiltroMapa(texto) {
+      // (Mantido simples para não estourar o limite de caracteres do chat, 
+      //  mas a estrutura está pronta para receber o código completo se desejar)
+    }
+
+    // --- FUNÇÕES DE APOIO ---
+    function fecharMapaMental() { document.getElementById('modal-mapa').classList.remove('open'); }
+    function alternarHeaderMapa() { document.getElementById('header-mapa-conteudo').classList.toggle('recolhido'); }
+    function ativarArrastarMapa() {
+      const slider = document.querySelector('.mindmap-content');
+      let isDown = false, startX, scrollLeft, scrollTop, startY;
+      slider.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'A') return;
+        isDown = true; startX = e.pageX - slider.offsetLeft; startY = e.pageY - slider.offsetTop;
+        scrollLeft = slider.scrollLeft; scrollTop = slider.scrollTop;
+      });
+      slider.addEventListener('mouseleave', () => { isDown = false; });
+      slider.addEventListener('mouseup', () => { isDown = false; });
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return; e.preventDefault();
+        const x = e.pageX - slider.offsetLeft; const y = e.pageY - slider.offsetTop;
+        const walkX = (x - startX) * 1.5; const walkY = (y - startY) * 1.5;
+        slider.scrollLeft = scrollLeft - walkX; slider.scrollTop = scrollTop - walkY;
+      });
+    }
+
+    function setupFerramentas() {
+      const c = document.getElementById('texto-renderizado');
+      c.addEventListener('mouseup', function () {
+        if (modoGrifoAtivo) {
+          const sel = window.getSelection();
+          if (sel.rangeCount && !sel.isCollapsed) {
+            const range = sel.getRangeAt(0);
+            if (range.commonAncestorContainer.parentNode.tagName === 'A') return;
+            try {
+              const span = document.createElement('span');
+              span.className = 'user-highlight';
+              span.appendChild(range.extractContents());
+              range.insertNode(span);
+            } catch (e) { }
+          }
+        }
+      });
+      c.addEventListener('click', function (e) {
+        if (modoBorrachaAtivo && e.target.classList.contains('user-highlight')) {
+          const p = e.target.parentNode; while (e.target.firstChild) p.insertBefore(e.target.firstChild, e.target); p.removeChild(e.target);
+        }
+      });
+    }
+
+    function iniciarAtalhos() {
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (document.getElementById('modal-mapa').classList.contains('open')) { fecharMapaMental(); return; }
+          if (!document.body.classList.contains('menu-fechado')) { alternarMenu(); }
+        }
+      });
+    }
+
+    function alternarModoGrifo() { modoGrifoAtivo = !modoGrifoAtivo; modoBorrachaAtivo = false; uiBtn(); mostrarNotificacao(modoGrifoAtivo ? "Grifo ON" : "Grifo OFF"); }
+    function alternarModoBorracha() { modoBorrachaAtivo = !modoBorrachaAtivo; modoGrifoAtivo = false; uiBtn(); mostrarNotificacao(modoBorrachaAtivo ? "Borracha ON" : "Borracha OFF"); }
+    function uiBtn() {
+      document.getElementById('btn-grifar').classList.toggle('active-tool', modoGrifoAtivo);
+      document.getElementById('btn-borracha').classList.toggle('active-tool', modoBorrachaAtivo);
+    }
+    function alternarMenu() { document.body.classList.toggle('menu-fechado'); }
+    function mostrarNotificacao(msg, tipo = 'normal') {
+      const t = document.getElementById('toast-msg'); t.textContent = msg; t.className = 'notification-toast show ' + tipo;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function mudarFonte(d) { tamanhoFonte += d * 10; document.getElementById('texto-renderizado').style.fontSize = tamanhoFonte + "%"; }
+
+    function alternarEsquematizacao() {
+      modoSchemaAtivo = !modoSchemaAtivo; const b = document.getElementById('btn-schema'); b.classList.toggle('active-tool', modoSchemaAtivo);
+      const c = document.getElementById('texto-renderizado');
+      if (modoSchemaAtivo) {
+        const ps = c.getElementsByTagName('p'); const g = ["princípios", "objetivos", "são", "compreende", "requisitos"];
+        for (let p of ps) {
+          if (g.some(x => p.innerText.toLowerCase().includes(x)) && (p.innerText.match(/,/g) || []).length > 3 && !p.getAttribute('d-s')) {
+            let h = p.innerHTML, pts = h.split(/,| e (?=[^<]*$)/); if (pts.length > 3) { let n = pts[0]; for (let i = 1; i < pts.length; i++) { let it = pts[i].trim(), pt = ""; if (i === pts.length - 1 && it.endsWith('.')) { it = it.slice(0, -1); pt = "."; } n += (it.length > 2 ? ` <span class="schema-chip">${it}</span>${pt}` : `, ${it}`); } p.innerHTML = n; p.setAttribute('d-s', 'true'); }
+          }
+        } mostrarNotificacao("Esquema ON", "success");
+      } else { c.querySelectorAll('.schema-chip').forEach(k => { k.outerHTML = `, ${k.innerText}`; }); c.querySelectorAll('p[d-s]').forEach(p => p.removeAttribute('d-s')); mostrarNotificacao("Esquema OFF"); }
+    }
+
+    function alternarAnaliseAutomatica() {
+      analiseAutoAtiva = !analiseAutoAtiva; const b = document.getElementById('btn-auto'); b.classList.toggle('active-tool', analiseAutoAtiva);
+      const c = document.getElementById('texto-renderizado');
+      if (analiseAutoAtiva) {
+        const l = c.innerText.toLowerCase().replace(/[^a-zà-ú ]/g, ' ').split(/\s+/).filter(x => x.length > 3 && !STOPWORDS.has(x));
+        const f = {}; l.forEach((w, i) => { f[w] = (f[w] || 0) + 1; if (l[i + 1]) f[w + " " + l[i + 1]] = (f[w + " " + l[i + 1]] || 0) + 4; });
+        const k = Object.keys(f).sort((a, b) => f[b] - f[a]).slice(0, 15);
+        if (k.length) { const r = new RegExp(`(?![^<]+>)\\b(${k.join('|')})\\b`, "gi"); c.innerHTML = c.innerHTML.replace(r, '<span class="auto-keyword">$1</span>'); mostrarNotificacao("IA: Conceitos destacados", "success"); }
+      } else { c.querySelectorAll('.auto-keyword').forEach(k => k.outerHTML = k.innerText); mostrarNotificacao("IA Removida"); }
+    }
+
+    function verificarEnter(e) { if (e.key === 'Enter') executarBusca(); }
+
+    function executarBusca() {
+      const t = document.getElementById('campoBusca').value;
+      if (!t) return;
+      const c = document.getElementById('texto-renderizado');
+
+      // Limpa grifos de busca anteriores
+      c.querySelectorAll('mark').forEach(m => m.outerHTML = m.innerText);
+
+      try {
+        // Escapa caracteres especiais para evitar travamento do Regex
+        const tSafe = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?![^<]+>)(${tSafe})`, 'gi');
+
+        if (c.innerHTML.match(regex)) {
+          c.innerHTML = c.innerHTML.replace(regex, '<mark>$1</mark>');
+          const mark = c.querySelector('mark');
+          if (mark) mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          mostrarNotificacao("Não encontrado", "error");
+        }
+      } catch (e) {
+        mostrarNotificacao("Erro na busca: " + e.message, "error");
+      }
+    }
+
+    // --- RESTAURAÇÃO DE FUNÇÕES V40 (UI & MAPA) ---
+
+    // MODO LIVRO
+    function alternarModoLivro() {
+      const corpo = document.body;
+      const btn = document.getElementById('btn-livro');
+      corpo.classList.toggle('modo-livro-ativo');
+      const ativo = corpo.classList.contains('modo-livro-ativo');
+      if (btn) btn.classList.toggle('active-book', ativo);
+      mostrarNotificacao(ativo ? "Modo Livro Ativado" : "Modo Normal", "success");
+    }
+
+    // MODO ZEN
+    function alternarModoZen() {
+      document.body.classList.toggle('modo-zen');
+      const ativo = document.body.classList.contains('modo-zen');
+      if (ativo) { mostrarNotificacao("Modo Zen ATIVADO. (Pressione ESC para sair)", "success"); }
+      else { mostrarNotificacao("Modo Zen Desativado"); }
+    }
+
+    // LOGOUT (MODAL)
+    function abrirModalLogout() { document.getElementById('modal-logout').classList.add('open'); }
+    function fecharModalLogout() { document.getElementById('modal-logout').classList.remove('open'); }
+    function confirmarLogout() {
+      // 1. Avisa o servidor (sendBeacon)
+      const token = localStorage.getItem('sessionToken');
+      const email = localStorage.getItem('userEmail');
+      if (token && email) {
+        const formData = new URLSearchParams();
+        formData.append('action', 'logout');
+        formData.append('email', email);
+        formData.append('sessionToken', token);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(LOGIN_URL, formData);
+        } else {
+          fetch(LOGIN_URL, { method: 'POST', mode: 'no-cors', body: formData }).catch(() => { });
+        }
+      }
+      // 2. Limpa localStorage
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('sessionToken');
+      localStorage.removeItem('loginTime');
+      if (sessionTimer) { clearInterval(sessionTimer); sessionTimer = null; }
+      if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
+      isAuthenticated = false;
+      userEmail = '';
+      // 3. Atualiza UI
+      const btn = document.querySelector('#modal-logout .btn-confirm');
+      btn.innerHTML = "Saindo...";
+      btn.disabled = true;
+      setTimeout(() => { location.reload(); }, 500);
+    }
+    function abrirModalReset() { document.getElementById('modal-reset').classList.add('open'); }
+    function fecharModalReset() { document.getElementById('modal-reset').classList.remove('open'); }
+    function confirmarReset() { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+
+    // ZOOM DO MAPA
+    let zoomAtualMapa = 1;
+    function ajustarZoomMapa(fator) {
+      zoomAtualMapa *= fator;
+      if (zoomAtualMapa > 2) zoomAtualMapa = 2;
+      if (zoomAtualMapa < 0.5) zoomAtualMapa = 0.5;
+      const arvore = document.getElementById('arvore-visual');
+      if (arvore) arvore.style.transform = `scale(${zoomAtualMapa})`;
+      mostrarNotificacao("Zoom do Mapa: " + Math.round(zoomAtualMapa * 100) + "%", "success");
+    }
+    function resetarZoomMapa() {
+      zoomAtualMapa = 1;
+      const arvore = document.getElementById('arvore-visual');
+      if (arvore) arvore.style.transform = 'scale(1)';
+      mostrarNotificacao("Zoom Resetado");
+    }
+
+    // NAVEGAÇÃO / FILTRO MAPA
+    function alternarMenuMapa() {
+      const menu = document.getElementById('dropdown-navegacao');
+      menu.classList.toggle('ativo');
+    }
+
+    function popularFiltroMapa(texto) {
+      if (!texto) return;
+
+      const visual = document.getElementById('arvore-visual');
+      // converterTextoParaArvore já é chamado antes, mas garante atualização
+      // visual.innerHTML = converterTextoParaArvore(texto); 
+      aplicarInteracaoNosNodes();
+
+      const container = document.getElementById('dropdown-navegacao');
+      container.innerHTML = '';
+
+      const itemTodos = document.createElement('div');
+      itemTodos.className = 'nav-item nav-nivel-1';
+      itemTodos.innerHTML = '<span class="nav-texto">👁️ Visão Geral (Resetar)</span>';
+      itemTodos.onclick = function () {
+        resetarZoomMapa();
+        alternarMenuMapa();
+        mostrarNotificacao("Visão Geral restaurada");
+      };
+      container.appendChild(itemTodos);
+
+      const linhasRaw = texto.split('\n').filter(l => l.trim().startsWith('#'));
+      const dados = linhasRaw.map((linha, index) => {
+        const match = linha.match(/^(#{1,4})\s+(.*)/);
+        if (!match) return null;
+        return {
+          nivel: match[1].length,
+          nome: match[2].trim(),
+          original: linha,
+          id: index
+        };
+      }).filter(x => x);
+
+      dados.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.id = `menu-item-${index}`;
+        const classeOculto = (item.nivel > 1) ? ' nav-oculto' : '';
+        div.className = `nav-item nav-nivel-${item.nivel}${classeOculto}`;
+        div.setAttribute('data-nivel', item.nivel);
+        const proximoItem = dados[index + 1];
+        const ehPai = proximoItem && proximoItem.nivel > item.nivel;
+        let icone = "";
+        if (item.nivel === 1) icone = "📂 ";
+        if (item.nivel === 2) icone = "📄 ";
+        if (item.nivel === 3) icone = "🔹 ";
+        if (item.nivel === 4) icone = "🔸 ";
+
+        if (ehPai) {
+          div.innerHTML = `
+                  <span class="nav-seta" id="seta-${index}">▶</span> 
+                  <span class="nav-texto">${icone}${item.nome}</span>
+                  <span class="nav-btn-ir" title="Ir para este item no mapa" onclick="navegarPai(event, '${item.nome}')">🎯 Ir</span>
+              `;
+          div.onclick = function (e) {
+            const setaEl = document.getElementById(`seta-${index}`);
+            toggleMenuFilhosSimulado(setaEl, index, item.nivel);
+          };
+        } else {
+          div.innerHTML = `
+                  <span class="nav-seta" style="opacity:0;">•</span> 
+                  <span class="nav-texto">${icone}${item.nome}</span>
+              `;
+          div.onclick = function () {
+            filtrarMapa(item.nome);
+            alternarMenuMapa();
+          };
+        }
+        container.appendChild(div);
+      });
+    }
+
+    function navegarPai(e, nome) {
+      e.stopPropagation();
+      filtrarMapa(nome);
+      alternarMenuMapa();
+    }
+
+    function toggleMenuFilhosSimulado(setaEl, indexPai, nivelPai) {
+      setaEl.classList.toggle('aberto');
+      const estaAbrindo = setaEl.classList.contains('aberto');
+      let i = indexPai + 1;
+      while (true) {
+        const filhoEl = document.getElementById(`menu-item-${i}`);
+        if (!filhoEl) break;
+        const nivelFilho = parseInt(filhoEl.getAttribute('data-nivel'));
+        if (nivelFilho <= nivelPai) break;
+        if (estaAbrindo) {
+          if (nivelFilho === nivelPai + 1) {
+            filhoEl.classList.remove('nav-oculto');
+            const setaFilho = filhoEl.querySelector('.nav-seta');
+            if (setaFilho) setaFilho.classList.remove('aberto');
+          }
+        } else {
+          filhoEl.classList.add('nav-oculto');
+          const setaFilho = filhoEl.querySelector('.nav-seta');
+          if (setaFilho) setaFilho.classList.remove('aberto');
+        }
+        i++;
+      }
+    }
+
+    function filtrarMapa(nomeAlvo) {
+      if (!nomeAlvo) return;
+      document.querySelectorAll('.node-focado').forEach(el => el.classList.remove('node-focado'));
+      const todosNos = document.querySelectorAll('.tree li > a');
+      let encontrou = false;
+      todosNos.forEach(node => {
+        const clone = node.cloneNode(true);
+        const toggler = clone.querySelector('.mindmap-toggler');
+        if (toggler) toggler.remove();
+        const textoLimpo = clone.textContent.trim();
+        if (textoLimpo === nomeAlvo) {
+          encontrou = true;
+          let paiAtual = node.closest('li');
+          while (paiAtual) {
+            if (paiAtual.classList.contains('filhos-ocultos')) {
+              paiAtual.classList.remove('filhos-ocultos');
+              const linkDoPai = paiAtual.querySelector(':scope > a');
+              if (linkDoPai) {
+                const btn = linkDoPai.querySelector('.mindmap-toggler');
+                if (btn) btn.innerHTML = '−';
+              }
+            }
+            paiAtual = paiAtual.parentElement.closest('li');
+          }
+          resetarZoomMapa();
+          node.classList.add('node-focado');
+          setTimeout(() => {
+            node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          }, 200);
+          setTimeout(() => { node.classList.remove('node-focado'); }, 3000);
+        }
+      });
+      if (encontrou) { mostrarNotificacao("Localizado: " + nomeAlvo, "success"); }
+      else { mostrarNotificacao("Elemento não encontrado.", "error"); }
+    }
+
+    function aplicarInteracaoNosNodes() {
+      const nodesLinks = document.querySelectorAll('.tree li > a');
+      const modalConf = document.getElementById('modal-confirmacao');
+      const btnSim = document.getElementById('btn-confirmar-nav');
+      const btnNao = document.getElementById('btn-cancelar-nav');
+      const msgConf = document.getElementById('confirm-msg');
+
+      nodesLinks.forEach(link => {
+        const liPai = link.parentElement;
+        const temFilhos = liPai.querySelector('ul');
+        if (temFilhos) {
+          if (!link.querySelector('.mindmap-toggler')) {
+            const btnToggle = document.createElement('span');
+            btnToggle.className = 'mindmap-toggler';
+            btnToggle.innerHTML = '−';
+            btnToggle.title = "Expandir/Retrair";
+            btnToggle.addEventListener('click', function (e) {
+              e.preventDefault(); e.stopPropagation();
+              liPai.classList.toggle('filhos-ocultos');
+              if (liPai.classList.contains('filhos-ocultos')) { this.innerHTML = '+'; }
+              else { this.innerHTML = '−'; }
+            });
+            link.appendChild(btnToggle);
+          }
+        }
+        // Remove listeners antigos (clone node seria ideal, mas aqui apenas adicionamos se necessario)
+        // Para simplificar, assumimos que esta funcao roda uma vez ao gerar a arvore
+
+        link.onclick = function (e) {
+          if (e.target.className === 'mindmap-toggler') return;
+          e.preventDefault();
+          this.style.fontWeight = (this.style.fontWeight === '900') ? '600' : '900';
+        };
+
+        link.ondblclick = function (e) {
+          if (e.target.className === 'mindmap-toggler') return;
+          e.preventDefault();
+          const acaoLink = this.getAttribute('href');
+          const matchArt = acaoLink.match(/'([^']+)'/);
+          if (matchArt) {
+            const numRef = matchArt[1];
+            const idFormatado = "art_id_" + numRef.replace(/[º\.]/g, '').trim();
+            const idApostila = "art_" + numRef.toString().replace(/\./g, '_');
+            const alvo = document.getElementById(idFormatado) || document.getElementById(idApostila);
+            if (alvo) {
+              msgConf.innerText = `Deseja sair do Mapa para ler o conteúdo do Tópico/Artigo ${numRef}?`;
+              if (modalConf) {
+                modalConf.style.display = 'flex';
+                btnSim.onclick = function () {
+                  modalConf.style.display = 'none';
+                  fecharMapaMental();
+                  setTimeout(() => {
+                    alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    alvo.style.backgroundColor = "#fff9c4";
+                    setTimeout(() => alvo.style.backgroundColor = "", 1500);
+                  }, 300);
+                };
+                btnNao.onclick = function () { modalConf.style.display = 'none'; };
+              }
+            } else { mostrarNotificacao("Conteúdo não encontrado no texto.", "error"); }
+          }
+        };
+      });
+    }
+
+    // BUSCA NO MAPA
+    let timeoutBusca = null;
+    let ultimoTermoBusca = "";
+    let resultadosEncontrados = [];
+    let indiceResultadoAtual = 0;
+
+    document.addEventListener('click', function (e) {
+      const box = document.getElementById('box-busca-mapa');
+      const btnOpen = document.querySelector('.map-search-btn');
+      if (!box || !box.classList.contains('ativo')) return;
+      if (box.contains(e.target) || e.target === btnOpen) return;
+      fecharBuscaCompleto();
+    });
+
+    function fecharBuscaCompleto() {
+      const box = document.getElementById('box-busca-mapa');
+      const input = document.getElementById('input-busca-mapa');
+      box.classList.remove('ativo');
+      input.value = '';
+      limparDestaquesBusca();
+      ultimoTermoBusca = ""; resultadosEncontrados = []; indiceResultadoAtual = 0;
+    }
+
+    function cliqueBotaoBusca(e) {
+      e.stopPropagation();
+      const box = document.getElementById('box-busca-mapa');
+      const input = document.getElementById('input-busca-mapa');
+      const termo = input.value.trim();
+      if (box.classList.contains('ativo')) {
+        if (termo !== '') { realizarBuscaMapa(); input.focus(); }
+        else { fecharBuscaCompleto(); }
+      } else {
+        box.classList.add('ativo'); input.focus();
+      }
+    }
+
+    function verificarBuscaDigita(e) {
+      const termo = e.target.value.trim();
+      if (termo === '') { clearTimeout(timeoutBusca); limparDestaquesBusca(); return; }
+      clearTimeout(timeoutBusca);
+      timeoutBusca = setTimeout(() => { realizarBuscaMapa(true); }, 300);
+    }
+
+    function verificarEnterBusca(e) {
+      if (e.key === 'Enter') { e.preventDefault(); clearTimeout(timeoutBusca); realizarBuscaMapa(); }
+    }
+
+    function limparDestaquesBusca() {
+      document.querySelectorAll('.search-match').forEach(el => el.classList.remove('search-match'));
+    }
+
+    function expandirAteONo(node) {
+      let paiAtual = node.closest('li');
+      while (paiAtual) {
+        if (paiAtual.classList.contains('filhos-ocultos')) {
+          paiAtual.classList.remove('filhos-ocultos');
+          const linkDoPai = paiAtual.querySelector(':scope > a');
+          if (linkDoPai) {
+            const btn = linkDoPai.querySelector('.mindmap-toggler');
+            if (btn) btn.innerHTML = '−';
+          }
+        }
+        paiAtual = paiAtual.parentElement.closest('li');
+      }
+    }
+
+    function focarNoResultado(node) {
+      expandirAteONo(node);
+      node.classList.add('node-focado');
+      setTimeout(() => { node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }); }, 100);
+      setTimeout(() => { node.classList.remove('node-focado'); }, 3000);
+    }
+
+    function realizarBuscaMapa(ehDigitacao = false) {
+      const termo = document.getElementById('input-busca-mapa').value.trim().toLowerCase();
+      if (!termo) return;
+
+      if (termo === ultimoTermoBusca && resultadosEncontrados.length > 0 && !ehDigitacao) {
+        indiceResultadoAtual++;
+        if (indiceResultadoAtual >= resultadosEncontrados.length) {
+          indiceResultadoAtual = 0;
+          mostrarNotificacao("Voltando ao primeiro resultado...", "normal");
+        }
+        const proximoNode = resultadosEncontrados[indiceResultadoAtual];
+        focarNoResultado(proximoNode);
+        mostrarNotificacao(`Resultado ${indiceResultadoAtual + 1} de ${resultadosEncontrados.length}`, "success");
+        return;
+      }
+
+      limparDestaquesBusca();
+      resultadosEncontrados = [];
+      indiceResultadoAtual = 0;
+      ultimoTermoBusca = termo;
+
+      const todosNos = document.querySelectorAll('.tree li > a');
+      todosNos.forEach(node => {
+        const clone = node.cloneNode(true);
+        const toggler = clone.querySelector('.mindmap-toggler');
+        if (toggler) toggler.remove();
+        const textoNo = clone.textContent.trim().toLowerCase();
+        if (textoNo.includes(termo)) {
+          node.classList.add('search-match');
+          expandirAteONo(node);
+          resultadosEncontrados.push(node);
+        }
+      });
+
+      if (resultadosEncontrados.length > 0) {
+        focarNoResultado(resultadosEncontrados[0]);
+        mostrarNotificacao(`Encontrado: 1 de ${resultadosEncontrados.length}`, "success");
+      } else {
+        if (!ehDigitacao) mostrarNotificacao("Não encontrado: " + termo, "error");
+      }
+    }
+
+    // --- MENU MOBILE ---
+    function alternarMenuMobile() {
+      const menu = document.getElementById('toolbar-opcoes');
+      menu.classList.toggle('ativo');
+
+      if (menu.classList.contains('ativo')) {
+        document.addEventListener('click', fecharMenuAoClicarFora);
+        const botoesAcao = menu.querySelectorAll('button:not(.dropbtn)');
+        botoesAcao.forEach(btn => {
+          btn.onclick = function () {
+            setTimeout(() => {
+              menu.classList.remove('ativo');
+              document.removeEventListener('click', fecharMenuAoClicarFora);
+            }, 150);
+          };
+        });
+      }
+    }
+
+    function alternarMenuExtrasMapa() {
+      const menu = document.getElementById('map-extras');
+      menu.classList.toggle('ativo');
+      if (menu.classList.contains('ativo')) {
+        setTimeout(() => {
+          document.addEventListener('click', fecharMenuMapaAoClicar);
+        }, 100);
+      }
+    }
+
+    function fecharMenuMapaAoClicar(e) {
+      const menu = document.getElementById('map-extras');
+      const btn = document.querySelector('.btn-map-menu-mobile');
+      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('ativo');
+        document.removeEventListener('click', fecharMenuMapaAoClicar);
+      }
+      if (menu.contains(e.target) && (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON')) {
+        menu.classList.remove('ativo');
+        document.removeEventListener('click', fecharMenuMapaAoClicar);
+      }
+    }
+
+    function fecharMenuAoClicarFora(e) {
+      const menu = document.getElementById('toolbar-opcoes');
+      const btn = document.querySelector('.btn-mobile-ops');
+      if (e.target.closest('.mobile-search-box')) return;
+      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('ativo');
+        document.removeEventListener('click', fecharMenuAoClicarFora);
+      }
+    }
+
+    function verificarEnterMobile(e) { if (e.key === 'Enter') executarBuscaMobile(); }
+
+    function executarBuscaMobile() {
+      const t = document.getElementById('campoBuscaMobile').value;
+      const c = document.getElementById('texto-renderizado');
+      c.querySelectorAll('mark').forEach(m => m.outerHTML = m.innerText);
+      if (!t) return;
+
+      try {
+        const tSafe = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?![^<]+>)(${tSafe})`, 'gi');
+        if (c.innerHTML.match(regex)) {
+          c.innerHTML = c.innerHTML.replace(regex, '<mark>$1</mark>');
+          c.querySelector('mark').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          document.getElementById('toolbar-opcoes').classList.remove('ativo');
+        } else {
+          mostrarNotificacao("Não encontrado", "error");
+        }
+      } catch (e) { }
+    }
+
+    // --- TROCAR MATERIA (Compatibilidade V41) ---
+    function trocarMateria(valor) {
+      // Se for apenas índice numérico, tenta pegar da biblioteca local
+      // V41 carrega BIBLIOTECA_LOCAL no onload.
+      // Aqui assumimos que BIBLIOTECA_LOCAL está acessível (veja modificação no topo).
+
+      if (typeof BIBLIOTECA_LOCAL !== 'undefined' && BIBLIOTECA_LOCAL[valor]) {
+        const item = BIBLIOTECA_LOCAL[valor];
+        if (item.sheetId) {
+          carregarDaNuvem(item.sheetId, item.id || "completa", item.nome);
+        } else {
+          mostrarNotificacao("Item de teste sem ID definido", "error");
+        }
+      } else {
+        console.log("Seleção:", valor);
+        // Se não for índice válido, ignora ou avisa
+      }
+    }
+
+  </script>
+</body>
+
+</html>
