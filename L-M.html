@@ -40,19 +40,13 @@
       font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0 !important;
-      /* FORÇA ZERO DE ESPAÇO NO TOPO */
       display: flex;
       flex-direction: column;
-      height: auto !important;
-      /* V84 STRATEGY: Altura automática para crescer com conteúdo */
-      min-height: 100vh;
-      /* Garante o fundo */
+      height: 100vh; /* Força a ocupar exatamente a altura da tela (PC ou Mobile) */
       background-color: #f8f9fa;
       color: var(--cor-texto);
-      overflow-y: auto !important;
-      /* Scroll na janela principal */
-      overflow-x: hidden;
-      position: static !important;
+      overflow: hidden; /* Impede que a página inteira role, apenas o conteúdo interno rolará */
+      position: relative;
     }
 
     #loginModal {
@@ -467,22 +461,19 @@
     }
 
     .study-toolbar {
-      position: sticky;
+      position: relative; /* Mudamos de sticky para relative para trabalhar em conjunto com o flex do body */
       top: 0;
-      /* MUDANÇA: Agora usa o PRETO da sua marca */
       background-color: var(--cor-menu-fundo);
       border-bottom: 1px solid #333;
-      /* Borda escura discreta */
       padding: 10px 20px;
       display: flex;
       align-items: center;
       gap: 10px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      /* Sombra mais elegante */
       z-index: 1000;
-      flex-wrap: wrap;
       width: 100%;
       box-sizing: border-box;
+      flex-shrink: 0; /* Impede que a barra seja espremida */
     }
 
     /* Texto "MATÉRIA:" agora em DOURADO */
@@ -607,13 +598,10 @@
     }
 
     /* CONTEÚDO RENDERIZADO */
-    /* CONTEÚDO RENDERIZADO */
     .content {
       flex-grow: 1;
       padding: 40px 80px;
-      height: auto !important;
-      overflow: visible !important;
-      /* Remove barra de rolagem interna */
+      overflow-y: auto !important; /* Só o texto vai rolar aqui dentro */
       background-color: white;
       max-width: 100%;
       margin: 0 auto;
