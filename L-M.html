@@ -93,7 +93,7 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: var(--gold-gradient);
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
       border-radius: 20px 20px 0 0;
     }
 
@@ -110,7 +110,7 @@
 
     /* Aplica o efeito Dourado APENAS na palavra dentro do <span> (CONCURSOS) */
     .login-logo span {
-      background: var(--gold-gradient);
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
       /* O mesmo degradê do botão */
       -webkit-background-clip: text;
       /* Recorta o fundo no formato da letra */
@@ -179,7 +179,7 @@
       /* Reduzido de 100% para 80% (mais elegante) */
       padding: 10px;
       /* Reduzido de 15px para 10px */
-      background: var(--gold-gradient);
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
       color: #000;
       border: none;
       border-radius: 50px;
@@ -417,29 +417,38 @@
       font-weight: normal;
     }
 
+    /* Botão ▶ de abrir o Índice — agora DENTRO da toolbar */
     .btn-open-sidebar {
-      position: fixed;
-      left: 0;
-      top: 75px;
-      background-color: var(--cor-menu-fundo);
-      color: white;
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
+      color: #000;
       border: none;
-      border-radius: 0 50% 50% 0;
-      padding: 10px 15px 10px 10px;
+      border-radius: 13px;
+      padding: 0 10px;
+      height: 23px;
+      min-height: 23px;
       cursor: pointer;
-      font-size: 1.2rem;
-      z-index: 90;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-      transform: translateX(-100%);
-      transition: transform 0.3s;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25);
+      flex-shrink: 0;
+    }
+
+    .btn-open-sidebar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Quando o menu está aberto, esconde o botão ▶ */
+    body:not(.menu-fechado) .btn-open-sidebar {
+      display: none;
     }
 
     body.menu-fechado .sidebar {
       margin-left: calc(var(--largura-menu) * -1);
-    }
-
-    body.menu-fechado .btn-open-sidebar {
-      transform: translateX(0);
     }
 
     /* --- ÁREA PRINCIPAL --- */
@@ -464,9 +473,10 @@
       /* MUDANÇA: Agora usa o PRETO da sua marca */
       background-color: var(--cor-menu-fundo);
       border-bottom: 1px solid #333;
-/* MUDANÇA: Reduzi drásticamente o espaço vertical */
-      padding: 5px 20px !important; 
-      height: 45px !important; /* Força a barra a ser fina (era variavel/maior) */
+      /* MUDANÇA: Reduzi drásticamente o espaço vertical */
+      padding: 5px 20px !important;
+      height: 45px !important;
+      /* Força a barra a ser fina (era variavel/maior) */
       display: flex;
       align-items: center;
       gap: 10px;
@@ -482,126 +492,99 @@
     .study-label {
       font-size: 0.85rem;
       font-weight: 600;
-      color:#F2E782 !important;
+      color: #F2E782 !important;
       text-transform: uppercase;
       margin-right: 5px;
     }
 
-    /* Botões Base (Dark Mode) */
-    .tool-btn, .dropbtn, #seletor-conteudo {
-      border: 1px solid #444;
-      /* Borda cinza escuro */
-      background-color: #1a1a1a;
-      /* Fundo quase preto */
-      color: #fff;
-	  
-      height: 23px !important;      /* Força a altura exata da caixa */
-      min-height: 23px !important;  /* Garante que não diminua mais que isso */
-      padding: 0 10px !important;   /* Zero em cima/baixo, 10px nas laterais */
-	  /* A MÁGICA DO ARREDONDAMENTO: Metade da altura (26/2 = 13) */
+    /* Botões Base (Estilo Dourado CEFS 206) */
+    .tool-btn,
+    .dropbtn,
+    #seletor-conteudo {
+      border: none;
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
+      color: #000;
+      font-weight: 700;
+
+      height: 23px !important;
+      min-height: 23px !important;
+      padding: 0 10px !important;
       border-radius: 13px !important;
       font-size: 0.85rem;
       display: flex;
       align-items: center;
       gap: 8px;
       transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25);
+      cursor: pointer;
     }
-/* Ajuste específico para o seletor (dropdown da matéria) para não cortar texto */
+
+    /* Ajuste específico para o seletor (dropdown da matéria) para não cortar texto */
     #seletor-conteudo {
       padding-right: 5px !important;
     }
-    /* Ao passar o mouse: Fundo Preto Absoluto + Texto Dourado */
-    .tool-btn:hover {
-      background-color: #000;
-      color: var(--cor-destaque);
-      border-color: var(--cor-destaque);
-      box-shadow: 0 0 10px rgba(176, 141, 40, 0.2);
+
+    /* Ao passar o mouse: Brilho mais intenso */
+    .tool-btn:hover,
+    .dropbtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
-    /* Mantém compatibilidade com botões ativos (não apague as linhas abaixo no seu arquivo original, apenas substitua até aqui) */
-    .tool-btn:hover {
-      background-color: #e9ecef;
-    }
-
+    /* Estado ativo genérico: dourado mais escuro com borda */
     .tool-btn.active-tool {
-      background-color: var(--cor-menu-fundo);
-      color: white;
-      border-color: var(--cor-menu-fundo);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #AE8625 0%, #D2AC47 50%, #AE8625 100%);
+      color: #000;
+      border: 2px solid #F7EF8A;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
     }
 
     .tool-btn.highlight-btn.active-tool {
-      background-color: #fbc02d;
-      color: #333;
-      border-color: #fbc02d;
+      background: linear-gradient(135deg, #AE8625 0%, #D2AC47 50%, #AE8625 100%);
+      color: #000;
+      border: 2px solid #F7EF8A;
     }
 
     .tool-btn.clear-btn.active-tool {
-      background-color: #c0392b;
-      color: white;
-      border-color: #c0392b;
+      background: linear-gradient(135deg, #AE8625 0%, #D2AC47 50%, #AE8625 100%);
+      color: #000;
+      border: 2px solid #F7EF8A;
     }
 
-    .tool-btn.magic-btn {
-      color: #2e7d32;
-      border-color: #a5d6a7;
-      background-color: #e8f5e9;
-    }
 
-    .tool-btn.magic-btn.active-tool {
-      background-color: #2e7d32;
-      color: white;
-      border-color: #1b5e20;
-    }
 
-    .tool-btn.schema-btn {
-      color: #1565c0;
-      border-color: #90caf9;
-      background-color: #e3f2fd;
-    }
-
+    .tool-btn.magic-btn.active-tool,
     .tool-btn.schema-btn.active-tool {
-      background-color: #1565c0;
-      color: white;
-      border-color: #0d47a1;
-    }
-
-    .tool-btn.mindmap-btn {
-      color: #8e44ad;
-      border-color: #d2b4de;
-      background-color: #f4ecf7;
+      background: linear-gradient(135deg, #AE8625 0%, #D2AC47 50%, #AE8625 100%);
+      color: #000;
+      border: 2px solid #F7EF8A;
     }
 
     .tool-btn.mindmap-btn:hover {
-      background-color: #e8daef;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
     .tool-btn.reset-btn {
       margin-left: auto;
-      border-radius: 4px;
       font-size: 0.75rem;
-      color: #999;
-      border: none;
-      background: none;
+      /* Herda o dourado base */
     }
 
     .tool-btn.reset-btn:hover {
-      color: #c0392b;
-      text-decoration: underline;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
     /* --- BOTÃO DE SAIR (LOGOUT) --- */
     .tool-btn.logout-btn {
       margin-left: 5px;
-      color: #c0392b;
-      border: 1px solid #e74c3c;
-      font-weight: bold;
+      /* Herda o dourado base */
     }
 
     .tool-btn.logout-btn:hover {
-      background-color: #c0392b;
-      color: white;
-      box-shadow: 0 2px 5px rgba(192, 57, 43, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
     /* CONTEÚDO RENDERIZADO */
@@ -647,15 +630,17 @@
       color: #555;
     }
 
-   /* --- FONTE DO TEXTO MAIOR (V55) --- */
-    p, li {
+    /* --- FONTE DO TEXTO MAIOR (V55) --- */
+    p,
+    li {
       line-height: 1.7;
       margin-bottom: 15px;
       text-align: justify;
       color: #444;
-      
+
       /* AQUI ESTÁ A MUDANÇA: */
-      font-size: 1.15rem !important; /* Aumenta 15% em relação ao padrão */
+      font-size: 1.15rem !important;
+      /* Aumenta 15% em relação ao padrão */
       /* Se ainda achar pequeno, mude 1.15rem para 1.2rem ou 19px */
     }
 
@@ -911,18 +896,21 @@
 
     .mindmap-content {
       flex-grow: 1;
-      overflow: auto; /* Rolagem em todas as direções */
-      
+      overflow: auto;
+      /* Rolagem em todas as direções */
+
       display: flex;
       flex-direction: column;
-      align-items: flex-start; /* Alinha tudo à esquerda para o scroll funcionar */
-      
+      align-items: flex-start;
+      /* Alinha tudo à esquerda para o scroll funcionar */
+
       /* REMOVIDO: background-image e background-size (os pontinhos sumiram) */
-      background-color: #f8f9fa; /* Um fundo cinza super suave (quase branco) para conforto */
-      
+      background-color: #f8f9fa;
+      /* Um fundo cinza super suave (quase branco) para conforto */
+
       cursor: grab;
       user-select: none;
-      
+
       /* Garante que o container ocupe a área correta */
       position: relative;
       width: 100%;
@@ -935,12 +923,14 @@
     /* --- ESTRUTURA DA ÁRVORE COM RESPIRO (V58) --- */
     .tree {
       display: flex;
-      margin: 0;           /* Remove centralização automática que pode travar o scroll */
+      margin: 0;
+      /* Remove centralização automática que pode travar o scroll */
       padding: 10px 40px 60px 40px;
-      
+
       /* Garante que o mapa tenha espaço para crescer */
-      width: fit-content;  
-      min-width: 100%;     /* Ocupa pelo menos a tela toda */
+      width: fit-content;
+      min-width: 100%;
+      /* Ocupa pelo menos a tela toda */
       box-sizing: border-box;
     }
 
@@ -976,17 +966,18 @@
       display: none;
     }
 
-   /* --- CONEXÕES HORIZONTAIS (Mantido) --- */
+    /* --- CONEXÕES HORIZONTAIS (Mantido) --- */
     .tree li::before {
       content: '';
       position: absolute;
       left: -50px;
       top: 50%;
-      height: 2px; /* Espessura sólida */
+      height: 2px;
+      /* Espessura sólida */
       width: 50px;
       background: #666;
     }
-    
+
     .tree>ul>li::before {
       display: none;
     }
@@ -997,29 +988,36 @@
       content: '';
       position: absolute;
       left: -50px;
-      width: 2px; /* Espessura sólida */
+      width: 2px;
+      /* Espessura sólida */
       background: #666;
     }
 
     /* 1. O PRIMEIRO FILHO: Começa no meio e desce até o limite */
     .tree li:first-child::after {
       top: 50%;
-      bottom: -1px; /* Vai até o finalzinho do item */
-      height: auto; /* Deixa o navegador calcular a altura necessária */
+      bottom: -1px;
+      /* Vai até o finalzinho do item */
+      height: auto;
+      /* Deixa o navegador calcular a altura necessária */
     }
 
     /* 2. O ÚLTIMO FILHO: Sobe MUITO (-20px) para encontrar o vizinho de cima */
     .tree li:last-child::after {
-      top: -20px;   /* Sobe 20 pixels para dentro do item anterior */
-      bottom: 50%;  /* Para exatamente no meio do texto */
+      top: -20px;
+      /* Sobe 20 pixels para dentro do item anterior */
+      bottom: 50%;
+      /* Para exatamente no meio do texto */
       height: auto;
     }
 
     /* 3. FILHOS DO MEIO: A Solução Definitiva */
     /* Começa 20px acima e vai até o final. A sobreposição garante zero falhas */
     .tree li:not(:first-child):not(:last-child)::after {
-      top: -20px;   /* Invade a área do vizinho de cima */
-      bottom: -1px; /* Vai até o limite para o vizinho de baixo pegar */
+      top: -20px;
+      /* Invade a área do vizinho de cima */
+      bottom: -1px;
+      /* Vai até o limite para o vizinho de baixo pegar */
       height: auto;
     }
 
@@ -1048,7 +1046,8 @@
     .tree li>a {
       background: white;
       border: 1px solid #ccc;
-      padding: 10px 18px; /* Padding equilibrado */
+      padding: 10px 18px;
+      /* Padding equilibrado */
       border-radius: 8px;
       text-decoration: none;
       color: #333;
@@ -1058,17 +1057,22 @@
       transition: all 0.2s;
       z-index: 2;
       position: relative;
-      
+
       /* A MÁGICA DO TAMANHO: */
-      display: inline-flex;  /* Flexível, mas respeita conteúdo */
+      display: inline-flex;
+      /* Flexível, mas respeita conteúdo */
       align-items: center;
       justify-content: center;
-      
-      width: max-content;    /* Tenta crescer para caber o texto numa linha só */
-      min-width: 120px;      /* Garante que caixas com "Oi" não fiquem minúsculas */
-      max-width: 350px;      /* Limite aumentado (era 220px) para frases longas */
-      
-      white-space: normal;   /* Permite quebrar linha SÓ se passar de 350px */
+
+      width: max-content;
+      /* Tenta crescer para caber o texto numa linha só */
+      min-width: 120px;
+      /* Garante que caixas com "Oi" não fiquem minúsculas */
+      max-width: 350px;
+      /* Limite aumentado (era 220px) para frases longas */
+
+      white-space: normal;
+      /* Permite quebrar linha SÓ se passar de 350px */
       text-align: center;
       line-height: 1.4;
     }
@@ -1219,12 +1223,15 @@
     .map-nav-dropdown {
       display: none;
       position: absolute;
-      
+
       /* AQUI ESTÁ A MÁGICA DA POSIÇÃO: */
-      top: 100% !important;       /* Fica logo abaixo do container do botão */
-      margin-top: 8px !important; /* Um pequeno respiro estético (pode diminuir para 5px se quiser mais perto) */
-      left: 0 !important;         /* Alinha perfeitamente à esquerda do botão */
-      
+      top: 100% !important;
+      /* Fica logo abaixo do container do botão */
+      margin-top: 8px !important;
+      /* Um pequeno respiro estético (pode diminuir para 5px se quiser mais perto) */
+      left: 0 !important;
+      /* Alinha perfeitamente à esquerda do botão */
+
       width: 300px;
       max-height: 70vh;
       overflow-y: auto;
@@ -1433,9 +1440,12 @@
     }
 
     @media (max-width: 768px) {
-     /* --- CORREÇÃO V49: TEXTO INTEIRO NA PRÓXIMA LINHA --- */
-      html, body {
-        overflow-x: hidden !important; /* Trava a rolagem lateral */
+
+      /* --- CORREÇÃO V49: TEXTO INTEIRO NA PRÓXIMA LINHA --- */
+      html,
+      body {
+        overflow-x: hidden !important;
+        /* Trava a rolagem lateral */
         width: 100% !important;
         position: relative !important;
       }
@@ -1443,28 +1453,42 @@
       .content {
         width: 100% !important;
         max-width: 100% !important;
-        box-sizing: border-box !important; /* Importante para o padding não estourar */
-        padding: 20px 25px !important; /* Margem confortável */
-        
+        box-sizing: border-box !important;
+        /* Importante para o padding não estourar */
+        padding: 20px 25px !important;
+        /* Margem confortável */
+
         /* A MÁGICA DA LEITURA: */
-        white-space: normal !important;       /* Permite pular linha */
-        word-break: normal !important;        /* NUNCA quebra palavra no meio (padrão) */
-        overflow-wrap: break-word !important; /* Só quebra se for um link gigante sem espaços */
-        hyphens: auto !important;             /* Adiciona hífen (-) se precisar quebrar (estilo livro) */
+        white-space: normal !important;
+        /* Permite pular linha */
+        word-break: normal !important;
+        /* NUNCA quebra palavra no meio (padrão) */
+        overflow-wrap: break-word !important;
+        /* Só quebra se for um link gigante sem espaços */
+        hyphens: auto !important;
+        /* Adiciona hífen (-) se precisar quebrar (estilo livro) */
       }
 
       /* Garante que parágrafos e títulos obedeçam o pai */
-      .content p, .content h1, .content h2, .content h3, .content li {
+      .content p,
+      .content h1,
+      .content h2,
+      .content h3,
+      .content li {
         max-width: 100% !important;
         width: auto !important;
-        word-break: normal !important; /* Reforça: não quebrar palavras */
+        word-break: normal !important;
+        /* Reforça: não quebrar palavras */
       }
-      
+
       /* Imagens e tabelas responsivas */
-      .content img, .content table, .content iframe {
+      .content img,
+      .content table,
+      .content iframe {
         max-width: 100% !important;
         height: auto !important;
-        display: block; /* Evita comportamentos estranhos de linha */
+        display: block;
+        /* Evita comportamentos estranhos de linha */
       }
 
       /* Login mais compacto */
@@ -1523,23 +1547,25 @@
       display: inline-block;
     }
 
-    /* O botão principal do menu */
+    /* O botão principal do menu (Dourado) */
     .dropbtn {
-      background-color: #fff;
-      color: #333;
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
+      color: #000;
       padding: 8px 15px;
       font-size: 0.85rem;
-      border: 1px solid #ddd;
+      border: none;
       border-radius: 20px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 5px;
+      box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25);
     }
 
     .dropbtn:hover {
-      background-color: #f1f1f1;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
     /* O conteúdo da gaveta (escondido) */
@@ -1579,7 +1605,7 @@
 
     .dropdown-content .tool-btn:hover {
       background-color: #f8f9fa;
-      color: var(--cor-destaque);
+      color: #D2AC47;
     }
 
 
@@ -1634,7 +1660,10 @@
       }
 
       .btn-open-sidebar {
-        top: 80px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        padding: 0 8px !important;
+        font-size: 0.9rem !important;
       }
 
       /* 1. BARRA DE FERRAMENTAS PRINCIPAL OTIMIZADA */
@@ -1642,8 +1671,8 @@
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        padding: 5px 10px 5px 45px !important;
-        /* Mais compacta */
+        padding: 5px 10px !important;
+        /* Compacta, sem padding-left extra */
         gap: 8px;
         height: 50px;
         /* Altura fixa menor */
@@ -2118,12 +2147,15 @@
       animation: spin 1s linear infinite;
       margin-bottom: 20px;
     }
-	/* --- HARMONIZAÇÃO TOTAL DO MAPA (V52) --- */
+
+    /* --- HARMONIZAÇÃO TOTAL DO MAPA (V52) --- */
 
     /* 1. Barra do Mapa (Réplica da Principal) */
     .mindmap-header {
-      height: 26px !important;          /* Mesma altura da barra principal */
-      padding: 5px 20px !important;     /* Mesmo espaçamento */
+      height: 26px !important;
+      /* Mesma altura da barra principal */
+      padding: 5px 20px !important;
+      /* Mesmo espaçamento */
       background-color: var(--cor-menu-fundo) !important;
       border-bottom: 1px solid #333 !important;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
@@ -2135,7 +2167,8 @@
     .map-title-desktop {
       font-size: 0.85rem !important;
       font-weight: 600 !important;
-      color: #F2E782 !important;        /* Amarelo Brilhante Solicitado */
+      color: #F2E782 !important;
+      /* Amarelo Brilhante Solicitado */
       text-transform: uppercase !important;
       margin-right: 10px !important;
       letter-spacing: 0.5px;
@@ -2143,90 +2176,102 @@
 
     /* 3. Botões do Mapa (Filtrar, Zoom, Fechar, Busca) 
        Forçando o estilo "Tool-Btn" neles */
-    .map-nav-btn, 
+    .map-nav-btn,
     .map-search-container,
-    .map-toolbar-extras .tool-btn, 
+    .map-toolbar-extras .tool-btn,
     .btn-close-map {
-      /* Estilo Base */
-      background-color: #1a1a1a !important;
-      border: 1px solid #444 !important;
-      color: #fff !important;
-      
-      /* Geometria Pílula (Igual V51) */
+      /* Estilo Base (Dourado CEFS 206) */
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%) !important;
+      border: none !important;
+      color: #000 !important;
+      font-weight: 700 !important;
+
+      /* Geometria Pílula */
       height: 26px !important;
       min-height: 26px !important;
       border-radius: 13px !important;
       padding: 0 10px !important;
-      
+
       /* Texto e Alinhamento */
       font-size: 0.85rem !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
       transition: all 0.2s !important;
-      box-shadow: none !important;
-      margin: 0 !important; /* Remove margens antigas */
+      box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25) !important;
+      margin: 0 !important;
     }
 
-    /* Efeito Hover (Mouse em cima) - Dourado */
+    /* Efeito Hover - Brilho mais intenso */
     .map-nav-btn:hover,
     .btn-close-map:hover,
     .map-toolbar-extras .tool-btn:hover {
-      background-color: #000 !important;
-      color: var(--cor-destaque) !important;
-      border-color: var(--cor-destaque) !important;
-      box-shadow: 0 0 10px rgba(176, 141, 40, 0.2) !important;
+      transform: scale(1.05) !important;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
     }
 
     /* Ajuste Fino para a Caixa de Busca do Mapa */
     .map-search-container {
       /* A busca precisa de um pouco de flexibilidade interna */
-      width: auto !important; 
+      width: auto !important;
       padding: 0 5px !important;
     }
-    
-   /* --- CORREÇÃO DE LEITURA NA BUSCA (V53) --- */
-    
+
+    /* --- CORREÇÃO DE LEITURA NA BUSCA (V53) --- */
+
     /* Quando a busca está aberta, o texto deve ser BRANCO */
     .map-search-container.ativo .map-search-input {
       width: 180px !important;
       padding: 5px 8px !important;
-      color: #fff !important;  /* MUDANÇA: Texto Branco Brilhante */
+      color: #fff !important;
+      /* MUDANÇA: Texto Branco Brilhante */
       font-weight: 500;
-      background-color: transparent !important; /* Garante fundo limpo */
+      background-color: transparent !important;
+      /* Garante fundo limpo */
     }
 
     /* Cor do texto de ajuda "Buscar..." */
     .map-search-input::placeholder {
-      color: rgba(255, 255, 255, 0.5) !important; /* Branco semi-transparente */
+      color: rgba(255, 255, 255, 0.5) !important;
+      /* Branco semi-transparente */
     }
 
     /* Remove estilos antigos que podem atrapalhar */
-    .map-search-btn { padding: 0 5px !important; }
-	/* --- READEQUAÇÃO EXCLUSIVA DAS CAIXAS MOBILE (V60 - PURE) --- */
+    .map-search-btn {
+      padding: 0 5px !important;
+    }
+
+    /* --- READEQUAÇÃO EXCLUSIVA DAS CAIXAS MOBILE (V60 - PURE) --- */
     @media (max-width: 768px) {
-      
+
       /* 1. Força o tamanho clássico (220px) nas caixas */
-      .tree li > a {
-        max-width: 220px !important;    /* A TRAVA: Volta ao tamanho antigo */
+      .tree li>a {
+        max-width: 220px !important;
+        /* A TRAVA: Volta ao tamanho antigo */
         min-width: 120px !important;
-        width: auto !important;         /* Permite encolher se for texto curto */
-        
-        white-space: normal !important; /* IMPORTANTE: Obriga o texto a quebrar linha */
-        padding: 8px 12px !important;   /* Conforto para o dedo */
-        font-size: 0.85rem !important;  /* Letra legível */
+        width: auto !important;
+        /* Permite encolher se for texto curto */
+
+        white-space: normal !important;
+        /* IMPORTANTE: Obriga o texto a quebrar linha */
+        padding: 8px 12px !important;
+        /* Conforto para o dedo */
+        font-size: 0.85rem !important;
+        /* Letra legível */
       }
-      
+
       /* 2. Ajusta apenas o espaçamento ao redor do mapa */
       .tree {
-        padding: 10px 15px 60px 15px !important; /* Menos borda para caber na tela */
+        padding: 10px 15px 60px 15px !important;
+        /* Menos borda para caber na tela */
       }
-      
+
       /* 3. Garante que o container do mapa aceite a altura */
       .mindmap-content {
         padding: 10px !important;
         height: auto !important;
-        min-height: 500px; /* Garante que o fundo cinza/pontilhado apareça */
+        min-height: 500px;
+        /* Garante que o fundo cinza/pontilhado apareça */
       }
     }
   </style>
@@ -2316,8 +2361,6 @@
     </div>
   </div>
 
-  <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">▶</button>
-
   <nav class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-top-row">
@@ -2335,10 +2378,11 @@
 
   <div class="main-wrapper">
     <div class="study-toolbar">
+      <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">☰</button>
       <span class="study-label">Matéria:</span>
 
       <select id="seletor-conteudo" onchange="trocarMateria(this.value)" class="tool-btn"
-        style="background:white; color:#2c3e50; font-weight:bold; cursor:pointer; max-width: 180px;">
+        style="cursor:pointer; max-width: 180px;">
       </select>
 
       <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
@@ -2605,8 +2649,8 @@
 
     // --- INICIALIZAÇÃO INTELIGENTE ---
     document.addEventListener("DOMContentLoaded", function () {
-	// --- LÓGICA DE BOAS-VINDAS (ABRE E FECHA EM 5s) ---
-      
+      // --- LÓGICA DE BOAS-VINDAS (ABRE E FECHA EM 5s) ---
+
       // 1. Força o menu a começar ABERTO (remove a classe que o esconde)
       document.body.classList.remove('menu-fechado');
 
@@ -2684,6 +2728,41 @@
       iniciarAtalhos();
     });
 
+    // --- NOVO: SISTEMA DE GALPÃO (IndexedDB) PARA LEIS E MAPAS ---
+    const DB_NAME = "LeitorLeisDB";
+    const STORE_NAME = "leisStore";
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (e) => e.target.result.createObjectStore(STORE_NAME);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveToGalpao(key, data) {
+      try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, "readwrite");
+          tx.objectStore(STORE_NAME).put(data, key);
+          tx.oncomplete = () => resolve();
+        });
+      } catch (e) { console.warn("Erro ao salvar no galpão"); }
+    }
+
+    async function loadFromGalpao(key) {
+      try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, "readonly");
+          const request = tx.objectStore(STORE_NAME).get(key);
+          request.onsuccess = () => resolve(request.result);
+        });
+      } catch (e) { return null; }
+    }
+
     // --- FUNÇÃO DE CARREGAMENTO UNIVERSAL (COM SISTEMA "O VIGIA" DO V84) ---
     async function carregarDaNuvem(sheetId, idConteudo, nomeDisplay) {
       const loader = document.getElementById('loader-api');
@@ -2707,8 +2786,10 @@
       // --- CHAVES DO CACHE LOCAL (Por documento) ---
       const cacheKey = `cachedContent_${sheetId}_${idConteudo}`;
       const versionKey = `version_${sheetId}_${idConteudo}`;
-      const localData = localStorage.getItem(cacheKey);
-      const localVersion = localStorage.getItem(versionKey);
+
+      // Recupera o que temos guardado no celular (AGORA DO GALPÃO ASSÍNCRONO)
+      const localData = await loadFromGalpao(cacheKey);
+      const localVersion = localStorage.getItem(versionKey); // Versão continua na mochila (é leve)
 
       let serverVersion = null;
       let shouldUseCache = false;
@@ -2817,13 +2898,13 @@
         // --- SALVA NO CACHE LOCAL (Para próxima vez ser instantâneo) ---
         try {
           const dadosParaCache = { html: dados.html, mapa: dados.mapa, titulo: dados.titulo };
-          localStorage.setItem(cacheKey, JSON.stringify(dadosParaCache));
+          await saveToGalpao(cacheKey, JSON.stringify(dadosParaCache));
           if (serverVersion) {
             localStorage.setItem(versionKey, serverVersion);
           }
-          console.log("💾 Dados salvos no cache local com sucesso.");
+          console.log("💾 Dados salvos no Galpão (IndexedDB) com sucesso.");
         } catch (e) {
-          console.warn("Memória local cheia, seguindo sem salvar offline.", e);
+          console.warn("Erro ao salvar no Galpão offline.", e);
         }
 
       } catch (error) {
@@ -2974,30 +3055,70 @@
       else mostrarNotificacao("Artigo " + n + " não encontrado.", "error");
     };
 
-    // --- MAPA MENTAL (V59 - COM AUTO-FOCO) ---
+  // --- MAPA MENTAL (V67 - IFRAME LIMPO E ESTÁVEL) ---
     function abrirMapaMental() {
       if (!textoMapaAtual) { mostrarNotificacao("Sem mapa disponível", "error"); return; }
-      
+
       const modal = document.getElementById('modal-mapa');
       modal.classList.add('open');
-      
+
+      // 1. CAPTURA OS BOTÕES DA BARRA (Para esconder ou mostrar)
+      const containerFiltrar = document.querySelector('button[onclick="alternarMenuMapa()"]')?.parentElement;
+      const boxBusca = document.getElementById('box-busca-mapa');
+      const boxZoom = document.querySelector('#map-extras > div');
+
+      const matchLink = textoMapaAtual.match(/(https?:\/\/[^\s"']+)/);
+
+      // --- MODO NOVO: É UM LINK ---
+      if (matchLink) {
+        document.getElementById('arvore-visual').style.display = 'none'; // Esconde mapa antigo
+        
+        // Esconde os botões usando !important
+        if(containerFiltrar) containerFiltrar.style.setProperty('display', 'none', 'important');
+        if(boxBusca) boxBusca.style.setProperty('display', 'none', 'important');
+        if(boxZoom) boxZoom.style.setProperty('display', 'none', 'important');
+        
+        let iframeBox = document.getElementById('iframe-mapa-link');
+        if (!iframeBox) {
+            iframeBox = document.createElement('iframe');
+            iframeBox.id = 'iframe-mapa-link';
+            iframeBox.style.position = 'absolute';
+            iframeBox.style.top = '0';
+            iframeBox.style.left = '0';
+            iframeBox.style.width = '100%';
+            iframeBox.style.height = '100%';
+            iframeBox.style.border = 'none';
+            iframeBox.style.backgroundColor = '#f8f9fa';
+            
+            document.querySelector('.mindmap-content').appendChild(iframeBox);
+        }
+        iframeBox.style.display = 'block';
+        iframeBox.src = matchLink[0]; 
+        return; 
+      }
+
+      // --- MODO ANTIGO: É UM TEXTO (CAIXINHAS) ---
+      let iframeBox = document.getElementById('iframe-mapa-link');
+      if (iframeBox) iframeBox.style.display = 'none';
+      document.getElementById('arvore-visual').style.display = 'flex';
+
+      // Mostra novamente os botões
+      if(containerFiltrar) containerFiltrar.style.setProperty('display', 'block', 'important');
+      if(boxBusca) boxBusca.style.setProperty('display', 'inline-flex', 'important');
+      if(boxZoom) boxZoom.style.setProperty('display', 'flex', 'important');
+
       // 1. Gera o mapa
       document.getElementById('arvore-visual').innerHTML = converterTextoParaArvore(textoMapaAtual);
       popularFiltroMapa(textoMapaAtual);
-      aplicarInteracaoNosNodes(); // Garante que os botões +/- funcionem
+      aplicarInteracaoNosNodes(); 
 
-      // 2. O PULO DO GATO: Auto-Foco no Tema Central
-      // Espera 300ms para o mapa renderizar e então centraliza a câmera
+      // 2. Auto-Foco
       setTimeout(() => {
-        // Pega o primeiro nó (a Raiz do mapa)
         const noRaiz = document.querySelector('.tree > ul > li > a');
         if (noRaiz) {
-           // Centraliza suavemente na tela
-           noRaiz.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
-           
-           // Destaque visual rápido para chamar atenção
-           noRaiz.classList.add('node-focado');
-           setTimeout(() => noRaiz.classList.remove('node-focado'), 2000);
+          noRaiz.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+          noRaiz.classList.add('node-focado');
+          setTimeout(() => noRaiz.classList.remove('node-focado'), 2000);
         }
       }, 300);
     }
