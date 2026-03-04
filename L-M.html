@@ -704,7 +704,37 @@
       background-color: rgba(52, 152, 219, 0.1);
       border-bottom: 1px solid var(--cor-destaque);
     }
+/* --- CAIXAS DE ALERTA (V65) --- */
+    .caixa-alerta {
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border-left: 5px solid transparent;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      line-height: 1.6;
+      font-size: 1.15rem; /* Acompanha o tamanho da fonte padrão */
+    }
 
+    /* Caixa Azul Suave (Revisão/Resumo) */
+    .caixa-revisao {
+      background-color: #e3f2fd;
+      border-left-color: #1565c0;
+      color: #0d47a1;
+    }
+
+    /* Caixa Laranja/Vermelha (Atenção/Cuidado) */
+    .caixa-atencao {
+      background-color: #fff3e0;
+      border-left-color: #e65100;
+      color: #bf360c;
+    }
+
+    /* Caixa Vermelha Forte (Importante/Nota) */
+    .caixa-importante {
+      background-color: #ffebee;
+      border-left-color: #c62828;
+      color: #b71c1c;
+    }
     /* Notificações */
     .notification-toast {
       position: fixed;
@@ -3007,38 +3037,91 @@
       for (let i = indexInicial; i < lin.length; i++) {
         let l = lin[i].trim(); if (!l) continue;
 
-        // Limpa bullets e marcadores de lista para melhor detecção
-        let cleanLine = l.replace(/^[•●○◦▪▸►\-\*]\s*/g, '').trim();
-        // Remove "o" solto usado como sub-bullet (só quando seguido de número)
+        // --- 1. EXIBIÇÃO LIMPA (Visual na tela) ---
+        let linhaExibicao = l.replace(/^[#]+\s*/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // --- 2. GATILHO AUTOMÁTICO DO DOIS-PONTOS (:) ---
+        if (linhaExibicao.match(/^\d+[\.\d]*\s+[^:]+:/) && !linhaExibicao.includes('<strong>')) {
+          linhaExibicao = linhaExibicao.replace(/^(\d+[\.\d]*\s+[^:]+:)(.*)$/, '<strong>$1</strong><span style="font-weight: normal; color: #444; font-size: 1.15rem;">$2</span>');
+        }
+
+        // --- NOVO: GATILHO PARA LISTAS COM SETA (Laranja) ---
+        let matchSeta = linhaExibicao.match(/^([→➔➞►]|->|=>)\s*([^:]+:)(.*)$/);
+        if (matchSeta && !linhaExibicao.includes('<strong>')) {
+          // matchSeta[1] = A seta | matchSeta[2] = Texto até os dois pontos | matchSeta[3] = A explicação
+          linhaExibicao = `<strong style="color: #d35400;">${matchSeta[1]} ${matchSeta[2]}</strong><span style="color: #444;">${matchSeta[3]}</span>`;
+        }
+        // --- 3. MOTOR INTERNO (Limpeza para o Índice) ---
+        let cleanLine = l.replace(/^[•●○◦▪▸►\-\*#]+\s*/g, '').replace(/\*\*/g, '').trim();
         cleanLine = cleanLine.replace(/^o\s+(?=\d)/i, '').trim();
 
-        // Teste 1: Palavra-chave de seção (agora aceita após números e traços)
+        // Teste 1: Palavra-chave de seção
         let m = cleanLine.match(/^(?:\d+[\.\d]*\s*[-–—]?\s*)?(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE)\s/i);
 
-        // Teste 2: Padrão numérico X.Y (sempre ativo, não depende de MODO: APOSTILA)
-        let mNumerico = cleanLine.match(/^(\d+\.\d+)\s/);
+        // Teste 2: Padrão numérico (AGORA ACEITA "1.", "2.", "1.1")
+        let mNumerico = cleanLine.match(/^(\d+[\.\d]*)\s/);
 
         if (m || mNumerico) {
           fimBloco(); cid++; const id = 'ref-' + cid;
           let tipoBloco;
+          let nivelEstilo = 'class="lei-titulo-CAPÍTULO"'; // Padrão Inicial (Dourado)
+
           if (m) {
             let palavraChave = m[1].toUpperCase();
             tipoBloco = (['TÍTULO', 'MÓDULO', 'UNIDADE', 'PARTE'].includes(palavraChave)) ? 'MAIOR' : 'MENOR';
           } else {
-            // X.0 = seção principal (grupo), X.Y = subseção (link)
-            tipoBloco = mNumerico[1].endsWith('.0') ? 'MAIOR' : 'MENOR';
+            let num = mNumerico[1];
+            tipoBloco = (num.endsWith('.0') || !num.includes('.') || num.match(/^\d+\.$/)) ? 'MAIOR' : 'MENOR';
+            
+            // --- NOVA LÓGICA DA ESCADINHA VISUAL ---
+            // Conta a quantidade de números removendo o ponto final, se houver.
+            let qtdNumeros = num.replace(/\.$/, '').split('.').length;
+            
+            if (qtdNumeros === 1) {
+              // Nível 1: Dourado Nobre (Ex: "2. TÉCNICA...")
+              nivelEstilo = 'class="lei-titulo-CAPÍTULO"';
+            } else if (qtdNumeros === 2) {
+              // Nível 2: Azul Clássico, MAIÚSCULAS e linha divisória suave
+              nivelEstilo = 'style="font-size: 1.25rem; color: #1565c0; text-transform: uppercase; margin-top: 35px; margin-bottom: 15px; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px;"';
+            } else if (qtdNumeros === 3) {
+              // Nível 3 (PAI): AZUL PETRÓLEO, Negrito Forte
+              nivelEstilo = 'style="font-size: 1.15rem; color: #0d3b4c; font-weight: 800; margin-top: 20px; margin-bottom: 5px; border-bottom: none;"';
+            } else {
+              // Nível 4 em diante (FILHO): CINZA MÉDIO, Semi-bold, Borda lateral (Efeito Árvore)
+              nivelEstilo = 'style="font-size: 1.05rem; color: #555555; font-weight: 600; margin-top: 8px; margin-bottom: 5px; margin-left: 20px; padding-left: 12px; border-left: 3px solid #e0e0e0; border-bottom: none;"';
+            }
           }
           if (tipoBloco === 'MAIOR') contMenu = null;
+          
           bloco = { id: id, tipo: tipoBloco, nome: cleanLine, primeiroArt: null, ultimoArt: null };
-          h += `<h3 id="${id}" class="lei-titulo-CAPÍTULO">${cleanLine}</h3>`;
+          
+          h += `<h3 id="${id}" ${nivelEstilo}>${linhaExibicao}</h3>`;
         } else if (cleanLine.match(/^(Art\.|Questão|Item)\s/i) || cleanLine.match(/^\d+\.\d+\.\d+\s/)) {
           let match = cleanLine.match(/^([\d\.]+)/) || cleanLine.match(/(Art\.|Item)\s*([\d\wº\.]+)/i);
           let numeroRef = match ? (match[2] || match[1]) : "";
           if (bloco) { if (!bloco.primeiroArt) bloco.primeiroArt = numeroRef; bloco.ultimoArt = numeroRef; }
           let idArt = "art_" + numeroRef.toString().replace(/\./g, '_');
-          h += `<p id="${idArt}">${cleanLine.replace(/^([\w\d\.]+\s?[-–]?)/, '<span class="destaque-artigo">$1</span>')}</p>`;
+          
+          h += `<p id="${idArt}">${linhaExibicao.replace(/^([\w\d\.]+\s?[-–]?)/, '<span class="destaque-artigo">$1</span>')}</p>`;
         } else {
-          h += (i === indexInicial) ? `<h1>${l}</h1>` : `<p>${l}</p>`;
+          
+          // --- DETECÇÃO DE CAIXAS DE ALERTA (V65) ---
+          let matchAlerta = cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA)[:\-\s]/i) || cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA)$/i);
+          
+          if (matchAlerta) {
+            let tipoAlerta = matchAlerta[1].toUpperCase();
+            let classeCaixa = "caixa-revisao"; // Assume azul suave como padrão
+            
+            // Define as cores com base na palavra-chave
+            if (tipoAlerta === "ATENÇÃO" || tipoAlerta === "CUIDADO") classeCaixa = "caixa-atencao";
+            if (tipoAlerta === "IMPORTANTE" || tipoAlerta === "NOTA") classeCaixa = "caixa-importante";
+            
+            h += `<div class="caixa-alerta ${classeCaixa}">${linhaExibicao}</div>`;
+          } else {
+            // Se não for nenhum alerta, renderiza como parágrafo normal
+            h += (i === indexInicial) ? `<h1>${linhaExibicao}</h1>` : `<p>${linhaExibicao}</p>`;
+          }
+          
         }
       }
       fimBloco();
