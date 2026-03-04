@@ -2588,36 +2588,56 @@
       document.getElementById('sessionExpiredModal').classList.add('open');
     }
 
+    // Variável para contar quantas vezes o servidor engasgou
+    let falhasDeConexao = 0; 
+
     function startSessionHeartbeat() {
       if (sessionHeartbeat) clearInterval(sessionHeartbeat);
+      
+      // MUDANÇA 1: Mudamos o tempo para 300000 milissegundos (5 minutos)
       sessionHeartbeat = setInterval(async () => {
         const token = localStorage.getItem('sessionToken');
         const email = localStorage.getItem('userEmail');
         if (!token || !email) return;
+        
         try {
           const formData = new URLSearchParams();
           formData.append('action', 'checkStatus');
           formData.append('email', email);
           formData.append('sessionToken', token);
           formData.append('originUrl', window.location.href);
+          
           const response = await fetch(LOGIN_URL, { method: 'POST', body: formData });
           const result = await response.json();
+          
           if (!result.success) {
-            clearInterval(sessionHeartbeat);
-            localStorage.removeItem('isAuthenticated');
-            localStorage.removeItem('sessionToken');
-            const modal = document.getElementById('concurrentSessionModal');
-            if (modal) {
-              modal.classList.add('open');
-            } else {
-              alert("Sua conta foi conectada em outro dispositivo. Sessão encerrada.");
-              location.reload();
+            // MUDANÇA 2: Sistema de Tolerância (Amortecedor)
+            falhasDeConexao++; 
+            console.warn("Aviso: Servidor piscou. Falha " + falhasDeConexao + " de 2.");
+            
+            // Só expulsa o usuário se o servidor negar o acesso 2 vezes seguidas
+            if (falhasDeConexao >= 2) {
+              clearInterval(sessionHeartbeat);
+              localStorage.removeItem('isAuthenticated');
+              localStorage.removeItem('sessionToken');
+              const modal = document.getElementById('concurrentSessionModal');
+              if (modal) {
+                modal.classList.add('open');
+              } else {
+                alert("Sua conta foi conectada em outro dispositivo. Sessão encerrada.");
+                location.reload();
+              }
             }
+          } else {
+            // Se o Google respondeu com sucesso, zeramos o contador de falhas
+            falhasDeConexao = 0;
           }
         } catch (e) {
-          console.log("Erro silencioso ao verificar sessão:", e);
+          console.log("Erro silencioso ao verificar sessão (pode ser falta de internet):", e);
+          // Falta de internet ou timeout também entra na tolerância
+          falhasDeConexao++;
         }
-      }, 30000); // Verifica a cada 30 segundos
+      }, 600.000); // 600.000 ms = Verifica a cada 10 minutos
     }
 
     async function login(event) {
