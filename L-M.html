@@ -697,7 +697,7 @@
       text-decoration: none;
       border-bottom: 1px dotted var(--cor-destaque);
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 700;
     }
 
     .lei-link-interno:hover {
@@ -734,6 +734,13 @@
       background-color: #ffebee;
       border-left-color: #c62828;
       color: #b71c1c;
+    }
+
+    /* Caixa Amarela Leve (Palavras-chave) */
+    .caixa-palavras-chave {
+      background-color: #fffde7;
+      border-left-color: #fbc02d;
+      color: #444;
     }
     /* Notificações */
     .notification-toast {
@@ -2738,39 +2745,62 @@
         urlSheetId = urlIdConteudo;
       }
 
-      if (urlSheetId) {
-        // --- MODO LINK DIRETO (GOOGLE SITES) ---
-        console.log("Modo URL Detectado: " + urlSheetId);
+      // --- MODO: MENU 100% DINÂMICO ---
+      const ID_DA_PLANILHA = urlSheetId || ""; 
+      const seletor = document.getElementById('seletor-conteudo');
 
-        // Esconde o seletor de matérias (já que veio definido pelo link)
-        const seletor = document.getElementById('seletor-conteudo');
-        seletor.innerHTML = '<option selected>Carregando via Link...</option>';
+      if (ID_DA_PLANILHA) {
+        // Tranca temporariamente enquanto baixa o cardápio
         seletor.disabled = true;
+        seletor.innerHTML = '<option value="" disabled selected>⏳ Carregando matérias...</option>';
 
-        // Define um ID padrão (analise) exceto se o id original for curto (ex: ?sheetId=...&id=artigo1)
-        let idFinal = "analise";
-        if (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) {
-          idFinal = urlIdConteudo;
-        }
+        // Pede o "cardápio" da planilha para o Apps Script
+        const urlMenu = `${API_URL}?action=getMenu&sheetId=${encodeURIComponent(ID_DA_PLANILHA)}&_t=${new Date().getTime()}`;
+        
+        fetch(urlMenu)
+          .then(resposta => resposta.json())
+          .then(json => {
+            if (json.success && json.data && json.data.length > 0) {
+              // Converte o cardápio recebido na nossa BIBLIOTECA_LOCAL
+              BIBLIOTECA_LOCAL = json.data.map(item => ({
+                nome: item.nome,
+                id: item.id,
+                sheetId: ID_DA_PLANILHA
+              }));
 
-        // Carrega direto
-        carregarDaNuvem(urlSheetId, idFinal, "Conteúdo Linkado");
+              // Destranca e monta o botão superior com os títulos achados
+              seletor.disabled = false;
+              seletor.innerHTML = '<option value="" disabled>Escolha o Capítulo...</option>';
+              
+              BIBLIOTECA_LOCAL.forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = "📂 " + item.nome;
+                seletor.appendChild(opt);
+              });
+
+              // Decide qual texto exibir primeiro na tela
+              let idFinal = (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) ? urlIdConteudo : BIBLIOTECA_LOCAL[0].id;
+              
+              // Marca no botão superior o item que está sendo lido
+              const indexEncontrado = BIBLIOTECA_LOCAL.findIndex(item => item.id === idFinal);
+              if(indexEncontrado !== -1) seletor.value = indexEncontrado;
+
+              // Enfim, pede para carregar o texto daquela lei na tela
+              carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
+            } else {
+              seletor.innerHTML = '<option value="" disabled>Planilha Vazia ou Erro</option>';
+              mostrarNotificacao("Não foi possível ler as matérias da planilha.", "error");
+            }
+          })
+          .catch(err => {
+            console.error("Erro ao buscar cardápio:", err);
+            seletor.innerHTML = '<option value="" disabled>Erro de conexão</option>';
+            mostrarNotificacao("Sem internet ou erro no servidor.", "error");
+          });
 
       } else {
-        // --- MODO TESTE/BIBLIOTECA (SEM LINK) ---
-        // Se abrir o HTML puro, carrega uma lista de exemplo
-        BIBLIOTECA_LOCAL = [
-          { nome: "⚠️ Nenhum Link Detectado", id: "", sheetId: "" }
-        ];
-
-        const seletor = document.getElementById('seletor-conteudo');
-        seletor.innerHTML = '<option value="" disabled selected>Selecione (Modo Teste)...</option>';
-        BIBLIOTECA_LOCAL.forEach((item, index) => {
-          const opt = document.createElement('option');
-          opt.value = index;
-          opt.textContent = item.nome;
-          seletor.appendChild(opt);
-        });
+        seletor.innerHTML = '<option value="" disabled selected>⚠️ Faltou a Planilha no link!</option>';
       }
 
       setupFerramentas();
@@ -2895,10 +2925,7 @@
           mostrarNotificacao("⚡ Carregado da memória (Instantâneo)", "success");
           document.getElementById('texto-renderizado').scrollTop = 0;
 
-          const seletor = document.getElementById('seletor-conteudo');
-          if (seletor) {
-            seletor.innerHTML = `<option selected>📂 ${dadosCache.titulo || nomeDisplay || "Documento"}</option>`;
-          }
+          // Menu preservado com sucesso
 
           loader.classList.remove('ativo');
           return; // Encerra aqui, economizando dados!
@@ -2939,11 +2966,7 @@
         mostrarNotificacao("Carregado: " + (dados.titulo || nomeDisplay), "success");
         document.getElementById('texto-renderizado').scrollTop = 0;
 
-        // Atualiza título da página (Visual)
-        const seletor = document.getElementById('seletor-conteudo');
-        if (seletor) {
-          seletor.innerHTML = `<option selected>📂 ${dados.titulo || "Documento Carregado"}</option>`;
-        }
+        // Menu preservado com sucesso
 
         // --- SALVA NO CACHE LOCAL (Para próxima vez ser instantâneo) ---
         try {
@@ -2971,10 +2994,7 @@
             mostrarNotificacao("⚠️ Erro na conexão. Usando versão anterior.", "error");
             document.getElementById('texto-renderizado').scrollTop = 0;
 
-            const seletor = document.getElementById('seletor-conteudo');
-            if (seletor) {
-              seletor.innerHTML = `<option selected>📂 ${dadosCache.titulo || nomeDisplay || "Versão Anterior"}</option>`;
-            }
+            // Menu preservado com sucesso
           } catch (e2) {
             // Cache também falhou, mostra erro
             document.getElementById('texto-renderizado').innerHTML = `
@@ -3065,12 +3085,17 @@
           linhaExibicao = linhaExibicao.replace(/^(\d+[\.\d]*\s+[^:]+:)(.*)$/, '<strong>$1</strong><span style="font-weight: normal; color: #444; font-size: 1.15rem;">$2</span>');
         }
 
+        if (linhaExibicao.match(/^\d+[\.\d]*\s+[^:]+:/) && !linhaExibicao.includes('<strong>')) {
+          linhaExibicao = linhaExibicao.replace(/^(\d+[\.\d]*\s+[^:]+:)(.*)$/, '<strong>$1</strong><span style="font-weight: normal; color: #444; font-size: 1.15rem;">$2</span>');
+        }
+
         // --- NOVO: GATILHO PARA LISTAS COM SETA (Laranja) ---
-        let matchSeta = linhaExibicao.match(/^([→➔➞►]|->|=>)\s*([^:]+:)(.*)$/);
-        if (matchSeta && !linhaExibicao.includes('<strong>')) {
+        let matchSeta = linhaExibicao.match(/^([➔→➔⮕➜➞►]|->|=>)\s*(?:<strong>)?([^:]+:)(?:<\/strong>)?(.*)$/);
+        if (matchSeta) {
           // matchSeta[1] = A seta | matchSeta[2] = Texto até os dois pontos | matchSeta[3] = A explicação
           linhaExibicao = `<strong style="color: #d35400;">${matchSeta[1]} ${matchSeta[2]}</strong><span style="color: #444;">${matchSeta[3]}</span>`;
         }
+        
         // --- 3. MOTOR INTERNO (Limpeza para o Índice) ---
         let cleanLine = l.replace(/^[•●○◦▪▸►\-\*#]+\s*/g, '').replace(/\*\*/g, '').trim();
         cleanLine = cleanLine.replace(/^o\s+(?=\d)/i, '').trim();
@@ -3126,7 +3151,7 @@
         } else {
           
           // --- DETECÇÃO DE CAIXAS DE ALERTA (V65) ---
-          let matchAlerta = cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA)[:\-\s]/i) || cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA)$/i);
+          let matchAlerta = cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)[:\-\s]/i) || cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)$/i);
           
           if (matchAlerta) {
             let tipoAlerta = matchAlerta[1].toUpperCase();
@@ -3135,6 +3160,7 @@
             // Define as cores com base na palavra-chave
             if (tipoAlerta === "ATENÇÃO" || tipoAlerta === "CUIDADO") classeCaixa = "caixa-atencao";
             if (tipoAlerta === "IMPORTANTE" || tipoAlerta === "NOTA") classeCaixa = "caixa-importante";
+            if (tipoAlerta === "PALAVRAS-CHAVE" || tipoAlerta === "PALAVRA-CHAVE") classeCaixa = "caixa-palavras-chave";
             
             h += `<div class="caixa-alerta ${classeCaixa}">${linhaExibicao}</div>`;
           } else {
@@ -3613,9 +3639,26 @@
         const temFilhos = liPai.querySelector('ul');
         if (temFilhos) {
           if (!link.querySelector('.mindmap-toggler')) {
+            // --- NOVA LÓGICA DE GERAÇÕES ---
+            let nivel = 0;
+            let atual = liPai;
+            // O sistema sobe a árvore contando quantas listas (UL) existem acima dele
+            while (atual && !atual.classList.contains('tree')) {
+              if (atual.tagName === 'UL') nivel++;
+              atual = atual.parentElement;
+            }
+
             const btnToggle = document.createElement('span');
             btnToggle.className = 'mindmap-toggler';
-            btnToggle.innerHTML = '−';
+            
+            // Se for nível 2 (Filhos) em diante, os descendentes nascem escondidos (+)
+            if (nivel >= 2) {
+              liPai.classList.add('filhos-ocultos');
+              btnToggle.innerHTML = '+';
+            } else {
+              btnToggle.innerHTML = '−';
+            }
+
             btnToggle.title = "Expandir/Retrair";
             btnToggle.addEventListener('click', function (e) {
               e.preventDefault(); e.stopPropagation();
