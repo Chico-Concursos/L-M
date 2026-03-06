@@ -1083,8 +1083,8 @@
     .tree li>a {
       background: white;
       border: 1px solid #ccc;
-      padding: 10px 18px;
-      /* Padding equilibrado */
+      padding: 10px 12px;
+      /* Padding reduzido nas laterais para abraçar o texto */
       border-radius: 8px;
       text-decoration: none;
       color: #333;
@@ -1103,10 +1103,10 @@
 
       width: max-content;
       /* Tenta crescer para caber o texto numa linha só */
-      min-width: 120px;
-      /* Garante que caixas com "Oi" não fiquem minúsculas */
+      min-width: 50px;
+      /* Reduzido para não deixar caixas curtas com vazio */
       max-width: 350px;
-      /* Limite aumentado (era 220px) para frases longas */
+      /* Limite mantido para frases longas */
 
       white-space: normal;
       /* Permite quebrar linha SÓ se passar de 350px */
@@ -1129,12 +1129,14 @@
       font-size: 1.1rem;
       text-transform: uppercase;
       box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+	  max-width: 200px;
     }
 
     .tree>ul>li>ul>li>a {
       color: #fff;
       background-color: #111184;
       border-color: #162b75;
+	  max-width: 300px;
     }
 
     .tree>ul>li>ul>li>ul>li>a {
@@ -2285,10 +2287,10 @@
       .tree li>a {
         max-width: 220px !important;
         /* A TRAVA: Volta ao tamanho antigo */
-        min-width: 120px !important;
+        min-width: 50px !important;
+        /* Reduzido para evitar espaços vazios no celular */
         width: auto !important;
         /* Permite encolher se for texto curto */
-
         white-space: normal !important;
         /* IMPORTANTE: Obriga o texto a quebrar linha */
         padding: 8px 12px !important;
