@@ -27,7 +27,7 @@
       --cor-schema-bg: #e3f2fd;
       --cor-schema-border: #90caf9;
       --cor-schema-text: #1565c0;
-      --largura-menu: 340px;
+      --largura-menu: 280px;
 
       /* VARIÁVEIS DO LOGIN (CHICO CONCURSOS) */
       --gold-main: #FFD700;
@@ -423,11 +423,11 @@
       color: #000;
       border: none;
       border-radius: 13px;
-      padding: 0 10px;
-      height: 23px;
-      min-height: 23px;
+      padding: 0 8px;
+      height: 24px;
+      min-height: 24px;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -467,19 +467,40 @@
       overflow: hidden;
     }
 
+    /* --- PADRONIZAÇÃO GLOBAL DE CABEÇALHOS E BOTÕES --- */
+    .study-toolbar,
+    .mindmap-header {
+      height: 27px !important;
+      min-height: 27px !important;
+      max-height: 27px !important;
+      padding: 0 10px !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
+      align-items: center !important;
+    }
+
+    .tool-btn,
+    .dropbtn,
+    .map-nav-btn,
+    .map-search-container,
+    .btn-close-map,
+    .btn-open-sidebar {
+      height: 24px !important;
+      min-height: 24px !important;
+      max-height: 24px !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+    }
+
     .study-toolbar {
       position: sticky;
       top: 0;
-      /* MUDANÇA: Agora usa o PRETO da sua marca */
+      /* Usa o PRETO da sua marca */
       background-color: var(--cor-menu-fundo);
       border-bottom: 1px solid #333;
-      /* MUDANÇA: Reduzi drásticamente o espaço vertical */
-      padding: 5px 20px !important;
-      height: 45px !important;
-      /* Força a barra a ser fina (era variavel/maior) */
       display: flex;
-      align-items: center;
-      gap: 10px;
+      gap: 5px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       /* Sombra mais elegante */
       z-index: 1000;
@@ -497,7 +518,7 @@
       margin-right: 5px;
     }
 
-    /* Botões Base (Estilo Dourado CEFS 206) */
+    /* Botões Base (Estilo Dourado CEFS 206 Slim com Border-Radius original) */
     .tool-btn,
     .dropbtn,
     #seletor-conteudo {
@@ -506,14 +527,14 @@
       color: #000;
       font-weight: 700;
 
-      height: 23px !important;
-      min-height: 23px !important;
-      padding: 0 10px !important;
+      height: 24px !important;
+      min-height: 24px !important;
+      padding: 0 8px !important;
       border-radius: 13px !important;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       transition: all 0.2s;
       box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25);
       cursor: pointer;
@@ -704,7 +725,8 @@
       background-color: rgba(52, 152, 219, 0.1);
       border-bottom: 1px solid var(--cor-destaque);
     }
-/* --- CAIXAS DE ALERTA (V65) --- */
+
+    /* --- CAIXAS DE ALERTA (V65) --- */
     .caixa-alerta {
       padding: 15px 20px;
       margin-bottom: 20px;
@@ -712,7 +734,8 @@
       border-left: 5px solid transparent;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       line-height: 1.6;
-      font-size: 1.15rem; /* Acompanha o tamanho da fonte padrão */
+      font-size: 1.15rem;
+      /* Acompanha o tamanho da fonte padrão */
     }
 
     /* Caixa Azul Suave (Revisão/Resumo) */
@@ -742,6 +765,7 @@
       border-left-color: #fbc02d;
       color: #444;
     }
+
     /* Notificações */
     .notification-toast {
       position: fixed;
@@ -873,10 +897,9 @@
 
     /* HEADER MAIS FINO E COM TRANSIÇÃO */
     .mindmap-header {
-      padding: 5px 15px;
-      /* Reduzido de 15px para 5px */
-      height: 50px;
-      /* Altura fixa compacta */
+      padding: 2px 10px !important;
+      height: 36px !important;
+      box-sizing: border-box;
       background: var(--cor-menu-fundo);
       color: white;
       display: flex;
@@ -887,6 +910,7 @@
       z-index: 20;
       transition: transform 0.3s ease-in-out;
       /* Animação suave */
+      width: 100%;
     }
 
     /* CLASSE PARA OCULTAR O HEADER (SOBE PARA FORA DA TELA) */
@@ -1129,14 +1153,14 @@
       font-size: 1.1rem;
       text-transform: uppercase;
       box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-	  max-width: 200px;
+      max-width: 200px;
     }
 
     .tree>ul>li>ul>li>a {
       color: #fff;
       background-color: #111184;
       border-color: #162b75;
-	  max-width: 300px;
+      max-width: 300px;
     }
 
     .tree>ul>li>ul>li>ul>li>a {
@@ -1241,21 +1265,25 @@
 
     /* Navegação Mapa */
     .map-nav-btn {
-      background-color: #34495e;
-      color: white;
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%);
+      color: #000;
+      font-weight: 700;
       border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
+      padding: 0 10px;
+      height: 24px;
+      border-radius: 13px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       display: flex;
       align-items: center;
       gap: 5px;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(210, 172, 71, 0.25);
     }
 
     .map-nav-btn:hover {
-      background-color: #2c3e50;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
     /* --- CORREÇÃO POSIÇÃO MENU FILTRAR (V54) --- */
@@ -1380,11 +1408,12 @@
       display: flex;
       align-items: center;
       background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
+      border-radius: 13px;
       padding: 0 10px;
       margin-right: 10px;
       transition: all 0.3s;
       border: 1px solid transparent;
+      height: 24px;
     }
 
     .map-search-container.ativo {
@@ -1406,7 +1435,8 @@
 
     .map-search-container.ativo .map-search-input {
       width: 180px;
-      padding: 5px 8px;
+      padding: 0 8px;
+      /* Ajustado padding vertical para manter slim */
       color: #333;
     }
 
@@ -1416,7 +1446,11 @@
       color: white;
       cursor: pointer;
       font-size: 1rem;
-      padding: 5px;
+      padding: 0 5px;
+      /* Ajustado padding vertical para manter slim */
+      display: flex;
+      align-items: center;
+      height: 100%;
     }
 
     .map-search-container.ativo .map-search-btn {
@@ -2168,7 +2202,10 @@
       z-index: 50000;
       display: none;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      /* Move para o topo */
+      padding-top: 100px;
+      /* Fica logo abaixo da barra de ferramentas */
       flex-direction: column;
       color: white;
     }
@@ -2191,7 +2228,7 @@
 
     /* 1. Barra do Mapa (Réplica da Principal) */
     .mindmap-header {
-      height: 26px !important;
+      height: 27px !important;
       /* Mesma altura da barra principal */
       padding: 5px 20px !important;
       /* Mesmo espaçamento */
@@ -2226,10 +2263,10 @@
       font-weight: 700 !important;
 
       /* Geometria Pílula */
-      height: 26px !important;
-      min-height: 26px !important;
+      height: 24px !important;
+      min-height: 24px !important;
       border-radius: 13px !important;
-      padding: 0 10px !important;
+      padding: 0 8px !important;
 
       /* Texto e Alinhamento */
       font-size: 0.85rem !important;
@@ -2311,6 +2348,226 @@
         height: auto !important;
         min-height: 500px;
         /* Garante que o fundo cinza/pontilhado apareça */
+      }
+    }
+
+    /* === SISTEMA TTS (Vozes Neurais) === */
+    #ttsConfigModal,
+    #handsFreeModalLeis {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 60000;
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 10px;
+      padding-bottom: 30px;
+      overflow-y: auto;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    #ttsConfigModal.open,
+    #handsFreeModalLeis.open {
+      display: flex;
+    }
+
+    .tts-modal-content {
+      background: #222;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      max-width: 420px;
+      width: 90%;
+      border: 1px solid #FFD700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+      text-align: center;
+    }
+
+    .tts-modal-content h3 {
+      color: #FFD700;
+      margin-bottom: 8px;
+    }
+
+    .tts-modal-content label {
+      display: block;
+      color: #ccc;
+      font-size: 0.9em;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+
+    .tts-modal-content select,
+    .tts-modal-content input[type="range"] {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .tts-modal-content select {
+      padding: 6px;
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 4px;
+    }
+
+    .tts-modal-content input[type="range"] {
+      accent-color: gold;
+    }
+
+    .tts-btn-gold {
+      background: linear-gradient(to bottom, #FFD700, #D4AF37);
+      color: black;
+      border: none;
+      padding: 10px 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .tts-btn-gold:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    .tts-btn-secondary {
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .tts-btn-cancel {
+      margin-top: 5px;
+      cursor: pointer;
+      color: #888;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-size: 1em;
+    }
+
+    .tool-btn.tts-btn.tts-ativo {
+      background: linear-gradient(135deg, #AE8625 0%, #D2AC47 50%, #AE8625 100%);
+      color: #000;
+      border: 2px solid #00ff00;
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
+    }
+
+    /* --- ESTILOS DE IMPRESSÃO (APOSTILA) --- */
+    @media print {
+      @page {
+        margin: 1cm 2cm 1cm 3cm; /* top, right, bottom, left */
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body {
+        background-color: white !important;
+        color: black !important;
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+
+      .main-wrapper {
+        display: table !important;
+        width: 100% !important;
+        background-color: white !important;
+        color: black !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+
+      .content {
+        display: table-row-group !important;
+        background-color: white !important;
+        color: black !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+
+      #header-impressao {
+        display: table-header-group !important;
+      }
+
+      .print-header-inner {
+        text-align: center;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 900;
+        font-size: 1.5em;
+        padding-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ccc;
+        color: #D2AC47 !important;
+        background-color: white !important;
+        margin-bottom: 1cm;
+      }
+
+      #header-impressao span {
+        color: #D2AC47 !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        -webkit-text-fill-color: unset !important;
+      }
+
+      #footer-impressao {
+        display: table-footer-group !important;
+      }
+
+      #footer-impressao::after {
+        content: "";
+        display: block;
+        height: 1.5cm; /* Espaço vazio reservado no final de cada página para o rodapé não sobrepor o texto */
+      }
+
+      .print-footer-inner {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        text-align: center;
+        font-family: 'Roboto', sans-serif;
+        font-size: 11pt;
+        font-weight: 600;
+        color: #555 !important;
+        padding-top: 10px !important;
+        padding-bottom: 0px !important;
+        border-top: 1px solid #ccc !important;
+        background-color: white !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+      }
+
+      p, li {
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+        color: black !important;
+        page-break-inside: avoid;
+      }
+
+      .study-toolbar, .mindmap-modal, .sidebar, #loginModal, .modal-overlay, #loader-api, .notification-toast, .btn-sair-zen, .btn-reabrir-header {
+        display: none !important;
       }
     }
   </style>
@@ -2416,15 +2673,22 @@
   </nav>
 
   <div class="main-wrapper">
+    <div id="header-impressao" style="display: none;">
+      <div class="print-header-inner">
+        CHICO <span>CONCURSOS</span>
+      </div>
+    </div>
+
     <div class="study-toolbar">
       <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">☰</button>
       <span class="study-label">Matéria:</span>
 
       <select id="seletor-conteudo" onchange="trocarMateria(this.value)" class="tool-btn"
-        style="cursor:pointer; max-width: 180px;">
+        style="cursor:pointer; max-width: 140px;">
       </select>
 
       <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
+      <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF">⬇️ Baixar</button>
 
       <button class="btn-mobile-ops" onclick="alternarMenuMobile()">☰</button>
 
@@ -2454,14 +2718,27 @@
             <button id="btn-grifar" class="tool-btn highlight-btn" onclick="alternarModoGrifo()">🖊️ Grifar</button>
             <button id="btn-borracha" class="tool-btn clear-btn" onclick="alternarModoBorracha()">🧹 Apagar</button>
             <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
+            <!-- Opção de Leitura no mobile -->
+            <button class="tool-btn tts-btn-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta"
+              style="background:transparent; border:none; color:black; text-align:left; width:100%;">🔊 Ler em Voz
+              Alta</button>
+            <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
             <button class="tool-btn reset-btn" onclick="abrirModalReset()">⚠️ Resetar Tudo</button>
           </div>
         </div>
+
+        <button class="tool-btn tts-btn" onclick="toggleLeitura()" title="Ler em Voz Alta" id="btnTTS">🔊 Ler</button>
 
         <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema">🚪 Sair</button>
       </div>
     </div>
     <main class="content" id="texto-renderizado"></main>
+
+    <div id="footer-impressao" style="display: none;">
+      <div class="print-footer-inner">
+        ⚡ Mire, estude e acerte 🎯
+      </div>
+    </div>
   </div>
   <div id="modal-mapa" class="mindmap-modal">
     <div class="mindmap-header" id="header-mapa-conteudo">
@@ -2469,9 +2746,11 @@
       <div style="display:flex; align-items:center; gap:10px; flex-grow:1;">
 
         <button onclick="alternarHeaderMapa()" class="tool-btn"
-          style="padding: 2px 8px; border:none; background:transparent; color:#fff;" title="Recolher Barra">▲</button>
+          style="padding: 0; width: 16px; height: 16px; border:none; background:rgba(255,255,255,0.1); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;"
+          title="Recolher Barra">▲</button>
 
-        <span class="map-title-desktop" style="font-size:1.2rem; font-weight:bold;">Mapa Mental</span>
+        <span class="map-title-desktop"
+          style="font-size:0.85rem; font-weight:600; color:#F2E782; text-transform:uppercase;">Mapa Mental</span>
 
         <div style="position:relative;">
           <button onclick="alternarMenuMapa()" class="map-nav-btn">
@@ -2490,13 +2769,16 @@
       <button class="btn-map-menu-mobile" onclick="alternarMenuExtrasMapa()">☰</button>
 
       <div class="map-toolbar-extras" id="map-extras">
-        <div
-          style="display:flex; gap:5px; background:rgba(255,255,255,0.1); padding:5px; border-radius:8px; align-items:center;">
-          <button onclick="ajustarZoomMapa(1.1)" class="tool-btn" style="padding:2px 10px;">🔍 +</button>
-          <button onclick="ajustarZoomMapa(0.9)" class="tool-btn" style="padding:2px 10px;">🔍 -</button>
-          <button onclick="resetarZoomMapa()" class="tool-btn" style="font-size:0.7rem;">Reset</button>
+        <div style="display:flex; gap:5px; align-items:center;">
+          <button onclick="ajustarZoomMapa(1.1)" class="tool-btn" style="padding:0 10px; border-radius:13px;">🔍
+            +</button>
+          <button onclick="ajustarZoomMapa(0.9)" class="tool-btn" style="padding:0 10px; border-radius:13px;">🔍
+            -</button>
+          <button onclick="resetarZoomMapa()" class="tool-btn"
+            style="font-size:0.75rem; padding:0 10px; border-radius:13px;">Reset</button>
         </div>
-        <button onclick="fecharMapaMental()" class="btn-close-map">✖</button>
+        <button onclick="fecharMapaMental()" class="btn-close-map"
+          style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
       </div>
     </div>
     <button class="btn-reabrir-header" onclick="alternarHeaderMapa()" title="Mostrar Menu">▼ MENU</button>
@@ -2520,6 +2802,11 @@
     </div>
   </div>
   <script>
+    function imprimirApostila() {
+      // Abre a janela de impressão nativa (permitindo Salvar como PDF)
+      setTimeout(() => { window.print(); }, 100);
+    }
+
     // =================================================================
     // ⚙️ CONFIGURAÇÃO UNIVERSAL (MODO URL)
     // =================================================================
@@ -2598,32 +2885,32 @@
     }
 
     // Variável para contar quantas vezes o servidor engasgou
-    let falhasDeConexao = 0; 
+    let falhasDeConexao = 0;
 
     function startSessionHeartbeat() {
       if (sessionHeartbeat) clearInterval(sessionHeartbeat);
-      
-      // MUDANÇA 1: Mudamos o tempo para 300000 milissegundos (5 minutos)
+
+      // MUDANÇA 1: Mudamos o tempo para 6000000 milissegundos (10 minutos)
       sessionHeartbeat = setInterval(async () => {
         const token = localStorage.getItem('sessionToken');
         const email = localStorage.getItem('userEmail');
         if (!token || !email) return;
-        
+
         try {
           const formData = new URLSearchParams();
           formData.append('action', 'checkStatus');
           formData.append('email', email);
           formData.append('sessionToken', token);
           formData.append('originUrl', window.location.href);
-          
+
           const response = await fetch(LOGIN_URL, { method: 'POST', body: formData });
           const result = await response.json();
-          
+
           if (!result.success) {
             // MUDANÇA 2: Sistema de Tolerância (Amortecedor)
-            falhasDeConexao++; 
+            falhasDeConexao++;
             console.warn("Aviso: Servidor piscou. Falha " + falhasDeConexao + " de 2.");
-            
+
             // Só expulsa o usuário se o servidor negar o acesso 2 vezes seguidas
             if (falhasDeConexao >= 2) {
               clearInterval(sessionHeartbeat);
@@ -2748,7 +3035,7 @@
       }
 
       // --- MODO: MENU 100% DINÂMICO ---
-      const ID_DA_PLANILHA = urlSheetId || ""; 
+      const ID_DA_PLANILHA = urlSheetId || "";
       const seletor = document.getElementById('seletor-conteudo');
 
       if (ID_DA_PLANILHA) {
@@ -2758,7 +3045,7 @@
 
         // Pede o "cardápio" da planilha para o Apps Script
         const urlMenu = `${API_URL}?action=getMenu&sheetId=${encodeURIComponent(ID_DA_PLANILHA)}&_t=${new Date().getTime()}`;
-        
+
         fetch(urlMenu)
           .then(resposta => resposta.json())
           .then(json => {
@@ -2773,7 +3060,7 @@
               // Destranca e monta o botão superior com os títulos achados
               seletor.disabled = false;
               seletor.innerHTML = '<option value="" disabled>Escolha o Capítulo...</option>';
-              
+
               BIBLIOTECA_LOCAL.forEach((item, index) => {
                 const opt = document.createElement('option');
                 opt.value = index;
@@ -2783,10 +3070,10 @@
 
               // Decide qual texto exibir primeiro na tela
               let idFinal = (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) ? urlIdConteudo : BIBLIOTECA_LOCAL[0].id;
-              
+
               // Marca no botão superior o item que está sendo lido
               const indexEncontrado = BIBLIOTECA_LOCAL.findIndex(item => item.id === idFinal);
-              if(indexEncontrado !== -1) seletor.value = indexEncontrado;
+              if (indexEncontrado !== -1) seletor.value = indexEncontrado;
 
               // Enfim, pede para carregar o texto daquela lei na tela
               carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
@@ -3097,7 +3384,7 @@
           // matchSeta[1] = A seta | matchSeta[2] = Texto até os dois pontos | matchSeta[3] = A explicação
           linhaExibicao = `<strong style="color: #d35400;">${matchSeta[1]} ${matchSeta[2]}</strong><span style="color: #444;">${matchSeta[3]}</span>`;
         }
-        
+
         // --- 3. MOTOR INTERNO (Limpeza para o Índice) ---
         let cleanLine = l.replace(/^[•●○◦▪▸►\-\*#]+\s*/g, '').replace(/\*\*/g, '').trim();
         cleanLine = cleanLine.replace(/^o\s+(?=\d)/i, '').trim();
@@ -3119,11 +3406,11 @@
           } else {
             let num = mNumerico[1];
             tipoBloco = (num.endsWith('.0') || !num.includes('.') || num.match(/^\d+\.$/)) ? 'MAIOR' : 'MENOR';
-            
+
             // --- NOVA LÓGICA DA ESCADINHA VISUAL ---
             // Conta a quantidade de números removendo o ponto final, se houver.
             let qtdNumeros = num.replace(/\.$/, '').split('.').length;
-            
+
             if (qtdNumeros === 1) {
               // Nível 1: Dourado Nobre (Ex: "2. TÉCNICA...")
               nivelEstilo = 'class="lei-titulo-CAPÍTULO"';
@@ -3139,37 +3426,37 @@
             }
           }
           if (tipoBloco === 'MAIOR') contMenu = null;
-          
+
           bloco = { id: id, tipo: tipoBloco, nome: cleanLine, primeiroArt: null, ultimoArt: null };
-          
+
           h += `<h3 id="${id}" ${nivelEstilo}>${linhaExibicao}</h3>`;
         } else if (cleanLine.match(/^(Art\.|Questão|Item)\s/i) || cleanLine.match(/^\d+\.\d+\.\d+\s/)) {
           let match = cleanLine.match(/^([\d\.]+)/) || cleanLine.match(/(Art\.|Item)\s*([\d\wº\.]+)/i);
           let numeroRef = match ? (match[2] || match[1]) : "";
           if (bloco) { if (!bloco.primeiroArt) bloco.primeiroArt = numeroRef; bloco.ultimoArt = numeroRef; }
           let idArt = "art_" + numeroRef.toString().replace(/\./g, '_');
-          
+
           h += `<p id="${idArt}">${linhaExibicao.replace(/^([\w\d\.]+\s?[-–]?)/, '<span class="destaque-artigo">$1</span>')}</p>`;
         } else {
-          
+
           // --- DETECÇÃO DE CAIXAS DE ALERTA (V65) ---
           let matchAlerta = cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)[:\-\s]/i) || cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)$/i);
-          
+
           if (matchAlerta) {
             let tipoAlerta = matchAlerta[1].toUpperCase();
             let classeCaixa = "caixa-revisao"; // Assume azul suave como padrão
-            
+
             // Define as cores com base na palavra-chave
             if (tipoAlerta === "ATENÇÃO" || tipoAlerta === "CUIDADO") classeCaixa = "caixa-atencao";
             if (tipoAlerta === "IMPORTANTE" || tipoAlerta === "NOTA") classeCaixa = "caixa-importante";
             if (tipoAlerta === "PALAVRAS-CHAVE" || tipoAlerta === "PALAVRA-CHAVE") classeCaixa = "caixa-palavras-chave";
-            
+
             h += `<div class="caixa-alerta ${classeCaixa}">${linhaExibicao}</div>`;
           } else {
             // Se não for nenhum alerta, renderiza como parágrafo normal
             h += (i === indexInicial) ? `<h1>${linhaExibicao}</h1>` : `<p>${linhaExibicao}</p>`;
           }
-          
+
         }
       }
       fimBloco();
@@ -3186,7 +3473,7 @@
       else mostrarNotificacao("Artigo " + n + " não encontrado.", "error");
     };
 
-  // --- MAPA MENTAL (V67 - IFRAME LIMPO E ESTÁVEL) ---
+    // --- MAPA MENTAL (V67 - IFRAME LIMPO E ESTÁVEL) ---
     function abrirMapaMental() {
       if (!textoMapaAtual) { mostrarNotificacao("Sem mapa disponível", "error"); return; }
 
@@ -3203,29 +3490,29 @@
       // --- MODO NOVO: É UM LINK ---
       if (matchLink) {
         document.getElementById('arvore-visual').style.display = 'none'; // Esconde mapa antigo
-        
+
         // Esconde os botões usando !important
-        if(containerFiltrar) containerFiltrar.style.setProperty('display', 'none', 'important');
-        if(boxBusca) boxBusca.style.setProperty('display', 'none', 'important');
-        if(boxZoom) boxZoom.style.setProperty('display', 'none', 'important');
-        
+        if (containerFiltrar) containerFiltrar.style.setProperty('display', 'none', 'important');
+        if (boxBusca) boxBusca.style.setProperty('display', 'none', 'important');
+        if (boxZoom) boxZoom.style.setProperty('display', 'none', 'important');
+
         let iframeBox = document.getElementById('iframe-mapa-link');
         if (!iframeBox) {
-            iframeBox = document.createElement('iframe');
-            iframeBox.id = 'iframe-mapa-link';
-            iframeBox.style.position = 'absolute';
-            iframeBox.style.top = '0';
-            iframeBox.style.left = '0';
-            iframeBox.style.width = '100%';
-            iframeBox.style.height = '100%';
-            iframeBox.style.border = 'none';
-            iframeBox.style.backgroundColor = '#f8f9fa';
-            
-            document.querySelector('.mindmap-content').appendChild(iframeBox);
+          iframeBox = document.createElement('iframe');
+          iframeBox.id = 'iframe-mapa-link';
+          iframeBox.style.position = 'absolute';
+          iframeBox.style.top = '0';
+          iframeBox.style.left = '0';
+          iframeBox.style.width = '100%';
+          iframeBox.style.height = '100%';
+          iframeBox.style.border = 'none';
+          iframeBox.style.backgroundColor = '#f8f9fa';
+
+          document.querySelector('.mindmap-content').appendChild(iframeBox);
         }
         iframeBox.style.display = 'block';
-        iframeBox.src = matchLink[0]; 
-        return; 
+        iframeBox.src = matchLink[0];
+        return;
       }
 
       // --- MODO ANTIGO: É UM TEXTO (CAIXINHAS) ---
@@ -3234,14 +3521,14 @@
       document.getElementById('arvore-visual').style.display = 'flex';
 
       // Mostra novamente os botões
-      if(containerFiltrar) containerFiltrar.style.setProperty('display', 'block', 'important');
-      if(boxBusca) boxBusca.style.setProperty('display', 'inline-flex', 'important');
-      if(boxZoom) boxZoom.style.setProperty('display', 'flex', 'important');
+      if (containerFiltrar) containerFiltrar.style.setProperty('display', 'block', 'important');
+      if (boxBusca) boxBusca.style.setProperty('display', 'inline-flex', 'important');
+      if (boxZoom) boxZoom.style.setProperty('display', 'flex', 'important');
 
       // 1. Gera o mapa
       document.getElementById('arvore-visual').innerHTML = converterTextoParaArvore(textoMapaAtual);
       popularFiltroMapa(textoMapaAtual);
-      aplicarInteracaoNosNodes(); 
+      aplicarInteracaoNosNodes();
 
       // 2. Auto-Foco
       setTimeout(() => {
@@ -3345,7 +3632,71 @@
           if (document.getElementById('modal-mapa').classList.contains('open')) { fecharMapaMental(); return; }
           if (!document.body.classList.contains('menu-fechado')) { alternarMenu(); }
         }
+
+        // Atalhos de leitura TTS (Espaço e Setas Laterais)
+        // Só desabilita o comportamento padrão do espaço se estivermos em contexto de leitura (ativo ou pausado)
+        if (e.key === ' ' || e.code === 'Space') {
+          // Bloqueia se o usuário estiver digitando na busca
+          if (document.activeElement.tagName === 'INPUT') return;
+
+          if (ttsAtivo) {
+            e.preventDefault();
+            desligarTTS(); // Pausa
+          } else if (typeof ttsResumePosition !== 'undefined' && ttsResumePosition > 0) {
+            e.preventDefault();
+            ativarTTS(ttsHandsFree, ttsHandsFreeDelay); // Retoma
+          }
+        }
+
+        if (e.key === 'ArrowLeft') {
+          // Bloqueia se o usuário estiver digitando
+          if (document.activeElement.tagName === 'INPUT') return;
+          if (ttsAtivo || (typeof ttsResumePosition !== 'undefined' && ttsResumePosition > 0)) {
+            e.preventDefault();
+            pularParagrafoTTS(-1);
+          }
+        }
+
+        if (e.key === 'ArrowRight') {
+          // Bloqueia se o usuário estiver digitando
+          if (document.activeElement.tagName === 'INPUT') return;
+          if (ttsAtivo || (typeof ttsResumePosition !== 'undefined' && ttsResumePosition > 0)) {
+            e.preventDefault();
+            pularParagrafoTTS(1);
+          }
+        }
       });
+    }
+
+    function pularParagrafoTTS(direcao) {
+      if (!ttsAtivo && ttsResumePosition === 0) return;
+      const estavaAtivo = ttsAtivo;
+
+      let alvo = (estavaAtivo ? ttsCurrentParagraph : ttsResumePosition) + direcao;
+      if (alvo < 0) alvo = 0;
+      if (ttsParagraphs && alvo >= ttsParagraphs.length) alvo = Math.max(0, ttsParagraphs.length - 1);
+
+      if (estavaAtivo) {
+        let hf = ttsHandsFree;
+        let delay = ttsHandsFreeDelay;
+        desligarTTS(); // Pausa o áudio e limpa timers
+
+        // Usa timeout para dar tempo ao motor do navegador de limpar o buffer e onerror
+        setTimeout(() => {
+          ttsCurrentParagraph = alvo;
+          ttsResumePosition = 0;
+          ttsAtivo = true;
+          ttsHandsFree = hf;
+          ttsHandsFreeDelay = delay;
+          const btn = document.getElementById('btnTTS');
+          if (btn) btn.classList.add('tts-ativo');
+          lerProximoParagrafo();
+        }, 150);
+      } else {
+        ttsResumePosition = alvo;
+        const preview = ttsParagraphs[alvo]?.text?.substring(0, 40) || '';
+        mostrarNotificacao(direcao > 0 ? '⏭️ Avançou para: "' + preview + '..."' : '⏮️ Voltou para: "' + preview + '..."');
+      }
     }
 
     function alternarModoGrifo() { modoGrifoAtivo = !modoGrifoAtivo; modoBorrachaAtivo = false; uiBtn(); mostrarNotificacao(modoGrifoAtivo ? "Grifo ON" : "Grifo OFF"); }
@@ -3359,7 +3710,23 @@
       const t = document.getElementById('toast-msg'); t.textContent = msg; t.className = 'notification-toast show ' + tipo;
       setTimeout(() => t.classList.remove('show'), 3000);
     }
-    function mudarFonte(d) { tamanhoFonte += d * 10; document.getElementById('texto-renderizado').style.fontSize = tamanhoFonte + "%"; }
+    function mudarFonte(d) {
+      tamanhoFonte += d * 10;
+      if (tamanhoFonte < 50) tamanhoFonte = 50;   // Limite mínimo
+      if (tamanhoFonte > 200) tamanhoFonte = 200;  // Limite máximo
+      const container = document.getElementById('texto-renderizado');
+      const fator = tamanhoFonte / 100;
+      // Aplica em TODOS os elementos filhos para escalar o conteúdo inteiro
+      container.querySelectorAll('*').forEach(el => {
+        const original = window.getComputedStyle(el).fontSize;
+        const baseSize = parseFloat(original);
+        // Guarda o tamanho original na primeira vez
+        if (!el.dataset.fontBase) el.dataset.fontBase = baseSize;
+        const novoTamanho = parseFloat(el.dataset.fontBase) * fator;
+        el.style.setProperty('font-size', novoTamanho + 'px', 'important');
+      });
+      mostrarNotificacao('Fonte: ' + tamanhoFonte + '%');
+    }
 
     function alternarEsquematizacao() {
       modoSchemaAtivo = !modoSchemaAtivo; const b = document.getElementById('btn-schema'); b.classList.toggle('active-tool', modoSchemaAtivo);
@@ -3652,7 +4019,7 @@
 
             const btnToggle = document.createElement('span');
             btnToggle.className = 'mindmap-toggler';
-            
+
             // Se for nível 2 (Filhos) em diante, os descendentes nascem escondidos (+)
             if (nivel >= 2) {
               liPai.classList.add('filhos-ocultos');
@@ -3918,7 +4285,623 @@
       }
     }
 
+    // =================================================================
+    // 🔊 SISTEMA TTS - VOZES NEURAIS (Migrado do V104)
+    // =================================================================
+
+    let ttsAtivo = false;
+    let ttsHandsFree = false;
+    let ttsHandsFreeDelay = 3;
+    let ttsHandsFreeTimer = null;
+    let ttsCurrentParagraph = 0;
+    let ttsParagraphs = [];
+
+    // --- DICIONÁRIO DE PRONÚNCIA ---
+    const pronunciationDict = {
+      // === 1. SÍMBOLOS E PONTUAÇÃO ESPECIAL ===
+      "§": "parágrafo",
+      "n.º": "número",
+      "nº": "número",
+      "obs:": "observação",
+      "etc.": "etcetera",
+      "p. ex.": "por exemplo",
+      "v.g.": "verbi gratia",
+      "al.": "Alínea",
+
+      // === 2. CÓDIGOS, LEIS E ESTATUTOS ===
+      "CF/88": "Constituição Federal de oitenta e oito",
+      "CF88": "Constituição Federal",
+      "CC/02": "Código Civil de dois mil e dois",
+      "CC": "Código Civil",
+      "CPC": "Código de Processo Civil",
+      "CPP": "Código de Processo Penal",
+      "CP": "Código Penal",
+      "CTB": "Código de Trânsito Brasileiro",
+      "CLT": "Consolidação das Leis do Trabalho",
+      "ECA": "Estatuto da Criança e do Adolescente",
+      "CDC": "Código de Defesa do Consumidor",
+      "LINDB": "Lei de Introdução às normas do Direito Brasileiro",
+      "LEP": "Lei de Execução Penal",
+      "Leman": "Lei do Mandado de Segurança",
+
+      // === 3. TRIBUNAIS E ÓRGÃOS ===
+      "TJMG": "Tribunal de Justiça de Minas Gerais",
+      "STF": "Supremo Tribunal Federal",
+      "STJ": "Superior Tribunal de Justiça",
+      "TST": "Tribunal Superior do Trabalho",
+      "TSE": "Tribunal Superior Eleitoral",
+      "MP": "Ministério Público",
+      "MPMG": "Ministério Público de Minas Gerais",
+      "DPU": "Defensoria Pública da União",
+      "AGU": "Advocacia Geral da União",
+      "PM": "Polícia Militar",
+      "PC": "Polícia Civil",
+      "PF": "Polícia Federal",
+      "PRF": "Polícia Rodoviária Federal",
+      "11 RPM": "Décima primeira região da polícia militar",
+      "RPM": "Região da Polícia Militar",
+
+      // === 4. RECURSOS E AÇÕES ===
+      "Habeas Corpus": "Ábeas Corpus",
+      "Habeas Data": "Ábeas Data",
+      "Mandado de Segurança": "Mandado de Segurança",
+      "ADIn": "Ação Direta de Inconstitucionalidade",
+      "ADC": "Ação Declaratória de Constitucionalidade",
+      "ADPF": "Arguição de Descumprimento de Preceito Fundamental",
+      "RE": "Recurso Extraordinário",
+      "REsp": "Recurso Especial",
+      "Writ": "Ruit",
+
+      // === 5. TERMOS EM LATIM ===
+      "caput": "cáput",
+      "in fine": "in fíne",
+      "vacatio legis": "vacátio légis",
+      "ex tunc": "ex túnc",
+      "ex nunc": "ex núnc",
+      "erga omnes": "érga ômnes",
+      "inter partes": "ínter pártes",
+      "bis in idem": "bis in ídem",
+      "periculum in mora": "perículum in móra",
+      "fumus boni iuris": "fúmus bôni iúris",
+      "custos legis": "cústos légis",
+      "data venia": "dáta vênia",
+
+      // === 6. ABREVIAÇÕES DE TEXTO DE LEI ===
+      "Art.": "Artigo",
+      "art.": "Artigo",
+      "Arts.": "Artigos",
+      "arts.": "Artigos",
+      "Inc.": "Inciso",
+      "inc.": "Inciso",
+      "Par.": "Parágrafo",
+      "par.": "Parágrafo",
+      "pg.": "Parágrafo",
+
+      // === 7. NÚMEROS ROMANOS ===
+      "XVIII": "dezoito",
+      "XVII": "dezessete",
+      "XVI": "dezesseis",
+      "VIII": "oito",
+      "XIII": "treze",
+      "XXX": "trinta",
+      "XIV": "quatorze",
+      "XIX": "dezenove",
+      "XX": "vinte",
+      "XV": "quinze",
+      "XII": "doze",
+      "VII": "sete",
+      "III": "três",
+      "IV": "quatro",
+      "VI": "seis",
+      "IX": "nove",
+      "XI": "onze",
+      "XL": "quarenta",
+      "XC": "noventa",
+      "II": "dois",
+      "V": "cinco",
+      "X": "dez",
+      "L": "cinquenta",
+      "C": "cem",
+      "I": "um",
+
+      // === 8. SIGLAS ===
+      "CEDM": "C-E-D-M",
+      "MG": "Minas Gerais",
+      "ex.:": "Exemplo",
+      "ex.": "Exemplo",
+      "NYPD": "New York City Police Department",
+
+      // === 9. DIVERSOS ===
+      "Pag.": "Página",
+
+    };
+
+    function applyPhoneticCorrections(text) {
+      if (!text) return "";
+      let correctedText = text;
+      const sortedKeys = Object.keys(pronunciationDict).sort((a, b) => b.length - a.length);
+      for (let original of sortedKeys) {
+        const phonetic = pronunciationDict[original];
+        const safeOriginal = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        let regex;
+        if (/^[a-zA-Z0-9À-ÿ]+$/.test(original)) {
+          regex = new RegExp(`(?<![a-zA-Z0-9À-ÿ\\-])${safeOriginal}(?![a-zA-Z0-9À-ÿ\\-])`, "gi");
+        } else {
+          regex = new RegExp(safeOriginal, "gi");
+        }
+        correctedText = correctedText.replace(regex, phonetic);
+      }
+      return correctedText;
+    }
+
+    // --- SELEÇÃO AUTOMÁTICA DE VOZES NEURAIS ---
+    function populateVoiceListLeis(attempt) {
+      attempt = attempt || 0;
+      try {
+        const voiceSelect = document.getElementById('voiceSelectLeis');
+        if (!voiceSelect) {
+          if (attempt < 3) setTimeout(() => populateVoiceListLeis(attempt + 1), 300);
+          return;
+        }
+
+        let voices = window.speechSynthesis.getVoices() || [];
+        if (voices.length === 0 && attempt < 10) {
+          setTimeout(() => populateVoiceListLeis(attempt + 1), 500);
+          return;
+        }
+
+        voiceSelect.innerHTML = '';
+
+        const ptVoices = voices.filter(v =>
+          v.lang?.includes('pt') ||
+          v.lang?.includes('PT') ||
+          v.lang?.includes('brasil') ||
+          v.name?.includes('Portuguese')
+        ).sort((a, b) => {
+          const neuralKeywords = [
+            'Natural', 'Neural', 'Online', 'Premium',
+            'Google', 'Microsoft', 'Azure', 'Amazon',
+            'Luciana', 'Fernanda', 'Daniel', 'Helena'
+          ];
+          const isNeuralA = neuralKeywords.some(k => a.name?.includes(k));
+          const isNeuralB = neuralKeywords.some(k => b.name?.includes(k));
+          if (isNeuralA && !isNeuralB) return -1;
+          if (!isNeuralA && isNeuralB) return 1;
+          const isBrazilianA = a.lang?.includes('BR') || a.name?.includes('Brasil');
+          const isBrazilianB = b.lang?.includes('BR') || b.name?.includes('Brasil');
+          if (isBrazilianA && !isBrazilianB) return -1;
+          if (!isBrazilianA && isBrazilianB) return 1;
+          return 0;
+        });
+
+        if (ptVoices.length === 0) {
+          const option = document.createElement('option');
+          option.textContent = "Padrão do Sistema";
+          voiceSelect.appendChild(option);
+        } else {
+          ptVoices.forEach((voice, index) => {
+            const option = document.createElement('option');
+            const isNeural = ['Natural', 'Neural', 'Online'].some(k => voice.name?.includes(k));
+            const isPremium = ['Google', 'Microsoft'].some(k => voice.name?.includes(k));
+            let prefix = '';
+            if (isNeural && isPremium) prefix = '⭐ ';
+            else if (isNeural) prefix = '🌟 ';
+            else if (isPremium) prefix = '💎 ';
+            option.textContent = prefix + (voice.name || 'Voz Desconhecida');
+            option.value = voice.name || 'default';
+            if (index === 0) option.selected = true;
+            voiceSelect.appendChild(option);
+          });
+        }
+
+        // Restaurar voz salva ou auto-selecionar melhor voz
+        const savedVoice = localStorage.getItem('leisVoice');
+
+        let voiceApplied = false;
+        if (savedVoice && ptVoices.some(v => v.name === savedVoice)) {
+          voiceSelect.value = savedVoice;
+          voiceApplied = true;
+        }
+
+        if (!voiceApplied && ptVoices.length > 0) {
+          // Lógica de seleção automática da melhor voz (igual v104)
+          const bestVoices = ptVoices.filter(voice =>
+            voice.lang?.includes('BR') ||
+            voice.name?.includes('Brasil') ||
+            voice.name?.includes('Brazilian') ||
+            voice.name?.includes('Fernanda') ||
+            voice.name?.includes('Helena')
+          );
+
+          // Prioridade 1: Voz Microsoft Neural (Edge)
+          let bestVoice = bestVoices.find(v =>
+            (v.name?.includes('Microsoft') || v.name?.includes('Azure')) &&
+            (v.name?.includes('Fernanda') || v.name?.includes('Helena') || v.name?.includes('Natural'))
+          );
+
+          // Prioridade 2: Vozes Google
+          if (!bestVoice) {
+            bestVoice = bestVoices.find(v =>
+              v.name?.includes('Google') &&
+              v.lang?.includes('BR')
+            );
+          }
+
+          // Fallback para a primeira disponível
+          bestVoice = bestVoice || bestVoices[0] || ptVoices[0];
+
+          if (bestVoice?.name) {
+            voiceSelect.value = bestVoice.name;
+            localStorage.setItem('leisVoice', bestVoice.name); // Salva a melhor escolha
+          }
+        }
+
+        voiceSelect.onchange = function () {
+          localStorage.setItem('leisVoice', this.value);
+          mostrarNotificacao("Voz atualizada! 🗣️", "success");
+        };
+
+        console.log('✅ Vozes Leis carregadas:', ptVoices.length);
+      } catch (error) {
+        console.error('❌ Erro ao carregar vozes:', error);
+      }
+    }
+
+    // Inicialização de Vozes
+    let leisVoicesLoaded = false;
+    if (typeof window.speechSynthesis !== 'undefined') {
+      window.speechSynthesis.onvoiceschanged = function () {
+        if (leisVoicesLoaded) return;
+        populateVoiceListLeis();
+        leisVoicesLoaded = true;
+      };
+      // Força carregamento inicial
+      setTimeout(() => populateVoiceListLeis(), 500);
+      setTimeout(() => populateVoiceListLeis(), 1500);
+    }
+
+    // --- TOGGLE PRINCIPAL ---
+    let ttsStartFromSelection = null; // Guarda o elemento selecionado pelo usuário
+
+    function toggleLeitura() {
+      if (ttsAtivo) {
+        desligarTTS();
+        return;
+      }
+
+      // Detecta se o usuário selecionou texto dentro do conteúdo
+      ttsStartFromSelection = null;
+      const selection = window.getSelection();
+      let hasSelection = false;
+      if (selection && selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+        const range = selection.getRangeAt(0);
+        const conteudo = document.getElementById('texto-renderizado');
+        if (conteudo && conteudo.contains(range.startContainer)) {
+          // Encontra o parágrafo pai mais próximo
+          let node = range.startContainer;
+          while (node && node !== conteudo) {
+            if (node.nodeType === 1 && (node.matches('p, li, h1, h2, h3') || node.classList?.contains('lei-descricao') || node.classList?.contains('destaque-artigo'))) {
+              ttsStartFromSelection = node;
+              hasSelection = true;
+              break;
+            }
+            node = node.parentElement;
+          }
+        }
+      }
+
+      // Se não há seleção manual e existe uma posição salva, retoma a leitura direto
+      if (!hasSelection && typeof ttsResumePosition !== 'undefined' && ttsResumePosition > 0) {
+        ativarTTS(ttsHandsFree, ttsHandsFreeDelay);
+        return;
+      }
+
+      // Abre o modal de configuração
+      document.getElementById('ttsConfigModal').classList.add('open');
+      populateVoiceListLeis();
+
+      // Mostra dica se há seleção
+      const dicaEl = document.getElementById('ttsSelectionHint');
+      if (dicaEl) {
+        if (ttsStartFromSelection) {
+          const preview = ttsStartFromSelection.innerText?.substring(0, 60) + '...';
+          dicaEl.innerHTML = '📍 <strong>Continuar de:</strong> "' + preview + '"';
+          dicaEl.style.display = 'block';
+        } else {
+          dicaEl.innerHTML = '💡 <em>Selecione um trecho do texto antes de clicar para continuar de onde parou.</em>';
+          dicaEl.style.display = 'block';
+        }
+      }
+    }
+
+    function fecharTTSConfig() {
+      document.getElementById('ttsConfigModal').classList.remove('open');
+    }
+
+    // --- INICIAR LEITURA (MANUAL) ---
+    function iniciarLeituraManual() {
+      fecharTTSConfig();
+      ativarTTS(false, 0);
+      mostrarNotificacao("Leitura: LIGADA (Manual) 🗣️", "success");
+    }
+
+    // --- ABRIR MODAL HANDS-FREE ---
+    function abrirHandsFree() {
+      fecharTTSConfig();
+      const modal = document.getElementById('handsFreeModalLeis');
+      modal.classList.add('open');
+      document.getElementById('hfStep1Leis').style.display = 'block';
+      document.getElementById('hfStep2Leis').style.display = 'none';
+    }
+
+    function fecharHandsFree() {
+      document.getElementById('handsFreeModalLeis').classList.remove('open');
+    }
+
+    function showHfStep2Leis() {
+      document.getElementById('hfStep1Leis').style.display = 'none';
+      document.getElementById('hfStep2Leis').style.display = 'block';
+      setTimeout(() => document.getElementById('hfDelayInputLeis').focus(), 100);
+    }
+
+    function iniciarHandsFreeTTS() {
+      const inputVal = document.getElementById('hfDelayInputLeis').value;
+      const delay = parseInt(inputVal) || 3;
+      fecharHandsFree();
+      ativarTTS(true, delay);
+      mostrarNotificacao('Mãos Livres ATIVO (' + delay + 's) 🗣️', "success");
+    }
+
+    // --- FUNÇÕES DO MOTOR TTS ---
+    let ttsResumePosition = 0; // Salva posição para retomar
+
+    function ativarTTS(handsFreeMode, delayTime) {
+      ttsAtivo = true;
+      ttsHandsFree = handsFreeMode;
+      ttsHandsFreeDelay = delayTime;
+
+      const btn = document.getElementById('btnTTS');
+      if (btn) btn.classList.add('tts-ativo');
+
+      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+
+      // Coleta parágrafos visíveis
+      coletarParagrafos();
+
+      // Se o usuário selecionou texto, começa dali
+      if (ttsStartFromSelection && ttsParagraphs.length > 0) {
+        const selectedEl = ttsStartFromSelection;
+        const idx = ttsParagraphs.findIndex(p => p.element === selectedEl);
+        if (idx >= 0) {
+          ttsCurrentParagraph = idx;
+          const preview = selectedEl.innerText?.substring(0, 50);
+          mostrarNotificacao('▶️ Começando de: "' + preview + '..."', 'success');
+        }
+        ttsStartFromSelection = null;
+        ttsResumePosition = 0;
+      } else if (ttsResumePosition > 0 && ttsResumePosition < ttsParagraphs.length) {
+        // Retoma de onde parou
+        ttsCurrentParagraph = ttsResumePosition;
+        ttsResumePosition = 0;
+        const preview = ttsParagraphs[ttsCurrentParagraph]?.text?.substring(0, 50);
+        mostrarNotificacao('▶️ Retomando de: "' + preview + '..."', 'success');
+      } else {
+        // Começa do início
+        ttsCurrentParagraph = 0;
+        ttsResumePosition = 0;
+      }
+
+      lerProximoParagrafo();
+    }
+
+    function desligarTTS() {
+      // Salva posição para retomar depois
+      ttsResumePosition = ttsCurrentParagraph;
+      ttsAtivo = false;
+      ttsHandsFree = false;
+      clearTimeout(ttsHandsFreeTimer);
+      window.speechSynthesis.cancel();
+
+      const btn = document.getElementById('btnTTS');
+      if (btn) btn.classList.remove('tts-ativo');
+
+      mostrarNotificacao("Leitura PAUSADA ⏸️ (clique ▶️ Ler para retomar)");
+    }
+
+    function coletarParagrafos() {
+      const conteudo = document.getElementById('texto-renderizado');
+      if (!conteudo) { ttsParagraphs = []; return; }
+
+      // Coleta todos os elementos de texto: p, li, h1, h2, h3, divs de alerta, spans com classe específica
+      const elementos = conteudo.querySelectorAll('p, li, h1, h2, h3, .lei-descricao, .destaque-artigo, .caixa-alerta, div[style]');
+      ttsParagraphs = [];
+
+      elementos.forEach(el => {
+        const texto = el.innerText?.trim();
+        if (texto && texto.length > 2) {
+          ttsParagraphs.push({ element: el, text: texto });
+        }
+      });
+    }
+
+    function lerProximoParagrafo() {
+      if (!ttsAtivo) return;
+      if (ttsCurrentParagraph >= ttsParagraphs.length) {
+        desligarTTS();
+        mostrarNotificacao("Leitura concluída! ✅", "success");
+        return;
+      }
+
+      const item = ttsParagraphs[ttsCurrentParagraph];
+
+      // Scroll até o parágrafo atual
+      if (item.element) {
+        item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Destaque temporário
+        item.element.style.outline = '2px solid rgba(255, 215, 0, 0.6)';
+        item.element.style.outlineOffset = '3px';
+        item.element.style.transition = 'outline 0.3s';
+      }
+
+      // Limpa texto
+      let cleanText = item.text
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ');
+
+      // Remove emojis
+      cleanText = cleanText.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{2600}-\u{26FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2300}-\u{25FF}]/gu, '');
+
+      // Tratamento de bullet points / marcadores
+      // 1. Remove bullets no INÍCIO da frase (não lê)
+      cleanText = cleanText.replace(/^[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '');
+      // 2. Substitui bullets no MEIO do texto por ";" (pausa natural de lista)
+      cleanText = cleanText.replace(/[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '; ');
+
+      // Tratamento de sequências numéricas (apostilas)
+      // Remove numeração de 3+ níveis no INÍCIO (ex: 4.0.1, 1.1.5, 3.2.1.4) mas mantém 1., 2., 1.1, 2.3
+      cleanText = cleanText.replace(/^\s*\d+\.\d+\.\d+[\d.]*\s*/g, '');
+
+      // Aplica dicionário fonético
+      let textToRead = applyPhoneticCorrections(cleanText);
+
+      // Cria utterance
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+
+      // Seleciona voz configurada ou faz fallback inteligente igual v104
+      const voices = window.speechSynthesis.getVoices();
+      const voiceSelect = document.getElementById('voiceSelectLeis');
+      const selectedName = voiceSelect ? voiceSelect.value : '';
+      const chosenVoice = voices.find(v => v.name === selectedName);
+
+      if (chosenVoice) {
+        utterance.voice = chosenVoice;
+      } else {
+        const ptVoices = voices.filter(v => v.lang?.includes('pt') || v.lang?.includes('BR') || v.name?.includes('Brasil'));
+
+        // Prioridade 1: Microsoft Neural
+        let bestFailover = ptVoices.find(v =>
+          (v.name?.includes('Microsoft') || v.name?.includes('Azure')) &&
+          (v.name?.includes('Fernanda') || v.name?.includes('Helena') || v.name?.includes('Natural'))
+        );
+
+        // Prioridade 2: Google
+        if (!bestFailover) {
+          bestFailover = ptVoices.find(v => v.name?.includes('Google') && v.lang?.includes('BR'));
+        }
+
+        bestFailover = bestFailover || ptVoices[0];
+        if (bestFailover) utterance.voice = bestFailover;
+      }
+
+      // Velocidade
+      const rateRange = document.getElementById('rateRangeLeis');
+      utterance.rate = rateRange ? parseFloat(rateRange.value) : 1.1;
+      utterance.pitch = 1.0;
+
+      // Keep alive (Bug Chrome)
+      utterance.onboundary = function () { /* keep alive */ };
+
+      // Quando terminar de falar
+      utterance.onend = function () {
+        // Remove destaque
+        if (item.element) {
+          item.element.style.outline = '';
+          item.element.style.outlineOffset = '';
+        }
+
+        ttsCurrentParagraph++;
+
+        if (ttsHandsFree && ttsAtivo) {
+          // Modo automático: espera e avança
+          ttsHandsFreeTimer = setTimeout(() => {
+            if (ttsHandsFree && ttsAtivo) {
+              lerProximoParagrafo();
+            }
+          }, ttsHandsFreeDelay * 1000);
+        } else if (ttsAtivo) {
+          // Modo manual: lê o próximo imediatamente
+          lerProximoParagrafo();
+        }
+      };
+
+      utterance.onerror = function (e) {
+        console.error('Erro na fala:', e);
+        if (item.element) {
+          item.element.style.outline = '';
+          item.element.style.outlineOffset = '';
+        }
+        ttsCurrentParagraph++;
+        if (ttsAtivo) {
+          setTimeout(() => lerProximoParagrafo(), 200);
+        }
+      };
+
+      // Fala com pequeno atraso (correção de buffer)
+      setTimeout(() => {
+        if (ttsAtivo) window.speechSynthesis.speak(utterance);
+      }, 100);
+    }
+
   </script>
+
+  <!-- Modal: Configuração de Voz TTS -->
+  <div id="ttsConfigModal">
+    <div class="tts-modal-content">
+      <h3>🔊 Configuração de Voz</h3>
+
+      <div
+        style="margin-bottom: 15px; padding: 8px; background: rgba(0, 120, 215, 0.2); border-left: 3px solid #0078d7; font-size: 0.85em; text-align: left;">
+        Use <strong>Microsoft Edge</strong> para vozes neurais mais realistas.
+      </div>
+
+      <label>🗣️ Voz:</label>
+      <select id="voiceSelectLeis">
+        <option value="">Carregando...</option>
+      </select>
+
+      <label>⚡ Velocidade: <span id="rateValueLeis">1.1x</span></label>
+      <input type="range" id="rateRangeLeis" min="0.5" max="3" step="0.1" value="1.1"
+        oninput="document.getElementById('rateValueLeis').textContent = this.value + 'x'">
+
+      <div id="ttsSelectionHint"
+        style="display: none; margin-bottom: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 5px; font-size: 0.85em; color: #eee; text-align: left;">
+      </div>
+
+      <button class="tts-btn-gold" onclick="iniciarLeituraManual()">▶️ Apenas Ler</button>
+      <button class="tts-btn-gold" onclick="abrirHandsFree()"
+        style="background: linear-gradient(to bottom, #4CAF50, #388E3C); color: white;">🙌 Mãos Livres
+        (Automático)</button>
+      <button class="tts-btn-cancel" onclick="fecharTTSConfig()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal: Hands-Free -->
+  <div id="handsFreeModalLeis">
+    <div class="tts-modal-content">
+
+      <div id="hfStep1Leis">
+        <h3>🙌 Modo Mãos Livres</h3>
+        <p style="margin-bottom: 20px; font-size: 1.1em;">A leitura avançará automaticamente parágrafo por parágrafo.
+        </p>
+
+        <button class="tts-btn-gold" onclick="showHfStep2Leis()">⏱️ Definir Tempo de Espera</button>
+        <button class="tts-btn-cancel" onclick="fecharHandsFree()">Cancelar</button>
+      </div>
+
+      <div id="hfStep2Leis" style="display:none;">
+        <h3>⏱️ Tempo de Espera</h3>
+        <p style="margin-bottom: 10px;">Quantos segundos esperar entre os parágrafos?</p>
+
+        <input type="number" id="hfDelayInputLeis" value="3" min="1" max="60"
+          style="width: 80px; padding: 10px; font-size: 1.5em; text-align: center; border-radius: 5px; border: 1px solid gold; background: #000; color: white; margin-bottom: 20px;">
+
+        <button class="tts-btn-gold" onclick="iniciarHandsFreeTTS()">▶️ INICIAR</button>
+        <button class="tts-btn-cancel"
+          onclick="document.getElementById('hfStep1Leis').style.display='block'; document.getElementById('hfStep2Leis').style.display='none';">Voltar</button>
+      </div>
+
+    </div>
+  </div>
 </body>
 
 </html>
