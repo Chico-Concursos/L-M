@@ -2801,10 +2801,32 @@
       </div>
     </div>
   </div>
+  <div id="modal-download"
+    style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:white; z-index:100000; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5); padding:25px; text-align:center;">
+    <h3 style="margin-top:0; color:#2c3e50;">Aviso de Download</h3>
+    <p style="color:#7f8c8d; margin-bottom:20px; font-size: 0.95rem;">
+      Devido a restrições do navegador (Google Sites), a impressão foi bloqueada no quadro atual. Por favor, clique no botão abaixo para abrir o material em uma <b>nova guia segura</b>.
+      Lá, você poderá clicar em "Baixar" normalmente!
+    </p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="document.getElementById('modal-download').style.display='none'" class="tool-btn" style="background:#bdc3c7; color:black; padding:10px 20px;">Cancelar</button>
+      <button onclick="abrirNovaAbaDownload()" class="tool-btn" style="padding:10px 20px;">Abrir Nova Guia</button>
+    </div>
+  </div>
   <script>
     function imprimirApostila() {
-      // Abre a janela de impressão nativa (permitindo Salvar como PDF)
-      setTimeout(() => { window.print(); }, 100);
+      // Se estiver rodando dentro do Google Sites (iframe) bloqueamos a impressão nativa falha
+      if (window !== window.top) {
+        document.getElementById('modal-download').style.display = 'block';
+      } else {
+        // Abre a janela de impressão nativa (permitindo Salvar como PDF) na nova aba ou site normal
+        setTimeout(() => { window.print(); }, 100);
+      }
+    }
+
+    function abrirNovaAbaDownload() {
+      document.getElementById('modal-download').style.display = 'none';
+      window.open(window.location.href, '_blank');
     }
 
     // =================================================================
