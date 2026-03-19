@@ -4318,6 +4318,159 @@
     let ttsCurrentParagraph = 0;
     let ttsParagraphs = [];
 
+    // --- VARIÁVEIS DO MOTOR PIPER ---
+    let usePiperEngine = false;
+    let piperModule = null;
+    let piperReady = false;
+    let piperLoading = false;
+    let piperAudio = null;
+    let piperCheckDoneLeis = false;
+
+    // IDs dos modelos Piper (rhasspy/piper-voices)
+    const PIPER_MODELS = {
+      desktop: 'pt_BR-faber-medium',
+      mobile: 'pt_BR-edresson-low'
+    };
+
+    // --- DETECTOR: O navegador tem vozes neurais pt-BR? ---
+    function hasNeuralVoices() {
+      try {
+        const voices = window.speechSynthesis?.getVoices() || [];
+        const neuralKW = ['Natural', 'Neural', 'Online', 'Premium', 'Google', 'Microsoft'];
+        const ptVoices = voices.filter(v => v.lang?.includes('pt') || v.lang?.includes('PT'));
+        return ptVoices.some(v => neuralKW.some(k => v.name?.includes(k)));
+      } catch (e) { return false; }
+    }
+
+    // --- ATIVAÇÃO REAL DO PIPER (chamado pelo botão na UI) ---
+    async function initPiperReal() {
+      if (piperLoading || piperReady) return;
+      piperLoading = true;
+      updateVoiceEngineUI('loading');
+
+      try {
+        mostrarNotificacao("Importando motor Piper... ⏳", "normal");
+        piperModule = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web/+esm");
+
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+
+        // Verifica cache (OPFS — Origin Private File System)
+        const stored = await piperModule.stored();
+        if (!stored.includes(voiceId)) {
+          mostrarNotificacao("Baixando voz neural (primeira vez)...", "normal");
+          await piperModule.download(voiceId, (progress) => {
+            if (progress.total > 0) {
+              const pct = Math.round((progress.loaded / progress.total) * 100);
+              // Como mostrarNotificacao sobe na tela, não mandamos o log em todo %, apenas os múltiplos maiores (mas aqui mantemos simples)
+            }
+          });
+        }
+
+        piperReady = true;
+        piperLoading = false;
+        usePiperEngine = true;
+        localStorage.setItem('chicoUsePiperLeis', 'true');
+        mostrarNotificacao("Voz Neural Piper ativada! ✅", "success");
+        updateVoiceEngineUI('piper');
+      } catch (e) {
+        console.error("❌ Piper erro:", e);
+        piperLoading = false;
+        mostrarNotificacao("Erro ao carregar Piper. Usando voz padrão.", "error");
+        updateVoiceEngineUI(hasNeuralVoices() ? 'neural' : 'basic');
+      }
+    }
+
+    // --- DESATIVAR PIPER ---
+    function disablePiper() {
+      usePiperEngine = false;
+      piperReady = false;
+      localStorage.removeItem('chicoUsePiperLeis');
+      desligarTTS();
+      updateVoiceEngineUI(hasNeuralVoices() ? 'neural' : 'basic');
+      mostrarNotificacao("Piper desativado. Usando voz nativa.", "normal");
+    }
+
+    // --- SINTETIZAR COM PIPER ---
+    async function speakWithPiper(text) {
+      if (!piperModule || !piperReady) return;
+      try {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+        
+        // --- PRECAUÇÃO CONTRA CORTE DE ÁUDIO ---
+        // Adicionamos ", " no início da string. Piper interpreta a vírgula como uma micro-pausa
+        // Isso cria um pequeno silêncio no início do áudio, evitando que o modelo "engula" a 1º palavra.
+        const paddedText = ", " + text;
+
+        const wav = await piperModule.predict({ text: paddedText, voiceId: voiceId });
+
+        if (piperAudio) { piperAudio.pause(); piperAudio = null; }
+        piperAudio = new Audio();
+        piperAudio.src = URL.createObjectURL(wav);
+
+        const rateRange = document.getElementById('rateRangeLeis');
+        piperAudio.playbackRate = rateRange ? parseFloat(rateRange.value) : 1.1;
+
+        piperAudio.onended = function () {
+          const item = ttsParagraphs[ttsCurrentParagraph];
+          if (item && item.element) {
+            item.element.style.outline = '';
+            item.element.style.outlineOffset = '';
+          }
+          ttsCurrentParagraph++;
+
+          if (ttsHandsFree && ttsAtivo) {
+            ttsHandsFreeTimer = setTimeout(() => {
+              if (ttsHandsFree && ttsAtivo) lerProximoParagrafo();
+            }, ttsHandsFreeDelay * 1000);
+          } else if (ttsAtivo) {
+            lerProximoParagrafo();
+          }
+        };
+
+        piperAudio.onerror = function (e) {
+          console.error("Erro áudio Piper:", e);
+          usePiperEngine = false;
+          fallbackNextParagraph();
+        };
+        await piperAudio.play();
+      } catch (e) {
+        console.error("Erro Piper synth:", e);
+        usePiperEngine = false;
+        mostrarNotificacao("Erro Piper → voz nativa", "error");
+        fallbackNextParagraph();
+      }
+    }
+    
+    // Auxiliar fallback para erro no Piper
+    function fallbackNextParagraph() {
+        const item = ttsParagraphs[ttsCurrentParagraph];
+        if (item && item.element) item.element.style.outline = '';
+        ttsCurrentParagraph++;
+        if (ttsAtivo) setTimeout(() => lerProximoParagrafo(), 200);
+    }
+
+    // --- INDICADOR DO MOTOR DE VOZ (Settings Modal) ---
+    function updateVoiceEngineUI(status) {
+      const indicator = document.getElementById('voiceEngineIndicator');
+      const piperBtn = document.getElementById('activatePiperBtn');
+      const disableBtn = document.getElementById('disablePiperBtn');
+      if (!indicator) return;
+
+      const cfgs = {
+        neural:  { text: "🟢 Vozes neurais detectadas (Piper disponível ↓)", color: "#27ae60", act: true, dis: false },
+        basic:   { text: "🟡 Vozes básicas — ative o Piper ↓", color: "#f39c12", act: true, dis: false },
+        piper:   { text: "🟢 Motor Piper Neural ativo", color: "#2ecc71", act: false, dis: true },
+        loading: { text: "⏳ Carregando Piper...", color: "#f1c40f", act: false, dis: false }
+      };
+      const c = cfgs[status] || cfgs.basic;
+      indicator.textContent = c.text;
+      indicator.style.color = c.color;
+      if (piperBtn) piperBtn.style.display = c.act ? 'block' : 'none';
+      if (disableBtn) disableBtn.style.display = c.dis ? 'block' : 'none';
+    }
+
     // --- DICIONÁRIO DE PRONÚNCIA ---
     const pronunciationDict = {
       // === 1. SÍMBOLOS E PONTUAÇÃO ESPECIAL ===
@@ -4564,6 +4717,20 @@
         };
 
         console.log('✅ Vozes Leis carregadas:', ptVoices.length);
+
+        // --- VERIFICAÇÃO HÍBRIDA: Piper necessário? ---
+        if (!piperCheckDoneLeis && ptVoices.length > 0) {
+          piperCheckDoneLeis = true;
+          if (hasNeuralVoices()) {
+            updateVoiceEngineUI('neural');
+          } else {
+            updateVoiceEngineUI('basic');
+            if (localStorage.getItem('chicoUsePiperLeis') === 'true') {
+              initPiperReal();
+            }
+          }
+        }
+
       } catch (error) {
         console.error('❌ Erro ao carregar vozes:', error);
       }
@@ -4723,6 +4890,11 @@
       ttsHandsFree = false;
       clearTimeout(ttsHandsFreeTimer);
       window.speechSynthesis.cancel();
+      if (piperAudio) {
+        piperAudio.pause();
+        piperAudio.currentTime = 0;
+        piperAudio = null;
+      }
 
       const btn = document.getElementById('btnTTS');
       if (btn) btn.classList.remove('tts-ativo');
@@ -4786,6 +4958,13 @@
       // Aplica dicionário fonético
       let textToRead = applyPhoneticCorrections(cleanText);
 
+      // --- ROTA PIPER (se ativo) ---
+      if (usePiperEngine && piperReady) {
+        speakWithPiper(textToRead);
+        return;
+      }
+
+      // --- ROTA NATIVA (SpeechSynthesis) ---
       // Cria utterance
       const utterance = new SpeechSynthesisUtterance(textToRead);
 
@@ -4871,12 +5050,18 @@
     <div class="tts-modal-content">
       <h3>🔊 Configuração de Voz</h3>
 
-      <div
-        style="margin-bottom: 15px; padding: 8px; background: rgba(0, 120, 215, 0.2); border-left: 3px solid #0078d7; font-size: 0.85em; text-align: left;">
-        Use <strong>Microsoft Edge</strong> para vozes neurais mais realistas.
+      <div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px;">
+        <div id="voiceEngineIndicator" style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Carregando motores...</div>
+        <button id="activatePiperBtn" onclick="initPiperReal()" style="display: none; width: 100%; padding: 8px; background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">📥 Usar Voz Neural Offline (Piper)</button>
+        <button id="disablePiperBtn" onclick="disablePiper()" style="display: none; width: 100%; padding: 8px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">❌ Voltar para voz do sistema</button>
       </div>
 
-      <label>🗣️ Voz:</label>
+      <div
+        style="margin-bottom: 15px; padding: 8px; background: rgba(0, 120, 215, 0.2); border-left: 3px solid #0078d7; font-size: 0.85em; text-align: left;">
+        Use <strong>Microsoft Edge</strong> para vozes neurais mais realistas ou baixe a voz neural offline acima.
+      </div>
+
+      <label>🗣️ Voz Nativa:</label>
       <select id="voiceSelectLeis">
         <option value="">Carregando...</option>
       </select>
