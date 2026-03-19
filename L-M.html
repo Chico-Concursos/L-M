@@ -4338,7 +4338,9 @@
     let piperModule = null;
     let piperReady = false;
     let piperLoading = false;
-    let piperAudio = new Audio(); // Inicializa logo para permitir o "blessing" no iOS
+    // Inicializa com um milissegundo de silêncio (Engana o bloqueio do iPhone e Android)
+let piperAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+piperAudio.playsInline = true; // Crucial para o iPhone não tentar abrir o media player em tela cheia
     let piperCheckDoneLeis = false;
 
     // IDs dos modelos Piper (rhasspy/piper-voices)
@@ -4408,64 +4410,90 @@
 
     // --- SINTETIZAR COM PIPER ---
     async function speakWithPiper(text) {
-      if (!piperModule || !piperReady) return;
-      try {
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
-        
-        // --- PRECAUÇÃO CONTRA CORTE DE ÁUDIO ---
-        // Adicionamos ", " no início da string. Piper interpreta a vírgula como uma micro-pausa
-        // Isso cria um pequeno silêncio no início do áudio, evitando que o modelo "engula" a 1º palavra.
-        const paddedText = ", " + text;
+  if (!piperModule || !piperReady) return;
 
-        const wav = await piperModule.predict({ text: paddedText, voiceId: voiceId });
+  // 1. Guarda em qual parágrafo estávamos ANTES do Piper começar a "pensar"
+  const expectedParagraph = ttsCurrentParagraph;
 
-        if (!piperAudio) piperAudio = new Audio();
-        
-        // Se houver áudio tocando, para
-        piperAudio.pause();
-        
-        const oldSrc = piperAudio.src;
-        piperAudio.src = URL.createObjectURL(wav);
-        
-        // Limpeza de memória do blob anterior
-        if (oldSrc && oldSrc.startsWith('blob:')) {
-          URL.revokeObjectURL(oldSrc);
-        }
+  try {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+    
+    // PRECAUÇÃO CONTRA CORTE DE ÁUDIO
+    const paddedText = ", " + text;
 
-        const rateRange = document.getElementById('rateRangeLeis');
-        piperAudio.playbackRate = rateRange ? parseFloat(rateRange.value) : 1.1;
+    // 2. O Piper demora um pouco aqui... (Assíncrono)
+    const wav = await piperModule.predict({ text: paddedText, voiceId: voiceId });
 
-        piperAudio.onended = function () {
-          const item = ttsParagraphs[ttsCurrentParagraph];
-          if (item && item.element) {
-            item.element.style.outline = '';
-            item.element.style.outlineOffset = '';
-          }
-          ttsCurrentParagraph++;
-
-          if (ttsHandsFree && ttsAtivo) {
-            ttsHandsFreeTimer = setTimeout(() => {
-              if (ttsHandsFree && ttsAtivo) lerProximoParagrafo();
-            }, ttsHandsFreeDelay * 1000);
-          } else if (ttsAtivo) {
-            lerProximoParagrafo();
-          }
-        };
-
-        piperAudio.onerror = function (e) {
-          console.error("Erro áudio Piper:", e);
-          usePiperEngine = false;
-          fallbackNextParagraph();
-        };
-        await piperAudio.play();
-      } catch (e) {
-        console.error("Erro Piper synth:", e);
-        usePiperEngine = false;
-        mostrarNotificacao("Erro Piper → voz nativa", "error");
-        fallbackNextParagraph();
-      }
+    // 3. SEGREDO CONTRA CONFLITO: Verifica se o usuário pausou ou pulou o parágrafo enquanto o Piper pensava
+    if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph) {
+        return; // Aborta a reprodução silenciosamente
     }
+
+    // 4. Cala a voz nativa brutalmente caso ela tenha se ativado por acidente
+    window.speechSynthesis.cancel();
+
+    if (!piperAudio) {
+      piperAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+      piperAudio.playsInline = true;
+    }
+    
+    // Para qualquer áudio anterior
+    piperAudio.pause();
+    
+    const oldSrc = piperAudio.src;
+    
+    // 5. SEGREDO MOBILE: Garante que o retorno é tratado estritamente como Blob
+    const audioBlob = new Blob([wav], { type: "audio/wav" });
+    piperAudio.src = URL.createObjectURL(audioBlob);
+    
+    if (oldSrc && oldSrc.startsWith('blob:')) {
+      URL.revokeObjectURL(oldSrc);
+    }
+
+    const rateRange = document.getElementById('rateRangeLeis');
+    piperAudio.playbackRate = rateRange ? parseFloat(rateRange.value) : 1.1;
+
+    // 6. OBRIGATÓRIO NO IOS: Recarregar o buffer do áudio antes do play
+    piperAudio.load();
+
+    piperAudio.onended = function () {
+      const item = ttsParagraphs[ttsCurrentParagraph];
+      if (item && item.element) {
+        item.element.style.outline = '';
+        item.element.style.outlineOffset = '';
+      }
+      ttsCurrentParagraph++;
+
+      if (ttsHandsFree && ttsAtivo) {
+        ttsHandsFreeTimer = setTimeout(() => {
+          if (ttsHandsFree && ttsAtivo) lerProximoParagrafo();
+        }, ttsHandsFreeDelay * 1000);
+      } else if (ttsAtivo) {
+        lerProximoParagrafo();
+      }
+    };
+
+    piperAudio.onerror = function (e) {
+      console.error("Erro áudio Piper (Geralmente falha de memória no mobile):", e);
+      usePiperEngine = false;
+      fallbackNextParagraph();
+    };
+
+    // 7. Usa Promise para capturar o erro do bloqueio de interação no celular sem travar o código
+    await piperAudio.play().catch(err => {
+      console.warn("Bloqueio de autoplay no celular:", err);
+      mostrarNotificacao("O navegador bloqueou o áudio. Clique novamente.", "error");
+      desligarTTS();
+    });
+
+  } catch (e) {
+    console.error("Erro Piper synth:", e);
+    usePiperEngine = false; // Se der erro, desativa o Piper e volta pra nativa
+    mostrarNotificacao("Erro Piper → Usando voz nativa", "error");
+    fallbackNextParagraph();
+  }
+}
     
     // Auxiliar fallback para erro no Piper
     function fallbackNextParagraph() {
@@ -4928,23 +4956,27 @@
     }
 
     function desligarTTS() {
-      // Salva posição para retomar depois
-      ttsResumePosition = ttsCurrentParagraph;
-      ttsAtivo = false;
-      ttsHandsFree = false;
-      clearTimeout(ttsHandsFreeTimer);
-      window.speechSynthesis.cancel();
-      if (piperAudio) {
-        piperAudio.pause();
-        piperAudio.currentTime = 0;
-        piperAudio = null;
-      }
+  // Salva posição para retomar depois
+  ttsResumePosition = ttsCurrentParagraph;
+  ttsAtivo = false;
+  ttsHandsFree = false;
+  clearTimeout(ttsHandsFreeTimer);
+  
+  // Corta a nativa
+  window.speechSynthesis.cancel();
+  
+  // Corta o Piper de imediato
+  if (piperAudio) {
+    piperAudio.pause();
+    piperAudio.removeAttribute('src'); // Força a parar e liberar a memória do celular
+    piperAudio.load();
+  }
 
-      const btn = document.getElementById('btnTTS');
-      if (btn) btn.classList.remove('tts-ativo');
+  const btn = document.getElementById('btnTTS');
+  if (btn) btn.classList.remove('tts-ativo');
 
-      mostrarNotificacao("Leitura PAUSADA ⏸️ (clique ▶️ Ler para retomar)");
-    }
+  mostrarNotificacao("Leitura PAUSADA ⏸️ (clique ▶️ Ler para retomar)");
+}
 
     function coletarParagrafos() {
       const conteudo = document.getElementById('texto-renderizado');
