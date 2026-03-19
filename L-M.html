@@ -1774,6 +1774,16 @@
         height: 36px;
         white-space: nowrap;
       }
+      
+      .print-btn {
+        display: none !important; /* Esconde no celular para liberar espaço */
+      }
+
+      .tts-btn-icon-mobile {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
 
       /* 2. BOTÃO HAMBÚRGUER PRINCIPAL */
       .btn-mobile-ops {
@@ -2689,6 +2699,9 @@
 
       <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
       <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF">⬇️ Baixar</button>
+
+      <!-- NOVO BOTÃO DE LEITURA DIRETO NO HEADER MOBILE -->
+      <button class="tool-btn tts-btn-icon-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta" style="display:none; padding: 0 8px; font-size: 1.2rem; background:transparent; border:none; margin-right:5px; cursor: pointer;">🔊</button>
 
       <button class="btn-mobile-ops" onclick="alternarMenuMobile()">☰</button>
 
@@ -4788,6 +4801,14 @@
       // Abre o modal de configuração
       document.getElementById('ttsConfigModal').classList.add('open');
       populateVoiceListLeis();
+      
+      // Auto-focus no the modal content to gently guide the viewport (helps in some iframes)
+      setTimeout(() => {
+        const modalContent = document.querySelector('#ttsConfigModal .tts-modal-content');
+        if (modalContent && typeof modalContent.scrollIntoView === 'function') {
+          modalContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 300);
 
       // Mostra dica se há seleção
       const dicaEl = document.getElementById('ttsSelectionHint');
