@@ -2016,6 +2016,7 @@
     .login-logo-clean span {
       background: linear-gradient(135deg, #D2AC47, #F7EF8A, #AE8625);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -2538,6 +2539,7 @@
         color: #D2AC47 !important;
         background: none !important;
         -webkit-background-clip: unset !important;
+        background-clip: unset !important;
         -webkit-text-fill-color: unset !important;
       }
 
@@ -4336,7 +4338,7 @@
     let piperModule = null;
     let piperReady = false;
     let piperLoading = false;
-    let piperAudio = null;
+    let piperAudio = new Audio(); // Inicializa logo para permitir o "blessing" no iOS
     let piperCheckDoneLeis = false;
 
     // IDs dos modelos Piper (rhasspy/piper-voices)
@@ -4418,9 +4420,18 @@
 
         const wav = await piperModule.predict({ text: paddedText, voiceId: voiceId });
 
-        if (piperAudio) { piperAudio.pause(); piperAudio = null; }
-        piperAudio = new Audio();
+        if (!piperAudio) piperAudio = new Audio();
+        
+        // Se houver áudio tocando, para
+        piperAudio.pause();
+        
+        const oldSrc = piperAudio.src;
         piperAudio.src = URL.createObjectURL(wav);
+        
+        // Limpeza de memória do blob anterior
+        if (oldSrc && oldSrc.startsWith('blob:')) {
+          URL.revokeObjectURL(oldSrc);
+        }
 
         const rateRange = document.getElementById('rateRangeLeis');
         piperAudio.playbackRate = rateRange ? parseFloat(rateRange.value) : 1.1;
@@ -4794,6 +4805,10 @@
 
       // Se não há seleção manual e existe uma posição salva, retoma a leitura direto
       if (!hasSelection && typeof ttsResumePosition !== 'undefined' && ttsResumePosition > 0) {
+        // "Blessing" do áudio para iOS/Safari (precisa ser síncrono no clique)
+        if (piperAudio) {
+           piperAudio.play().then(() => piperAudio.pause()).catch(() => {});
+        }
         ativarTTS(ttsHandsFree, ttsHandsFreeDelay);
         return;
       }
@@ -4830,6 +4845,10 @@
 
     // --- INICIAR LEITURA (MANUAL) ---
     function iniciarLeituraManual() {
+      // "Blessing" do áudio para iOS/Safari
+      if (piperAudio) {
+         piperAudio.play().then(() => piperAudio.pause()).catch(() => {});
+      }
       fecharTTSConfig();
       ativarTTS(false, 0);
       mostrarNotificacao("Leitura: LIGADA (Manual) 🗣️", "success");
@@ -4855,6 +4874,10 @@
     }
 
     function iniciarHandsFreeTTS() {
+      // "Blessing" do áudio para iOS/Safari
+      if (piperAudio) {
+         piperAudio.play().then(() => piperAudio.pause()).catch(() => {});
+      }
       const inputVal = document.getElementById('hfDelayInputLeis').value;
       const delay = parseInt(inputVal) || 3;
       fecharHandsFree();
