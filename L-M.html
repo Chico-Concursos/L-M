@@ -1353,6 +1353,20 @@
       border-left: 4px solid #f39c12;
     }
 
+    .nav-nivel-5 {
+      font-style: italic;
+      font-size: 0.9em;
+      padding-left: 70px;
+      border-left: 4px solid #8e44ad;
+    }
+
+    .nav-nivel-6 {
+      font-style: italic;
+      font-size: 0.85em;
+      padding-left: 85px;
+      border-left: 4px solid #34495e;
+    }
+
     .nav-seta {
       display: inline-block;
       width: 20px;
@@ -3919,7 +3933,7 @@
 
       const linhasRaw = texto.split('\n').filter(l => l.trim().startsWith('#'));
       const dados = linhasRaw.map((linha, index) => {
-        const match = linha.match(/^(#{1,4})\s+(.*)/);
+        const match = linha.match(/^(#{1,6})\s+(.*)/);
         if (!match) return null;
         return {
           nivel: match[1].length,
@@ -3942,6 +3956,8 @@
         if (item.nivel === 2) icone = "📄 ";
         if (item.nivel === 3) icone = "🔹 ";
         if (item.nivel === 4) icone = "🔸 ";
+        if (item.nivel === 5) icone = "▪️ ";
+        if (item.nivel === 6) icone = "▫️ ";
 
         if (ehPai) {
           div.innerHTML = `
@@ -5109,6 +5125,15 @@
 
       // Tratamento de setas → substitui por ponto final (pausa natural de enumeração)
       cleanText = cleanText.replace(/\s*[→⇒⇨➔➜➡►▶⟶⟹↦⮕➤➞➟➠]\s*/g, '. ');
+
+      // NOVO: Remove referências em parênteses APÓS um ponto final, ex: "xxxxx. (pág. 10)"
+      // Exceção: Mantém se for artigo de lei, ex: (Art. 10, I) ou (Lei 8112)
+      cleanText = cleanText.replace(/(\.)\s*\(([^)]+)\)/gi, (match, p1, p2) => {
+        if (/art\.|artigo|lei|§|inciso|inc\.|par\.|alínea/i.test(p2)) {
+          return match; // Mantém
+        }
+        return p1; // Remove parênteses, devolve só o ponto
+      });
 
       // Aplica dicionário fonético
       let textToRead = applyPhoneticCorrections(cleanText);
