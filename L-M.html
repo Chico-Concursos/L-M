@@ -1222,6 +1222,22 @@
       z-index: 100 !important;
     }
 
+    /* --- NÓ ATIVO (clicado pelo usuário) --- */
+    .node-ativo {
+      background-color: #1a1a1a !important;
+      color: #fff !important;
+      font-weight: 900 !important;
+      border-color: #333 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .node-ativo > .mindmap-toggler {
+      background-color: #fff;
+      color: #1a1a1a;
+      border-color: #fff;
+    }
+
     /* --- BOTÃO DE EXPANDIR/RETRAIR --- */
     .mindmap-toggler {
       position: absolute;
@@ -2806,6 +2822,10 @@
           <button onclick="resetarZoomMapa()" class="tool-btn"
             style="font-size:0.75rem; padding:0 10px; border-radius:13px;">Reset</button>
         </div>
+        <div style="display:flex; gap:5px; align-items:center;">
+          <button onclick="recolherTudoMapa()" class="tool-btn" style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Recolhe todos os nós e limpa destaques">📁 Recolher</button>
+          <button onclick="expandirTudoMapa()" class="tool-btn" style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Expande todos os nós da árvore">📂 Expandir</button>
+        </div>
         <button onclick="fecharMapaMental()" class="btn-close-map"
           style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
       </div>
@@ -4049,6 +4069,55 @@
       else { mostrarNotificacao("Elemento não encontrado.", "error"); }
     }
 
+    // --- RECOLHER TUDO: Reset visual completo do mapa ---
+    function recolherTudoMapa() {
+      const arvore = document.getElementById('arvore-visual');
+      if (!arvore) return;
+
+      // 1. Remove todos os destaques ativos
+      arvore.querySelectorAll('.node-ativo').forEach(el => el.classList.remove('node-ativo'));
+
+      // 2. Recolhe todos os nós com filhos (nível ≥2, igual ao estado inicial)
+      const todosLi = arvore.querySelectorAll('li');
+      todosLi.forEach(li => {
+        const temFilhos = li.querySelector('ul');
+        if (!temFilhos) return;
+
+        // Calcula o nível do nó
+        let nivel = 0;
+        let atual = li;
+        while (atual && !atual.classList.contains('tree')) {
+          if (atual.tagName === 'UL') nivel++;
+          atual = atual.parentElement;
+        }
+
+        const toggler = li.querySelector(':scope > a > .mindmap-toggler');
+        if (nivel >= 2) {
+          li.classList.add('filhos-ocultos');
+          if (toggler) toggler.innerHTML = '+';
+        } else {
+          li.classList.remove('filhos-ocultos');
+          if (toggler) toggler.innerHTML = '−';
+        }
+      });
+
+      mostrarNotificacao("Mapa recolhido e destaques limpos 📁", "success");
+    }
+
+    // --- EXPANDIR TUDO: Abre todos os nós da árvore ---
+    function expandirTudoMapa() {
+      const arvore = document.getElementById('arvore-visual');
+      if (!arvore) return;
+
+      arvore.querySelectorAll('.filhos-ocultos').forEach(li => {
+        li.classList.remove('filhos-ocultos');
+        const toggler = li.querySelector(':scope > a > .mindmap-toggler');
+        if (toggler) toggler.innerHTML = '−';
+      });
+
+      mostrarNotificacao("Todos os nós expandidos 📂", "success");
+    }
+
     function aplicarInteracaoNosNodes() {
       const nodesLinks = document.querySelectorAll('.tree li > a');
       const modalConf = document.getElementById('modal-confirmacao');
@@ -4097,7 +4166,29 @@
         link.onclick = function (e) {
           if (e.target.className === 'mindmap-toggler') return;
           e.preventDefault();
-          this.style.fontWeight = (this.style.fontWeight === '900') ? '600' : '900';
+
+          const estaAtivo = this.classList.contains('node-ativo');
+
+          // Toggle destaque visual (preto/branco + negrito)
+          this.classList.toggle('node-ativo');
+
+          // Se tem filhos, sincroniza expand/collapse com o estado REAL dos filhos
+          if (temFilhos) {
+            const toggler = this.querySelector('.mindmap-toggler');
+            const estaRecolhido = liPai.classList.contains('filhos-ocultos');
+
+            if (estaAtivo) {
+              // Desativou → sempre recolhe
+              liPai.classList.add('filhos-ocultos');
+              if (toggler) toggler.innerHTML = '+';
+            } else {
+              // Ativou → expande se estiver recolhido
+              if (estaRecolhido) {
+                liPai.classList.remove('filhos-ocultos');
+                if (toggler) toggler.innerHTML = '−';
+              }
+            }
+          }
         };
 
         link.ondblclick = function (e) {
@@ -4361,6 +4452,11 @@
     let piperSourceNode = null; // BufferSource atual (para poder parar)
     let piperCheckDoneLeis = false;
 
+    // --- PRE-BUFFER PIPELINE (elimina atraso entre frases) ---
+    let piperPreBuffer = null;       // AudioBuffer pré-gerado da próxima frase
+    let piperPreBufferIndex = -1;    // Índice da frase que está no cache
+    let piperPreBuffering = false;   // Flag: já está gerando pre-buffer?
+
     // Cria/desbloqueia o AudioContext (chamado dentro de handlers de clique)
     function ensurePiperAudioCtx() {
       if (!piperAudioCtx) {
@@ -4432,23 +4528,15 @@
       usePiperEngine = false;
       piperReady = false;
       localStorage.removeItem('chicoUsePiperLeis');
+      invalidatePiperPreBuffer();
       desligarTTS();
       updateVoiceEngineUI(hasNeuralVoices() ? 'neural' : 'basic');
       mostrarNotificacao("Piper desativado. Usando voz nativa.", "normal");
     }
 
     // --- PARSER MANUAL DE WAV → AudioBuffer (bypassa limitações de formato do mobile) ---
-    function parseWavToAudioBuffer(rawData, audioCtx) {
-      // Converte para ArrayBuffer se necessário
-      let arrayBuf;
-      if (rawData instanceof ArrayBuffer) {
-        arrayBuf = rawData;
-      } else if (rawData.buffer && rawData.buffer instanceof ArrayBuffer) {
-        arrayBuf = rawData.buffer.slice(rawData.byteOffset, rawData.byteOffset + rawData.byteLength);
-      } else {
-        arrayBuf = new Uint8Array(rawData).buffer;
-      }
-
+    // --- PARSER MANUAL DE WAV → AudioBuffer (fallback para mobile) ---
+    function parseWavManual(arrayBuf, audioCtx) {
       const view = new DataView(arrayBuf);
 
       // Lê cabeçalho WAV
@@ -4497,53 +4585,208 @@
       return audioBuffer;
     }
 
-    // --- SINTETIZAR COM PIPER (AudioContext + parser manual de WAV) ---
+    // --- CONVERTER WAV → AudioBuffer (tenta nativo primeiro, fallback manual) ---
+    async function parseWavToAudioBuffer(rawData, audioCtx) {
+      // Converte para ArrayBuffer se necessário
+      let arrayBuf;
+      if (rawData instanceof ArrayBuffer) {
+        arrayBuf = rawData;
+      } else if (rawData.buffer && rawData.buffer instanceof ArrayBuffer) {
+        arrayBuf = rawData.buffer.slice(rawData.byteOffset, rawData.byteOffset + rawData.byteLength);
+      } else {
+        arrayBuf = new Uint8Array(rawData).buffer;
+      }
+
+      // Tenta decodeAudioData nativo (muito mais rápido que o parser manual)
+      try {
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuf.slice(0));
+        return audioBuffer;
+      } catch (e) {
+        // Fallback: parser manual (necessário em alguns browsers mobile)
+        return parseWavManual(arrayBuf, audioCtx);
+      }
+    }
+
+    // --- GERAR ÁUDIO PIPER (função pura, sem side-effects de reprodução) ---
+    async function generatePiperAudio(text) {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+
+      // Gera o WAV via Piper WASM (texto limpo, sem padding de texto)
+      const wav = await piperModule.predict({ text: text, voiceId: voiceId });
+
+      // Garante que o AudioContext existe
+      ensurePiperAudioCtx();
+
+      // Converte WAV → AudioBuffer
+      let rawData;
+      if (wav instanceof Blob) {
+        rawData = await wav.arrayBuffer();
+      } else {
+        rawData = wav;
+      }
+      const audioBuffer = await parseWavToAudioBuffer(rawData, piperAudioCtx);
+
+      // Protege contra truncamento no início da reprodução:
+      // Prepend 30ms de silêncio digital (custo zero, não passa pelo Piper)
+      return prependSilence(audioBuffer, piperAudioCtx, 0.03);
+    }
+
+    // --- PREPEND SILÊNCIO AO AUDIOBUFFER ---
+    // Adiciona N segundos de silêncio digital no início do buffer.
+    // Protege a primeira sílaba contra truncamento de playback (bug AudioContext/Piper).
+    function prependSilence(audioBuffer, audioCtx, silenceDuration) {
+      const sampleRate = audioBuffer.sampleRate;
+      const silenceSamples = Math.floor(sampleRate * silenceDuration);
+      const newLength = audioBuffer.length + silenceSamples;
+
+      const paddedBuffer = audioCtx.createBuffer(
+        audioBuffer.numberOfChannels, newLength, sampleRate
+      );
+
+      for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+        const src = audioBuffer.getChannelData(ch);
+        const dst = paddedBuffer.getChannelData(ch);
+        // Os primeiros silenceSamples já são zero (Float32Array inicializa com 0)
+        dst.set(src, silenceSamples);
+      }
+      return paddedBuffer;
+    }
+
+    // --- LIMPAR TEXTO PARA TTS (função compartilhada) ---
+    // Centraliza toda a lógica de limpeza de texto para síntese de voz.
+    // Chamada tanto por lerProximoParagrafo() quanto por getCleanTextForIndex().
+    function limparTextoParaTTS(rawText) {
+      if (!rawText) return '';
+
+      let cleanText = rawText
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ');
+
+      // Remove emojis
+      cleanText = cleanText.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{2600}-\u{26FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2300}-\u{25FF}]/gu, '');
+
+      // Tratamento de bullet points / marcadores
+      // 1. Remove bullets no INÍCIO da frase (não lê)
+      cleanText = cleanText.replace(/^[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '');
+      // 2. Substitui bullets no MEIO do texto por ";" (pausa natural de lista)
+      cleanText = cleanText.replace(/[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '; ');
+
+      // Tratamento de sequências numéricas (apostilas)
+      // Remove numeração de 3+ níveis no INÍCIO (ex: 4.0.1, 1.1.5, 3.2.1.4) mas mantém 1., 2., 1.1, 2.3
+      cleanText = cleanText.replace(/^\s*\d+\.\d+\.\d+[\d.]*\s*/g, '');
+
+      // Tratamento de marcações numéricas tipo "1.1", "2.3" → "1 ponto 1", "2 ponto 3"
+      // Só converte quando há dígito.dígito (não afeta "Art. 1" nem "1." sozinho)
+      cleanText = cleanText.replace(/(\d+)\.(\d+)/g, '$1 ponto $2');
+
+      // Tratamento de setas → substitui por ponto final (pausa natural de enumeração)
+      cleanText = cleanText.replace(/\s*[→⇒⇨➔➜➡►▶⟶⟹↦⮕➤➞➟➠]\s*/g, '. ');
+
+      // Remove referências em parênteses APÓS um ponto final, ex: "xxxxx. (pág. 10)"
+      // Exceção: Mantém se for artigo de lei, ex: (Art. 10, I) ou (Lei 8112)
+      cleanText = cleanText.replace(/(\.)\s*\(([^)]+)\)/gi, (match, p1, p2) => {
+        if (/art\.|artigo|lei|§|inciso|inc\.|par\.|alínea/i.test(p2)) {
+          return match; // Mantém
+        }
+        return p1; // Remove parênteses, devolve só o ponto
+      });
+
+      // Aplica dicionário fonético
+      return applyPhoneticCorrections(cleanText);
+    }
+
+    // --- OBTER TEXTO LIMPO PARA UM ÍNDICE DO ttsParagraphs ---
+    function getCleanTextForIndex(index) {
+      if (index < 0 || index >= ttsParagraphs.length) return null;
+      const item = ttsParagraphs[index];
+      if (!item) return null;
+      return limparTextoParaTTS(item.text);
+    }
+
+    // --- PRE-BUFFER: Gera áudio da próxima frase em background ---
+    async function preBufferNext() {
+      const nextIndex = ttsCurrentParagraph + 1;
+
+      // Já está no cache ou já está gerando ou não há próxima frase
+      if (piperPreBufferIndex === nextIndex || piperPreBuffering) return;
+      if (nextIndex >= ttsParagraphs.length) return;
+      if (!piperModule || !piperReady || !usePiperEngine) return;
+
+      const textToBuffer = getCleanTextForIndex(nextIndex);
+      if (!textToBuffer || textToBuffer.trim().length < 3) return;
+
+      piperPreBuffering = true;
+
+      // Timeout de segurança: se o Piper travar, libera a flag após 15s
+      const safetyTimeout = setTimeout(() => {
+        if (piperPreBuffering) {
+          console.warn("Pre-buffer timeout (15s) — liberando flag de segurança");
+          piperPreBuffering = false;
+        }
+      }, 15000);
+
+      try {
+        const audioBuffer = await generatePiperAudio(textToBuffer);
+
+        // Verifica se o contexto ainda é válido (usuário não pausou, não mudou de posição)
+        if (ttsAtivo && usePiperEngine && piperReady && (ttsCurrentParagraph + 1) === nextIndex) {
+          piperPreBuffer = audioBuffer;
+          piperPreBufferIndex = nextIndex;
+        }
+      } catch (e) {
+        // Falha silenciosa no pre-buffer — será gerado normalmente quando necessário
+        console.warn("Pre-buffer falhou (será gerado ao tocar):", e.message);
+      } finally {
+        clearTimeout(safetyTimeout);
+        piperPreBuffering = false;
+      }
+    }
+
+    // --- INVALIDAR CACHE DO PRE-BUFFER ---
+    function invalidatePiperPreBuffer() {
+      piperPreBuffer = null;
+      piperPreBufferIndex = -1;
+      piperPreBuffering = false;
+    }
+
+    // --- SINTETIZAR COM PIPER (AudioContext + pre-buffering pipeline) ---
     async function speakWithPiper(text) {
       if (!piperModule || !piperReady) return;
 
       const expectedParagraph = ttsCurrentParagraph;
 
       try {
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+        let audioBuffer;
 
-        const paddedText = ", " + text;
+        // 1. Verifica se já existe um buffer pré-gerado no cache
+        if (piperPreBuffer && piperPreBufferIndex === expectedParagraph) {
+          audioBuffer = piperPreBuffer;
+          piperPreBuffer = null;
+          piperPreBufferIndex = -1;
+        } else {
+          // 2. Gera normalmente (primeira frase ou cache miss)
+          audioBuffer = await generatePiperAudio(text);
+        }
 
-        // 1. Gera o WAV via Piper WASM
-        const wav = await piperModule.predict({ text: paddedText, voiceId: voiceId });
-
-        // 2. Verifica se o usuário pausou enquanto o Piper processava
+        // 3. Verifica se o usuário pausou enquanto o Piper processava
         if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph) {
           return;
         }
 
-        // 3. Cala a voz nativa
+        // 4. Cala a voz nativa
         window.speechSynthesis.cancel();
 
-        // 4. Garante que o AudioContext existe e está desbloqueado
+        // 5. Garante que o AudioContext existe e está desbloqueado
         ensurePiperAudioCtx();
 
-        // 5. Converte WAV → AudioBuffer manualmente (sem depender de decodeAudioData do browser)
-        let rawData;
-        if (wav instanceof Blob) {
-          rawData = await wav.arrayBuffer();
-        } else {
-          rawData = wav;
-        }
-        const audioBuffer = parseWavToAudioBuffer(rawData, piperAudioCtx);
-
-        // 6. Verifica novamente após conversão
-        if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph) {
-          return;
-        }
-
-        // 7. Para qualquer reprodução anterior
+        // 6. Para qualquer reprodução anterior
         if (piperSourceNode) {
           try { piperSourceNode.stop(); } catch (ignore) {}
           piperSourceNode = null;
         }
 
-        // 8. Cria BufferSource e toca
+        // 7. Cria BufferSource e toca
         piperSourceNode = piperAudioCtx.createBufferSource();
         piperSourceNode.buffer = audioBuffer;
 
@@ -4553,7 +4796,7 @@
 
         piperSourceNode.connect(piperAudioCtx.destination);
 
-        // 9. Quando terminar de tocar
+        // 8. Quando terminar de tocar
         piperSourceNode.onended = function () {
           piperErrorCount = 0; // Sucesso!
           piperSourceNode = null;
@@ -4574,6 +4817,9 @@
         };
 
         piperSourceNode.start(0);
+
+        // 9. PIPELINE: Inicia pre-buffer da PRÓXIMA frase em background
+        preBufferNext();
 
       } catch (e) {
         console.error("Erro Piper synth:", e);
@@ -5049,6 +5295,9 @@
         ttsResumePosition = 0;
       }
 
+      // Limpa qualquer pre-buffer de sessão anterior
+      invalidatePiperPreBuffer();
+
       lerProximoParagrafo();
     }
 
@@ -5067,6 +5316,9 @@
         try { piperSourceNode.stop(); } catch (ignore) {}
         piperSourceNode = null;
       }
+
+      // Invalida o cache do pre-buffer
+      invalidatePiperPreBuffer();
 
       const btn = document.getElementById('btnTTS');
       if (btn) btn.classList.remove('tts-ativo');
@@ -5109,42 +5361,8 @@
         item.element.style.transition = 'outline 0.3s';
       }
 
-      // Limpa texto
-      let cleanText = item.text
-        .replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;/g, ' ');
-
-      // Remove emojis
-      cleanText = cleanText.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{2600}-\u{26FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2300}-\u{25FF}]/gu, '');
-
-      // Tratamento de bullet points / marcadores
-      // 1. Remove bullets no INÍCIO da frase (não lê)
-      cleanText = cleanText.replace(/^[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '');
-      // 2. Substitui bullets no MEIO do texto por ";" (pausa natural de lista)
-      cleanText = cleanText.replace(/[\s]*[•●○▪▸►◦‣⁃─–—■□▶◆◇➤➜✦✧※·∙]+[\s]*/g, '; ');
-
-      // Tratamento de sequências numéricas (apostilas)
-      // Remove numeração de 3+ níveis no INÍCIO (ex: 4.0.1, 1.1.5, 3.2.1.4) mas mantém 1., 2., 1.1, 2.3
-      cleanText = cleanText.replace(/^\s*\d+\.\d+\.\d+[\d.]*\s*/g, '');
-
-      // Tratamento de marcações numéricas tipo "1.1", "2.3" → "1 ponto 1", "2 ponto 3"
-      // Só converte quando há dígito.dígito (não afeta "Art. 1" nem "1." sozinho)
-      cleanText = cleanText.replace(/(\d+)\.(\d+)/g, '$1 ponto $2');
-
-      // Tratamento de setas → substitui por ponto final (pausa natural de enumeração)
-      cleanText = cleanText.replace(/\s*[→⇒⇨➔➜➡►▶⟶⟹↦⮕➤➞➟➠]\s*/g, '. ');
-
-      // NOVO: Remove referências em parênteses APÓS um ponto final, ex: "xxxxx. (pág. 10)"
-      // Exceção: Mantém se for artigo de lei, ex: (Art. 10, I) ou (Lei 8112)
-      cleanText = cleanText.replace(/(\.)\s*\(([^)]+)\)/gi, (match, p1, p2) => {
-        if (/art\.|artigo|lei|§|inciso|inc\.|par\.|alínea/i.test(p2)) {
-          return match; // Mantém
-        }
-        return p1; // Remove parênteses, devolve só o ponto
-      });
-
-      // Aplica dicionário fonético
-      let textToRead = applyPhoneticCorrections(cleanText);
+      // Limpa texto para TTS (função compartilhada)
+      let textToRead = limparTextoParaTTS(item.text);
 
       // --- ROTA PIPER (se ativo) ---
       if (usePiperEngine && piperReady) {
