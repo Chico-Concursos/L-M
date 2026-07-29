@@ -2929,7 +2929,7 @@
     }
 
     function isSessionExpired() {
-      const loginTime = localStorage.getItem('loginTime');
+      const loginTime = localStorage.getItem('leis_loginTime');
       if (!loginTime) return true;
       return (Date.now() - parseInt(loginTime)) > SESSION_DURATION;
     }
@@ -2945,10 +2945,10 @@
     }
 
     function expireSession() {
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('sessionToken');
-      localStorage.removeItem('loginTime');
+      localStorage.removeItem('leis_isAuthenticated');
+      localStorage.removeItem('leis_userEmail');
+      localStorage.removeItem('leis_sessionToken');
+      localStorage.removeItem('leis_loginTime');
       isAuthenticated = false;
       userEmail = '';
       if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
@@ -2963,8 +2963,8 @@
 
       // MUDANÇA 1: Mudamos o tempo para 6000000 milissegundos (10 minutos)
       sessionHeartbeat = setInterval(async () => {
-        const token = localStorage.getItem('sessionToken');
-        const email = localStorage.getItem('userEmail');
+        const token = localStorage.getItem('leis_sessionToken');
+        const email = localStorage.getItem('leis_userEmail');
         if (!token || !email) return;
 
         try {
@@ -2985,8 +2985,8 @@
             // Só expulsa o usuário se o servidor negar o acesso 2 vezes seguidas
             if (falhasDeConexao >= 2) {
               clearInterval(sessionHeartbeat);
-              localStorage.removeItem('isAuthenticated');
-              localStorage.removeItem('sessionToken');
+              localStorage.removeItem('leis_isAuthenticated');
+              localStorage.removeItem('leis_sessionToken');
               const modal = document.getElementById('concurrentSessionModal');
               if (modal) {
                 modal.classList.add('open');
@@ -3036,10 +3036,10 @@
         if (result.success) {
           userEmail = email;
           isAuthenticated = true;
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('userEmail', userEmail);
-          localStorage.setItem('sessionToken', result.sessionToken);
-          localStorage.setItem('loginTime', Date.now().toString());
+          localStorage.setItem('leis_isAuthenticated', 'true');
+          localStorage.setItem('leis_userEmail', userEmail);
+          localStorage.setItem('leis_sessionToken', result.sessionToken);
+          localStorage.setItem('leis_loginTime', Date.now().toString());
           startSessionTimer();
           startSessionHeartbeat();
           unlockContent();
@@ -3079,8 +3079,8 @@
           mostrarNotificacao("Menu recolhido para leitura."); // Avisa o usuário (opcional)
         }
       }, 5000); // 5 segundos
-      const savedAuth = localStorage.getItem('isAuthenticated');
-      const savedEmail = localStorage.getItem('userEmail');
+      const savedAuth = localStorage.getItem('leis_isAuthenticated');
+      const savedEmail = localStorage.getItem('leis_userEmail');
       if (savedAuth === 'true' && savedEmail) {
         if (isSessionExpired()) {
           expireSession();
@@ -3875,8 +3875,8 @@
     function fecharModalLogout() { document.getElementById('modal-logout').classList.remove('open'); }
     function confirmarLogout() {
       // 1. Avisa o servidor (sendBeacon)
-      const token = localStorage.getItem('sessionToken');
-      const email = localStorage.getItem('userEmail');
+      const token = localStorage.getItem('leis_sessionToken');
+      const email = localStorage.getItem('leis_userEmail');
       if (token && email) {
         const formData = new URLSearchParams();
         formData.append('action', 'logout');
@@ -3889,10 +3889,10 @@
         }
       }
       // 2. Limpa localStorage
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('sessionToken');
-      localStorage.removeItem('loginTime');
+      localStorage.removeItem('leis_isAuthenticated');
+      localStorage.removeItem('leis_userEmail');
+      localStorage.removeItem('leis_sessionToken');
+      localStorage.removeItem('leis_loginTime');
       if (sessionTimer) { clearInterval(sessionTimer); sessionTimer = null; }
       if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
       isAuthenticated = false;
