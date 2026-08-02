@@ -3003,6 +3003,18 @@
           console.log("Erro silencioso ao verificar sessão (pode ser falta de internet):", e);
           // Falta de internet ou timeout também entra na tolerância
           falhasDeConexao++;
+          if (falhasDeConexao >= 3) {
+            clearInterval(sessionHeartbeat);
+            localStorage.removeItem('leis_isAuthenticated');
+            localStorage.removeItem('leis_sessionToken');
+            const modal = document.getElementById('concurrentSessionModal');
+            if (modal) {
+              modal.classList.add('open');
+            } else {
+              alert("Sua conta foi conectada em outro dispositivo. Sessão encerrada.");
+              location.reload();
+            }
+          }
         }
       }, 600000); // 600000 ms = Verifica a cada 10 minutos
     }
