@@ -2980,10 +2980,10 @@
           if (!result.success) {
             // MUDANÇA 2: Sistema de Tolerância (Amortecedor)
             falhasDeConexao++;
-            console.warn("Aviso: Servidor piscou. Falha " + falhasDeConexao + " de 2.");
+            console.warn("Aviso: Servidor piscou. Falha " + falhasDeConexao + " de 3.");
 
-            // Só expulsa o usuário se o servidor negar o acesso 2 vezes seguidas
-            if (falhasDeConexao >= 2) {
+            // Só expulsa o usuário se o servidor negar o acesso 3 vezes seguidas
+            if (falhasDeConexao >= 3) {
               clearInterval(sessionHeartbeat);
               localStorage.removeItem('leis_isAuthenticated');
               localStorage.removeItem('leis_sessionToken');
@@ -3004,7 +3004,7 @@
           // Falta de internet ou timeout também entra na tolerância
           falhasDeConexao++;
         }
-      }, 600.000); // 600.000 ms = Verifica a cada 10 minutos
+      }, 600000); // 600000 ms = Verifica a cada 10 minutos
     }
 
     async function login(event) {
