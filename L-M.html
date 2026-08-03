@@ -3019,6 +3019,50 @@
       }, 600000); // 600000 ms = Verifica a cada 10 minutos
     }
 
+    // =================================================================
+    // 👁️ PAUSA INTELIGENTE: PAGE VISIBILITY API (Economia de Cota)
+    // =================================================================
+    // Quando o aluno minimiza o navegador ou troca de aba, o heartbeat
+    // é PAUSADO para não gastar requisições à toa. Ao voltar para a aba,
+    // faz 1 checagem imediata e retoma o temporizador normal.
+    document.addEventListener('visibilitychange', () => {
+      if (!isAuthenticated) return; // Só age se estiver logado
+
+      if (document.hidden) {
+        // ABA OCULTA: Pausa o heartbeat
+        if (sessionHeartbeat) {
+          clearInterval(sessionHeartbeat);
+          sessionHeartbeat = null;
+          console.log("👁️ Aba oculta: Heartbeat pausado (economia de cota).");
+        }
+      } else {
+        // ABA VISÍVEL: Retoma o heartbeat com checagem imediata
+        console.log("👁️ Aba visível: Retomando heartbeat.");
+        // Checagem imediata ao voltar
+        const token = localStorage.getItem('leis_sessionToken');
+        const email = localStorage.getItem('leis_userEmail');
+        if (token && email) {
+          const formData = new URLSearchParams();
+          formData.append('action', 'checkStatus');
+          formData.append('email', email);
+          formData.append('sessionToken', token);
+          formData.append('originUrl', window.location.href);
+          fetch(LOGIN_URL, { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(result => {
+              if (result.success) {
+                falhasDeConexao = 0;
+              } else {
+                falhasDeConexao++;
+              }
+            })
+            .catch(() => { falhasDeConexao++; });
+        }
+        // Reinicia o timer normal
+        startSessionHeartbeat();
+      }
+    });
+
     async function login(event) {
       if (event) event.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
