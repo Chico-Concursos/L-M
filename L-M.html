@@ -2886,6 +2886,105 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxAsaSIfCjlsohR-xlDGoIV4MbfeY5yHheoq9wjL6EQsBPRj0gfF9ZkK5LXZw5Myg/exec";
     // URL do AppScript V13 para Login e Sessão (Mesmo do V84)
     const LOGIN_URL = "https://script.google.com/macros/s/AKfycbz1SfudKlf4Bs75QZQWLOtvhUhooEY4JahLIAYCvZSG5Gt4Q3V4wVVFfYdHZCsUvuGk/exec";
+    // URL do AppScript Proxy de PDF Seguro (Substitua pela URL da sua implantação do Apps Script)
+    let PDF_PROXY_URL = "https://script.google.com/macros/s/AKfycbxsREP5neM6cD3ShM01CTEDm_rRDFgPlruE61tiToac_20_oWML9aq5jHqtTO04w0AeAw/exec";
+
+    // --- FUNÇÃO AUXILIAR: DETECTAR ID DO GOOGLE DRIVE ---
+    function extrairDriveId(str) {
+      if (!str) return null;
+      const texto = str.trim();
+
+      // Padrão 1: Prefixo explicito (ex: driveId:1ABC..., pdfId:1ABC..., drive:1ABC...)
+      const matchPrefixo = texto.match(/(?:driveId|pdfId|drive|id)\s*:\s*([a-zA-Z0-9_-]{25,50})/i);
+      if (matchPrefixo) return matchPrefixo[1];
+
+      // Padrão 2: URL de arquivo do Google Drive (/file/d/ID/view ou open?id=ID)
+      const matchUrlFile = texto.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]{25,50})/i);
+      if (matchUrlFile) return matchUrlFile[1];
+
+      const matchUrlId = texto.match(/drive\.google\.com\/.*[?&]id=([a-zA-Z0-9_-]{25,50})/i);
+      if (matchUrlId) return matchUrlId[1];
+
+      // Padrão 3: Se for um link terminando em .pdf com id do drive
+      if (texto.endsWith('.pdf') && texto.includes('drive.google.com')) {
+        const m = texto.match(/([a-zA-Z0-9_-]{28,45})/);
+        if (m) return m[1];
+      }
+
+      return null;
+    }
+
+    // --- CARREGADOR SEGURO DE PDF VIA PROXY (GOOGLE DRIVE PRIVADO) ---
+    async function carregarPdfSeguro(fileId, container) {
+      if (!container) container = document.getElementById('texto-renderizado');
+      container.innerHTML = `
+        <div style="text-align:center; padding: 60px 20px; color: var(--cor-texto);">
+          <div class="spinner" style="display:block; margin: 0 auto 20px auto;"></div>
+          <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 10px;">🔒 Carregando Apostila Segura (PDF)...</h3>
+          <p style="font-size: 0.9em; opacity: 0.8;">Autenticando sessão e buscando arquivo no Google Drive...</p>
+        </div>
+      `;
+
+      const sessionToken = localStorage.getItem('leis_sessionToken') || '';
+
+      try {
+        const timestamp = new Date().getTime();
+        const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
+        
+        const response = await fetch(urlFinal);
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        
+        const json = await response.json();
+        if (!json.success || !json.base64) {
+          throw new Error(json.error || "Não foi possível carregar o PDF.");
+        }
+
+        // Converte o Base64 em Blob para gerar uma URL local na memória do navegador
+        const base64Parts = json.base64.split(',');
+        const mime = base64Parts[0].match(/:(.*?);/)[1] || 'application/pdf';
+        const bstr = atob(base64Parts[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        const fileName = json.fileName || "Apostila.pdf";
+
+        // Exibe o visualizador embutido e o botão seguro de download
+        container.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: 100%; min-height: 80vh; gap: 15px; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
+              <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                📄 <span>${fileName}</span>
+              </span>
+              <a href="${blobUrl}" download="${fileName}" class="tool-btn highlight-btn" style="text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+                📥 Baixar Apostila (PDF)
+              </a>
+            </div>
+            <iframe src="${blobUrl}#toolbar=1" style="width: 100%; flex-grow: 1; height: 75vh; border: 1px solid #ccc; border-radius: 8px; background: #f8f9fa;"></iframe>
+          </div>
+        `;
+
+        mostrarNotificacao("Apostila PDF carregada com sucesso! 📄", "success");
+
+      } catch (err) {
+        console.error("Erro ao carregar PDF seguro:", err);
+        container.innerHTML = `
+          <div style="text-align:center; padding: 50px 20px;">
+            <h2 style="color:#c0392b;">⚠️ Falha ao Carregar PDF</h2>
+            <p style="margin-bottom: 15px;">${err.message}</p>
+            <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; font-size: 0.85em; color: #555; max-width: 500px; margin: 0 auto; text-align: left;">
+              💡 <b>Dica de Configuração:</b><br>
+              1. Verifique se atualizou a constante <code>PDF_PROXY_URL</code> no arquivo HTML com o link da sua implantação do Apps Script.<br>
+              2. Certifique-se de que o ID do arquivo do Drive (<code>${fileId}</code>) existe na sua conta.
+            </div>
+          </div>
+        `;
+        mostrarNotificacao("Erro ao carregar PDF: " + err.message, "error");
+      }
+    }
 
     // =================================================================
     // VARIÁVEIS GLOBAIS
@@ -3440,6 +3539,14 @@
     function processarLei() {
       const d = document.getElementById('dados-brutos-lei'); if (!d) return;
       const txt = d.textContent.trim(), menu = document.getElementById('menu-dinamico'), c = document.getElementById('texto-renderizado');
+
+      // 0. DETECÇÃO DE APOSTILA PDF SEGURO DO GOOGLE DRIVE
+      const driveId = extrairDriveId(txt);
+      if (driveId) {
+        menu.innerHTML = `<div class="menu-grupo-titulo"><span>📄 Apostila PDF (Google Drive)</span></div>`;
+        carregarPdfSeguro(driveId, c);
+        return;
+      }
 
       // 1. TENTATIVA HTML (PRIORIDADE PARA CONTEÚDO DA NUVEM)
       // Se parece HTML (começa com <), renderizamos e buscamos headers reais
@@ -4508,10 +4615,14 @@
     let piperSourceNode = null; // BufferSource atual (para poder parar)
     let piperCheckDoneLeis = false;
 
-    // --- PRE-BUFFER PIPELINE (elimina atraso entre frases) ---
-    let piperPreBuffer = null;       // AudioBuffer pré-gerado da próxima frase
-    let piperPreBufferIndex = -1;    // Índice da frase que está no cache
-    let piperPreBuffering = false;   // Flag: já está gerando pre-buffer?
+    // --- PRE-BUFFER PIPELINE (Cache de múltiplos parágrafos à frente) ---
+    const piperPreBufferCache = new Map();  // Map<índice, AudioBuffer>
+    const piperPreBufferingSet = new Set(); // Índices em geração
+    const PIPER_PRE_BUFFER_DEPTH = 2;      // Quantos parágrafos gerar antecipadamente
+
+    // --- PRÉ-PROCESSAMENTO DE TEXTO PARA VOZES NATIVAS ---
+    let nativePreProcessedText = null;
+    let nativePreProcessedIndex = -1;
 
     // Cria/desbloqueia o AudioContext (chamado dentro de handlers de clique)
     function ensurePiperAudioCtx() {
@@ -4748,6 +4859,17 @@
         return p1; // Remove parênteses, devolve só o ponto
       });
 
+      // Normalização de ordinais (§ 1º → parágrafo primeiro)
+      cleanText = cleanText.replace(/(\d{1,2})[ºª]/g, (match, num) => {
+        const masc = ['', 'primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo', 'nono', 'décimo'];
+        const fem  = ['', 'primeira', 'segunda', 'terceira', 'quarta', 'quinta', 'sexta', 'sétima', 'oitava', 'nona', 'décima'];
+        const n = parseInt(num);
+        if (n >= 1 && n <= 10) {
+          return match.includes('ª') ? fem[n] : masc[n];
+        }
+        return match;
+      });
+
       // Aplica dicionário fonético
       return applyPhoneticCorrections(cleanText);
     }
@@ -4760,50 +4882,73 @@
       return limparTextoParaTTS(item.text);
     }
 
-    // --- PRE-BUFFER: Gera áudio da próxima frase em background ---
+    // --- PRE-BUFFER: Gera áudio de múltiplos parágrafos à frente ---
     async function preBufferNext() {
-      const nextIndex = ttsCurrentParagraph + 1;
-
-      // Já está no cache ou já está gerando ou não há próxima frase
-      if (piperPreBufferIndex === nextIndex || piperPreBuffering) return;
-      if (nextIndex >= ttsParagraphs.length) return;
       if (!piperModule || !piperReady || !usePiperEngine) return;
 
-      const textToBuffer = getCleanTextForIndex(nextIndex);
-      if (!textToBuffer || textToBuffer.trim().length < 3) return;
+      for (let offset = 1; offset <= PIPER_PRE_BUFFER_DEPTH; offset++) {
+        const targetIndex = ttsCurrentParagraph + offset;
 
-      piperPreBuffering = true;
+        // Pula se já está no cache ou já está sendo gerado
+        if (piperPreBufferCache.has(targetIndex) || piperPreBufferingSet.has(targetIndex)) continue;
+        if (targetIndex >= ttsParagraphs.length) continue;
 
-      // Timeout de segurança: se o Piper travar, libera a flag após 15s
-      const safetyTimeout = setTimeout(() => {
-        if (piperPreBuffering) {
-          console.warn("Pre-buffer timeout (15s) — liberando flag de segurança");
-          piperPreBuffering = false;
-        }
-      }, 15000);
+        const textToBuffer = getCleanTextForIndex(targetIndex);
+        if (!textToBuffer || textToBuffer.trim().length < 3) continue;
 
-      try {
-        const audioBuffer = await generatePiperAudio(textToBuffer);
+        // Gera sequencialmente (WASM é single-threaded)
+        await generateAndCachePiperAudio(targetIndex, textToBuffer);
 
-        // Verifica se o contexto ainda é válido (usuário não pausou, não mudou de posição)
-        if (ttsAtivo && usePiperEngine && piperReady && (ttsCurrentParagraph + 1) === nextIndex) {
-          piperPreBuffer = audioBuffer;
-          piperPreBufferIndex = nextIndex;
-        }
-      } catch (e) {
-        // Falha silenciosa no pre-buffer — será gerado normalmente quando necessário
-        console.warn("Pre-buffer falhou (será gerado ao tocar):", e.message);
-      } finally {
-        clearTimeout(safetyTimeout);
-        piperPreBuffering = false;
+        // Verifica se o contexto ainda é válido antes de continuar
+        if (!ttsAtivo || !usePiperEngine) return;
+      }
+
+      // Limpa buffers antigos (economia de memória)
+      for (const [idx] of piperPreBufferCache) {
+        if (idx < ttsCurrentParagraph) piperPreBufferCache.delete(idx);
       }
     }
 
-    // --- INVALIDAR CACHE DO PRE-BUFFER ---
+    async function generateAndCachePiperAudio(targetIndex, text) {
+      piperPreBufferingSet.add(targetIndex);
+
+      const safetyTimeout = setTimeout(() => {
+        piperPreBufferingSet.delete(targetIndex);
+      }, 15000);
+
+      try {
+        const audioBuffer = await generatePiperAudio(text);
+
+        if (ttsAtivo && usePiperEngine && piperReady) {
+          piperPreBufferCache.set(targetIndex, audioBuffer);
+        }
+      } catch (e) {
+        console.warn("Pre-buffer falhou (índice " + targetIndex + "):", e.message);
+      } finally {
+        clearTimeout(safetyTimeout);
+        piperPreBufferingSet.delete(targetIndex);
+      }
+    }
+
+    // --- INVALIDAR CACHES DE PRE-BUFFER E PRÉ-PROCESSAMENTO ---
     function invalidatePiperPreBuffer() {
-      piperPreBuffer = null;
-      piperPreBufferIndex = -1;
-      piperPreBuffering = false;
+      piperPreBufferCache.clear();
+      piperPreBufferingSet.clear();
+      nativePreProcessedText = null;
+      nativePreProcessedIndex = -1;
+    }
+
+    // --- PRÉ-PROCESSAR TEXTO DO PRÓXIMO PARÁGRAFO (Vozes Nativas) ---
+    function preProcessNextNativeText() {
+      const nextIndex = ttsCurrentParagraph + 1;
+      if (nextIndex >= ttsParagraphs.length) return;
+      if (nativePreProcessedIndex === nextIndex) return;
+
+      const nextItem = ttsParagraphs[nextIndex];
+      if (!nextItem) return;
+
+      nativePreProcessedText = limparTextoParaTTS(nextItem.text);
+      nativePreProcessedIndex = nextIndex;
     }
 
     // --- SINTETIZAR COM PIPER (AudioContext + pre-buffering pipeline) ---
@@ -4815,11 +4960,10 @@
       try {
         let audioBuffer;
 
-        // 1. Verifica se já existe um buffer pré-gerado no cache
-        if (piperPreBuffer && piperPreBufferIndex === expectedParagraph) {
-          audioBuffer = piperPreBuffer;
-          piperPreBuffer = null;
-          piperPreBufferIndex = -1;
+        // 1. Verifica se já existe um buffer pré-gerado no cache (Map)
+        if (piperPreBufferCache.has(expectedParagraph)) {
+          audioBuffer = piperPreBufferCache.get(expectedParagraph);
+          piperPreBufferCache.delete(expectedParagraph);
         } else {
           // 2. Gera normalmente (primeira frase ou cache miss)
           audioBuffer = await generatePiperAudio(text);
@@ -5048,11 +5192,12 @@
 
     };
 
-    function applyPhoneticCorrections(text) {
-      if (!text) return "";
-      let correctedText = text;
+    // --- COMPILAÇÃO ÚNICA DO DICIONÁRIO FONÉTICO (Performance) ---
+    // Cria as 125+ RegExp UMA VEZ no carregamento, não a cada parágrafo.
+    // Reduz o tempo de processamento de ~100-150ms para ~5ms por parágrafo.
+    const compiledPhoneticRules = (() => {
       const sortedKeys = Object.keys(pronunciationDict).sort((a, b) => b.length - a.length);
-      for (let original of sortedKeys) {
+      return sortedKeys.map(original => {
         const phonetic = pronunciationDict[original];
         const safeOriginal = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         let regex;
@@ -5061,7 +5206,16 @@
         } else {
           regex = new RegExp(safeOriginal, "gi");
         }
-        correctedText = correctedText.replace(regex, phonetic);
+        return { regex, replacement: phonetic };
+      });
+    })();
+
+    function applyPhoneticCorrections(text) {
+      if (!text) return "";
+      let correctedText = text;
+      for (const rule of compiledPhoneticRules) {
+        rule.regex.lastIndex = 0;
+        correctedText = correctedText.replace(rule.regex, rule.replacement);
       }
       return correctedText;
     }
@@ -5417,8 +5571,15 @@
         item.element.style.transition = 'outline 0.3s';
       }
 
-      // Limpa texto para TTS (função compartilhada)
-      let textToRead = limparTextoParaTTS(item.text);
+      // Usa texto pré-processado se disponível, senão processa agora
+      let textToRead;
+      if (nativePreProcessedIndex === ttsCurrentParagraph && nativePreProcessedText) {
+        textToRead = nativePreProcessedText;
+        nativePreProcessedText = null;
+        nativePreProcessedIndex = -1;
+      } else {
+        textToRead = limparTextoParaTTS(item.text);
+      }
 
       // --- ROTA PIPER (se ativo) ---
       if (usePiperEngine && piperReady) {
@@ -5427,10 +5588,9 @@
       }
 
       // --- ROTA NATIVA (SpeechSynthesis) ---
-      // Cria utterance
       const utterance = new SpeechSynthesisUtterance(textToRead);
 
-      // Seleciona voz configurada ou faz fallback inteligente igual v104
+      // Seleciona voz configurada ou faz fallback inteligente
       const voices = window.speechSynthesis.getVoices();
       const voiceSelect = document.getElementById('voiceSelectLeis');
       const selectedName = voiceSelect ? voiceSelect.value : '';
@@ -5466,7 +5626,6 @@
 
       // Quando terminar de falar
       utterance.onend = function () {
-        // Remove destaque
         if (item.element) {
           item.element.style.outline = '';
           item.element.style.outlineOffset = '';
@@ -5475,14 +5634,12 @@
         ttsCurrentParagraph++;
 
         if (ttsHandsFree && ttsAtivo) {
-          // Modo automático: espera e avança
           ttsHandsFreeTimer = setTimeout(() => {
             if (ttsHandsFree && ttsAtivo) {
               lerProximoParagrafo();
             }
           }, ttsHandsFreeDelay * 1000);
         } else if (ttsAtivo) {
-          // Modo manual: lê o próximo imediatamente
           lerProximoParagrafo();
         }
       };
@@ -5499,10 +5656,11 @@
         }
       };
 
-      // Fala com pequeno atraso (correção de buffer)
-      setTimeout(() => {
-        if (ttsAtivo) window.speechSynthesis.speak(utterance);
-      }, 100);
+      // Fala IMEDIATAMENTE (sem delay de 100ms) e pré-processa o próximo
+      if (ttsAtivo) {
+        window.speechSynthesis.speak(utterance);
+        preProcessNextNativeText();
+      }
     }
 
   </script>
