@@ -9,7 +9,10 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
   <style>
     /* --- VARIÁVEIS GERAIS (SISTEMA DE LEITURA) --- */
     :root {
@@ -2915,13 +2918,14 @@
     }
 
     // --- CARREGADOR SEGURO DE PDF VIA PROXY (GOOGLE DRIVE PRIVADO) ---
+    // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + PDF.JS ---
     async function carregarPdfSeguro(fileId, container) {
       if (!container) container = document.getElementById('texto-renderizado');
       container.innerHTML = `
         <div style="text-align:center; padding: 60px 20px; color: var(--cor-texto);">
           <div class="spinner" style="display:block; margin: 0 auto 20px auto;"></div>
           <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 10px;">🔒 Carregando Apostila Segura (PDF)...</h3>
-          <p style="font-size: 0.9em; opacity: 0.8;">Autenticando sessão e buscando arquivo no Google Drive...</p>
+          <p style="font-size: 0.9em; opacity: 0.8;">Autenticando sessão e conectando ao Google Drive...</p>
         </div>
       `;
 
@@ -2931,43 +2935,56 @@
         const timestamp = new Date().getTime();
         const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
         
-        const response = await fetch(urlFinal);
-        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-        
-        const json = await response.json();
-        if (!json.success || !json.base64) {
-          throw new Error(json.error || "Não foi possível carregar o PDF.");
+        let fileName = "Apostila.pdf";
+        let downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+        // Obtém o nome real do arquivo
+        try {
+          const response = await fetch(urlFinal);
+          if (response.ok) {
+            const json = await response.json();
+            if (json.success && json.fileName) {
+              fileName = json.fileName;
+            }
+            if (json.success && json.downloadUrl) {
+              downloadUrl = json.downloadUrl;
+            }
+          }
+        } catch (e) {
+          console.warn("Não foi possível obter metadados via Apps Script, usando valores padrão.", e);
         }
 
-        // Converte o Base64 em Blob para gerar uma URL local na memória do navegador
-        const base64Parts = json.base64.split(',');
-        const mime = base64Parts[0].match(/:(.*?);/)[1] || 'application/pdf';
-        const bstr = atob(base64Parts[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        const blob = new Blob([u8arr], { type: mime });
-        const blobUrl = URL.createObjectURL(blob);
-        const fileName = json.fileName || "Apostila.pdf";
+        const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
 
-        // Exibe o visualizador embutido e o botão seguro de download
+        // Renderiza o card com o padrão Dark (#121212) e detalhes em Dourado Nobre
         container.innerHTML = `
-          <div style="display: flex; flex-direction: column; height: 100%; min-height: 80vh; gap: 15px; padding: 10px;">
+          <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
+            
             <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
               <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
                 📄 <span>${fileName}</span>
               </span>
-              <a href="${blobUrl}" download="${fileName}" class="tool-btn highlight-btn" style="text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+              <a href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
                 📥 Baixar Apostila (PDF)
               </a>
             </div>
-            <iframe src="${blobUrl}#toolbar=1" style="width: 100%; flex-grow: 1; height: 75vh; border: 1px solid #ccc; border-radius: 8px; background: #f8f9fa;"></iframe>
+
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 260px; background-color: #121212; border: 1px solid rgba(210, 172, 71, 0.3); border-radius: 16px; padding: 45px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.1); text-align: center; gap: 25px; box-sizing: border-box;">
+              
+              <p style="color: #f5f5f5; font-size: 1.2rem; font-weight: 500; margin: 0; text-align: center; letter-spacing: 0.3px;">
+                📄 Clique no botão abaixo para abrir o material em tela cheia
+              </p>
+
+              <a href="${previewUrl}" target="_blank" class="tool-btn highlight-btn" style="text-decoration: none; font-size: 1.15rem; padding: 14px 32px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color: #000; box-shadow: 0 4px 18px rgba(210, 172, 71, 0.35); transition: all 0.2s ease-in-out;">
+                Clique aqui para abrir ou baixar o arquivo
+              </a>
+
+            </div>
+
           </div>
         `;
 
-        mostrarNotificacao("Apostila PDF carregada com sucesso! 📄", "success");
+        mostrarNotificacao("Apostila PDF pronta para leitura! 📄", "success");
 
       } catch (err) {
         console.error("Erro ao carregar PDF seguro:", err);
@@ -2975,11 +2992,6 @@
           <div style="text-align:center; padding: 50px 20px;">
             <h2 style="color:#c0392b;">⚠️ Falha ao Carregar PDF</h2>
             <p style="margin-bottom: 15px;">${err.message}</p>
-            <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; font-size: 0.85em; color: #555; max-width: 500px; margin: 0 auto; text-align: left;">
-              💡 <b>Dica de Configuração:</b><br>
-              1. Verifique se atualizou a constante <code>PDF_PROXY_URL</code> no arquivo HTML com o link da sua implantação do Apps Script.<br>
-              2. Certifique-se de que o ID do arquivo do Drive (<code>${fileId}</code>) existe na sua conta.
-            </div>
           </div>
         `;
         mostrarNotificacao("Erro ao carregar PDF: " + err.message, "error");
