@@ -9,7 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
@@ -1235,7 +1235,7 @@
       transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .node-ativo > .mindmap-toggler {
+    .node-ativo>.mindmap-toggler {
       background-color: #fff;
       color: #1a1a1a;
       border-color: #fff;
@@ -1807,9 +1807,10 @@
         height: 36px;
         white-space: nowrap;
       }
-      
+
       .print-btn {
-        display: none !important; /* Esconde no celular para liberar espaço */
+        display: none !important;
+        /* Esconde no celular para liberar espaço */
       }
 
       .tts-btn-icon-mobile {
@@ -2512,7 +2513,8 @@
     /* --- ESTILOS DE IMPRESSÃO (APOSTILA) --- */
     @media print {
       @page {
-        margin: 1cm 2cm 1cm 3cm; /* top, right, bottom, left */
+        margin: 1cm 2cm 1cm 3cm;
+        /* top, right, bottom, left */
       }
 
       * {
@@ -2583,7 +2585,8 @@
       #footer-impressao::after {
         content: "";
         display: block;
-        height: 1.5cm; /* Espaço vazio reservado no final de cada página para o rodapé não sobrepor o texto */
+        height: 1.5cm;
+        /* Espaço vazio reservado no final de cada página para o rodapé não sobrepor o texto */
       }
 
       .print-footer-inner {
@@ -2604,14 +2607,23 @@
         z-index: 9999 !important;
       }
 
-      p, li {
+      p,
+      li {
         font-size: 11pt !important;
         line-height: 1.5 !important;
         color: black !important;
         page-break-inside: avoid;
       }
 
-      .study-toolbar, .mindmap-modal, .sidebar, #loginModal, .modal-overlay, #loader-api, .notification-toast, .btn-sair-zen, .btn-reabrir-header {
+      .study-toolbar,
+      .mindmap-modal,
+      .sidebar,
+      #loginModal,
+      .modal-overlay,
+      #loader-api,
+      .notification-toast,
+      .btn-sair-zen,
+      .btn-reabrir-header {
         display: none !important;
       }
     }
@@ -2733,10 +2745,13 @@
       </select>
 
       <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
-      <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF">⬇️ Baixar</button>
+      <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
+      <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF"
+        style="display:none !important;">⬇️ Baixar</button>
 
       <!-- NOVO BOTÃO DE LEITURA DIRETO NO HEADER MOBILE -->
-      <button class="tool-btn tts-btn-icon-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta" style="display:none; padding: 0 8px; font-size: 1.2rem; background:transparent; border:none; margin-right:5px; cursor: pointer;">🔊</button>
+      <button class="tool-btn tts-btn-icon-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta"
+        style="display:none; padding: 0 8px; font-size: 1.2rem; background:transparent; border:none; margin-right:5px; cursor: pointer;">🔊</button>
 
       <button class="btn-mobile-ops" onclick="alternarMenuMobile()">☰</button>
 
@@ -2826,8 +2841,12 @@
             style="font-size:0.75rem; padding:0 10px; border-radius:13px;">Reset</button>
         </div>
         <div style="display:flex; gap:5px; align-items:center;">
-          <button onclick="recolherTudoMapa()" class="tool-btn" style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Recolhe todos os nós e limpa destaques">📁 Recolher</button>
-          <button onclick="expandirTudoMapa()" class="tool-btn" style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Expande todos os nós da árvore">📂 Expandir</button>
+          <button onclick="recolherTudoMapa()" class="tool-btn"
+            style="font-size:0.75rem; padding:4px 10px; border-radius:13px;"
+            title="Recolhe todos os nós e limpa destaques">📁 Recolher</button>
+          <button onclick="expandirTudoMapa()" class="tool-btn"
+            style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Expande todos os nós da árvore">📂
+            Expandir</button>
         </div>
         <button onclick="fecharMapaMental()" class="btn-close-map"
           style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
@@ -2857,11 +2876,13 @@
     style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:white; z-index:100000; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5); padding:25px; text-align:center;">
     <h3 style="margin-top:0; color:#2c3e50;">Aviso de Download</h3>
     <p style="color:#7f8c8d; margin-bottom:20px; font-size: 0.95rem;">
-      Devido a restrições do navegador (Google Sites), a impressão foi bloqueada no quadro atual. Por favor, clique no botão abaixo para abrir o material em uma <b>nova guia segura</b>.
+      Devido a restrições do navegador (Google Sites), a impressão foi bloqueada no quadro atual. Por favor, clique no
+      botão abaixo para abrir o material em uma <b>nova guia segura</b>.
       Lá, você poderá clicar em "Baixar" normalmente!
     </p>
     <div style="display:flex; gap:10px; justify-content:center;">
-      <button onclick="document.getElementById('modal-download').style.display='none'" class="tool-btn" style="background:#bdc3c7; color:black; padding:10px 20px;">Cancelar</button>
+      <button onclick="document.getElementById('modal-download').style.display='none'" class="tool-btn"
+        style="background:#bdc3c7; color:black; padding:10px 20px;">Cancelar</button>
       <button onclick="abrirNovaAbaDownload()" class="tool-btn" style="padding:10px 20px;">Abrir Nova Guia</button>
     </div>
   </div>
@@ -2919,7 +2940,7 @@
 
     // --- CARREGADOR SEGURO DE PDF VIA PROXY (GOOGLE DRIVE PRIVADO) ---
     // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + PDF.JS ---
-   async function carregarPdfSeguro(fileId, container, tentativas = 2) {
+    async function carregarPdfSeguro(fileId, container, tentativas = 2) {
       if (!container) container = document.getElementById('texto-renderizado');
       container.innerHTML = `
         <div style="text-align:center; padding: 60px 20px; color: var(--cor-texto);">
@@ -2935,7 +2956,7 @@
         try {
           const timestamp = new Date().getTime();
           const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
-          
+
           let fileName = "Apostila.pdf";
           let downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
@@ -2959,7 +2980,8 @@
                 <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
                   📄 <span>${fileName}</span>
                 </span>
-                <a href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+                <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
+                <a href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
                   📥 Baixar Apostila (PDF)
                 </a>
               </div>
@@ -3235,23 +3257,22 @@
       modal.style.opacity = "0";
       setTimeout(() => { modal.style.display = 'none'; }, 500);
     }
-// --- WARM-UP SILENCIOSO (Acorda os servidores Apps Script em segundo plano) ---
+    // --- WARM-UP SILENCIOSO (Acorda os servidores Apps Script em segundo plano) ---
     function realizarWarmupSilencioso() {
       try {
         if (typeof API_URL !== 'undefined' && API_URL) {
-          fetch(`${API_URL}?action=checkVersion&_t=${Date.now()}`).catch(() => {});
+          fetch(`${API_URL}?action=checkVersion&_t=${Date.now()}`).catch(() => { });
         }
         if (typeof PDF_PROXY_URL !== 'undefined' && PDF_PROXY_URL) {
-          fetch(`${PDF_PROXY_URL}?action=ping&_t=${Date.now()}`).catch(() => {});
+          fetch(`${PDF_PROXY_URL}?action=ping&_t=${Date.now()}`).catch(() => { });
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // --- INICIALIZAÇÃO INTELIGENTE ---
     document.addEventListener("DOMContentLoaded", function () {
       realizarWarmupSilencioso(); // Acorda os dois servidores na hora!
-    // --- INICIALIZAÇÃO INTELIGENTE ---
-    document.addEventListener("DOMContentLoaded", function () {
+
       // --- LÓGICA DE BOAS-VINDAS (ABRE E FECHA EM 5s) ---
 
       // 1. Força o menu a começar ABERTO (remove a classe que o esconde)
@@ -4383,6 +4404,15 @@
               }
             }
           }
+
+          // Centraliza a caixa clicada na tela (scroll suave)
+          if (!estaAtivo) {
+            // Pequeno delay para aguardar a expansão dos filhos antes de calcular posição
+            const linkRef = this;
+            setTimeout(function () {
+              linkRef.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            }, 80);
+          }
         };
 
         link.ondblclick = function (e) {
@@ -4662,7 +4692,7 @@
       }
       // Se o contexto está suspenso (iOS exige resume dentro de gesto do usuário)
       if (piperAudioCtx.state === 'suspended') {
-        piperAudioCtx.resume().catch(() => {});
+        piperAudioCtx.resume().catch(() => { });
       }
     }
 
@@ -4893,7 +4923,7 @@
       // Normalização de ordinais (§ 1º → parágrafo primeiro)
       cleanText = cleanText.replace(/(\d{1,2})[ºª]/g, (match, num) => {
         const masc = ['', 'primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo', 'nono', 'décimo'];
-        const fem  = ['', 'primeira', 'segunda', 'terceira', 'quarta', 'quinta', 'sexta', 'sétima', 'oitava', 'nona', 'décima'];
+        const fem = ['', 'primeira', 'segunda', 'terceira', 'quarta', 'quinta', 'sexta', 'sétima', 'oitava', 'nona', 'décima'];
         const n = parseInt(num);
         if (n >= 1 && n <= 10) {
           return match.includes('ª') ? fem[n] : masc[n];
@@ -5013,7 +5043,7 @@
 
         // 6. Para qualquer reprodução anterior
         if (piperSourceNode) {
-          try { piperSourceNode.stop(); } catch (ignore) {}
+          try { piperSourceNode.stop(); } catch (ignore) { }
           piperSourceNode = null;
         }
 
@@ -5083,9 +5113,9 @@
       if (!indicator) return;
 
       const cfgs = {
-        neural:  { text: "🟢 Vozes neurais detectadas (Piper disponível ↓)", color: "#27ae60", act: true, dis: false },
-        basic:   { text: "🟡 Vozes básicas — ative o Piper ↓", color: "#f39c12", act: true, dis: false },
-        piper:   { text: "🟢 Motor Piper Neural ativo", color: "#2ecc71", act: false, dis: true },
+        neural: { text: "🟢 Vozes neurais detectadas (Piper disponível ↓)", color: "#27ae60", act: true, dis: false },
+        basic: { text: "🟡 Vozes básicas — ative o Piper ↓", color: "#f39c12", act: true, dis: false },
+        piper: { text: "🟢 Motor Piper Neural ativo", color: "#2ecc71", act: false, dis: true },
         loading: { text: "⏳ Carregando Piper...", color: "#f1c40f", act: false, dis: false }
       };
       const c = cfgs[status] || cfgs.basic;
@@ -5212,14 +5242,14 @@
 
       // === 9. DIVERSOS ===
       "Pag.": "Página",
-	  "EPI": "E-P-I",
-	  "Profissional": "Profissionau",
-	  "Letal": "Letau",
-	  "Local": "Locau",
-	  "Transexuais": "Transeksuais",
-	  "Policial": "Policiau",
-	  "Funcional": "Funcionau",
-	  "Diagonal": "Diagonau",
+      "EPI": "E-P-I",
+      "Profissional": "Profissionau",
+      "Letal": "Letau",
+      "Local": "Locau",
+      "Transexuais": "Transeksuais",
+      "Policial": "Policiau",
+      "Funcional": "Funcionau",
+      "Diagonal": "Diagonau",
 
     };
 
@@ -5432,7 +5462,7 @@
       // Abre o modal de configuração
       document.getElementById('ttsConfigModal').classList.add('open');
       populateVoiceListLeis();
-      
+
       // Auto-focus no the modal content to gently guide the viewport (helps in some iframes)
       setTimeout(() => {
         const modalContent = document.querySelector('#ttsConfigModal .tts-modal-content');
@@ -5554,7 +5584,7 @@
 
       // Corta o Piper AudioContext de imediato
       if (piperSourceNode) {
-        try { piperSourceNode.stop(); } catch (ignore) {}
+        try { piperSourceNode.stop(); } catch (ignore) { }
         piperSourceNode = null;
       }
 
@@ -5702,9 +5732,14 @@
       <h3>🔊 Configuração de Voz</h3>
 
       <div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px;">
-        <div id="voiceEngineIndicator" style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Carregando motores...</div>
-        <button id="activatePiperBtn" onclick="initPiperReal()" style="display: none; width: 100%; padding: 8px; background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">📥 Usar Voz Neural Offline (Piper)</button>
-        <button id="disablePiperBtn" onclick="disablePiper()" style="display: none; width: 100%; padding: 8px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">❌ Voltar para voz do sistema</button>
+        <div id="voiceEngineIndicator" style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Carregando
+          motores...</div>
+        <button id="activatePiperBtn" onclick="initPiperReal()"
+          style="display: none; width: 100%; padding: 8px; background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">📥
+          Usar Voz Neural Offline (Piper)</button>
+        <button id="disablePiperBtn" onclick="disablePiper()"
+          style="display: none; width: 100%; padding: 8px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">❌
+          Voltar para voz do sistema</button>
       </div>
 
       <div
