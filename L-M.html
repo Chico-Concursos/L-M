@@ -3038,6 +3038,7 @@
     let sessionHeartbeat = null;
     let isAuthenticated = false;
     let userEmail = '';
+    let userAllowedCourses = []; // Armazena os IDs das planilhas autorizadas para o aluno
 
     // =================================================================
     // 🔐 SISTEMA DE LOGIN E SEGURANÇA (V84)
@@ -3085,6 +3086,8 @@
       localStorage.removeItem('leis_userEmail');
       localStorage.removeItem('leis_sessionToken');
       localStorage.removeItem('leis_loginTime');
+      localStorage.removeItem('leis_userAllowedCourses');
+      userAllowedCourses = [];
       isAuthenticated = false;
       userEmail = '';
       if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
@@ -3227,10 +3230,26 @@
         const result = await response.json();
         if (result.success) {
           userEmail = email;
+          userAllowedCourses = result.allowedCourses || [];
+
+          // Captura a planilha atual da URL para validação imediata
+          const urlParams = new URLSearchParams(window.location.search);
+          let currentSheetId = urlParams.get('sheetId') || (urlParams.get('id') && urlParams.get('id').length > 25 ? urlParams.get('id') : '');
+
+          // --- TRAVA DE SEGURANÇA: VALIDAÇÃO DE CURSO PERMITIDO ---
+          if (currentSheetId && userAllowedCourses && userAllowedCourses.length > 0) {
+            if (!userAllowedCourses.includes(currentSheetId)) {
+              showLoginError('⚠️ Acesso Negado: Sua conta não possui permissão para acessar este material.');
+              setLoginButtonLoading(false);
+              return;
+            }
+          }
+
           isAuthenticated = true;
           localStorage.setItem('leis_isAuthenticated', 'true');
           localStorage.setItem('leis_userEmail', userEmail);
           localStorage.setItem('leis_sessionToken', result.sessionToken);
+          localStorage.setItem('leis_userAllowedCourses', JSON.stringify(userAllowedCourses));
           localStorage.setItem('leis_loginTime', Date.now().toString());
           startSessionTimer();
           startSessionHeartbeat();
@@ -3286,10 +3305,35 @@
       }, 5000); // 5 segundos
       const savedAuth = localStorage.getItem('leis_isAuthenticated');
       const savedEmail = localStorage.getItem('leis_userEmail');
+
+      // 1. CAPTURA PARÂMETROS DA URL
+      const params = new URLSearchParams(window.location.search);
+      let urlSheetId = params.get('sheetId'); // Pega o ID da planilha do link
+      const urlIdConteudo = params.get('id');   // Pega o ID da linha ou SheetID alternativo
+
+      // Normalização: se id for longo, trata como sheetId
+      if (!urlSheetId && urlIdConteudo && urlIdConteudo.length > 25) {
+        urlSheetId = urlIdConteudo;
+      }
+
       if (savedAuth === 'true' && savedEmail) {
         if (isSessionExpired()) {
           expireSession();
         } else {
+          // Recupera permissões salvas no navegador
+          const savedAllowedCourses = localStorage.getItem('leis_userAllowedCourses');
+          userAllowedCourses = savedAllowedCourses ? JSON.parse(savedAllowedCourses) : [];
+
+          // --- TRAVA DE SEGURANÇA: VALIDAÇÃO AO REABRIR A PÁGINA ---
+          if (urlSheetId && userAllowedCourses && userAllowedCourses.length > 0) {
+            if (!userAllowedCourses.includes(urlSheetId)) {
+              document.getElementById('loginModal').style.display = 'flex';
+              document.getElementById('loginModal').style.opacity = '1';
+              showLoginError('⚠️ Acesso Negado: Sua conta não possui permissão para acessar este material.');
+              return;
+            }
+          }
+
           isAuthenticated = true;
           userEmail = savedEmail;
           unlockContent();
@@ -3298,16 +3342,6 @@
         }
       } else {
         document.getElementById('loginModal').style.display = 'flex';
-      }
-
-      // 1. CAPTURA PARÂMETROS DA URL (O SEGREDO DO V84)
-      const params = new URLSearchParams(window.location.search);
-      let urlSheetId = params.get('sheetId'); // Pega o ID da planilha do link
-      const urlIdConteudo = params.get('id');   // Pega o ID da linha ou SheetID alternativo
-
-      // LÓGICA INTELIGENTE: Se user passou ?id=LONG_ID e não passou sheetId, assume que é sheetId
-      if (!urlSheetId && urlIdConteudo && urlIdConteudo.length > 25) {
-        urlSheetId = urlIdConteudo;
       }
 
       // --- MODO: MENU 100% DINÂMICO ---
@@ -4106,6 +4140,7 @@
       localStorage.removeItem('leis_userEmail');
       localStorage.removeItem('leis_sessionToken');
       localStorage.removeItem('leis_loginTime');
+      localStorage.removeItem('leis_userAllowedCourses');
       if (sessionTimer) { clearInterval(sessionTimer); sessionTimer = null; }
       if (sessionHeartbeat) { clearInterval(sessionHeartbeat); sessionHeartbeat = null; }
       isAuthenticated = false;
@@ -4694,7 +4729,8 @@
       }
     }
 
-    // IDs dos modelos Piper (rhasspy/piper-voices)
+    // Endereço Próprio no Vercel e IDs dos modelos
+    const PIPER_VERCEL_BASE = 'https://piper-tts-beige.vercel.app';
     const PIPER_MODELS = {
       desktop: 'pt_BR-faber-medium',
       mobile: 'pt_BR-faber-medium'
@@ -4710,7 +4746,7 @@
       } catch (e) { return false; }
     }
 
-    // --- ATIVAÇÃO REAL DO PIPER (chamado pelo botão na UI) ---
+    // --- ATIVAÇÃO REAL DO PIPER (CONECTADO DIRETO AO SEU VERCEL) ---
     async function initPiperReal() {
       if (piperLoading || piperReady) return;
       piperLoading = true;
@@ -4718,21 +4754,67 @@
 
       try {
         mostrarNotificacao("Importando motor Piper... ⏳", "normal");
-        piperModule = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web/+esm");
+        // Versão estável travada para evitar quebras por atualizações externas
+        piperModule = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.3/+esm");
 
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
 
-        // Verifica cache (OPFS — Origin Private File System)
         const stored = await piperModule.stored();
         if (!stored.includes(voiceId)) {
-          mostrarNotificacao("Baixando voz neural (primeira vez)...", "normal");
-          await piperModule.download(voiceId, (progress) => {
-            if (progress.total > 0) {
-              const pct = Math.round((progress.loaded / progress.total) * 100);
-              // Como mostrarNotificacao sobe na tela, não mandamos o log em todo %, apenas os múltiplos maiores (mas aqui mantemos simples)
+          mostrarNotificacao("Conectando ao seu Vercel... ⏳", "normal");
+
+          const cache = await caches.open("piper-voices");
+
+          // 1. Baixar Configuração de Áudio (.json)
+          const jsonRes = await fetch(`${PIPER_VERCEL_BASE}/${voiceId}.onnx.json`);
+          if (!jsonRes.ok) throw new Error("Falha ao baixar configuração (.json) do Vercel");
+          const jsonBlob = await jsonRes.blob();
+
+          // 2. Baixar Modelo Neural (.onnx) com cálculo de progresso
+          const onnxRes = await fetch(`${PIPER_VERCEL_BASE}/${voiceId}.onnx`);
+          if (!onnxRes.ok) throw new Error("Falha ao baixar modelo (.onnx) do Vercel");
+
+          const contentLength = onnxRes.headers.get('content-length');
+          const totalBytes = contentLength ? parseInt(contentLength, 10) : 0;
+          let loadedBytes = 0;
+
+          const reader = onnxRes.body.getReader();
+          const chunks = [];
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loadedBytes += value.length;
+            if (totalBytes > 0) {
+              const pct = Math.round((loadedBytes / totalBytes) * 100);
+              if (pct % 25 === 0 || pct === 100) {
+                mostrarNotificacao(`Baixando voz neural... ${pct}%`, "normal");
+              }
             }
-          });
+          }
+
+          const onnxBlob = new Blob(chunks);
+
+          // 3. Registra os arquivos no armazenamento local para o Piper encontrar
+          const modelPaths = [
+            `/${voiceId}.onnx`,
+            `/${voiceId}/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx`,
+            `pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx`
+          ];
+          const configPaths = [
+            `/${voiceId}.onnx.json`,
+            `/${voiceId}/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json`,
+            `pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json`
+          ];
+
+          for (const path of modelPaths) {
+            await cache.put(path, new Response(onnxBlob));
+          }
+          for (const path of configPaths) {
+            await cache.put(path, new Response(jsonBlob));
+          }
         }
 
         piperReady = true;
@@ -4744,6 +4826,8 @@
       } catch (e) {
         console.error("❌ Piper erro:", e);
         piperLoading = false;
+        // Limpa cache incompleto se houver falha durante o download
+        try { await caches.delete("piper-voices"); } catch (err) {}
         mostrarNotificacao("Erro ao carregar Piper. Usando voz padrão.", "error");
         updateVoiceEngineUI(hasNeuralVoices() ? 'neural' : 'basic');
       }
