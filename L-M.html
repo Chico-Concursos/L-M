@@ -984,14 +984,17 @@
       cursor: grabbing;
     }
 
-   /* --- ESTRUTURA DA ÁRVORE COM PISTA DE MANOBRA (CORRIGIDO) --- */
+    /* --- ESTRUTURA DA ÁRVORE COM RESPIRO (V58) --- */
     .tree {
       display: flex;
       margin: 0;
-      /* Pista ampla à direita e abaixo (80vw e 80vh) para permitir centralização total de qualquer caixa */
-      padding: 40px 80vw 80vh 40px;
+      /* Remove centralização automática que pode travar o scroll */
+      padding: 10px 40px 60px 40px;
+
+      /* Garante que o mapa tenha espaço para crescer */
       width: fit-content;
       min-width: 100%;
+      /* Ocupa pelo menos a tela toda */
       box-sizing: border-box;
     }
 
@@ -2378,9 +2381,10 @@
         /* Letra legível */
       }
 
-      /* 2. Pista de manobra móvel (permite centralização no celular) */
+      /* 2. Ajusta apenas o espaçamento ao redor do mapa */
       .tree {
-        padding: 20px 80vw 80vh 20px !important;
+        padding: 10px 15px 60px 15px !important;
+        /* Menos borda para caber na tela */
       }
 
       /* 3. Garante que o container do mapa aceite a altura */
@@ -3862,11 +3866,11 @@
       popularFiltroMapa(textoMapaAtual);
       aplicarInteracaoNosNodes();
 
-      // 2. Posição Inicial: Centraliza na caixa vermelha raiz e destaca
+      // 2. Auto-Foco
       setTimeout(() => {
         const noRaiz = document.querySelector('.tree > ul > li > a');
         if (noRaiz) {
-          centralizarCaixaNoMapa(noRaiz);
+          noRaiz.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
           noRaiz.classList.add('node-focado');
           setTimeout(() => noRaiz.classList.remove('node-focado'), 2000);
         }
@@ -4379,25 +4383,7 @@
 
       mostrarNotificacao("Todos os nós expandidos 📂", "success");
     }
-// --- FUNÇÃO DE CENTRALIZAÇÃO RELATIVA DEDICADA (ABORDAGEM B + C) ---
-    function centralizarCaixaNoMapa(elemento) {
-      const container = document.querySelector('.mindmap-content');
-      if (!container || !elemento) return;
 
-      const containerRect = container.getBoundingClientRect();
-      const elemRect = elemento.getBoundingClientRect();
-
-      // Calcula o deslocamento exato para trazer o centro da caixa até o centro da tela
-      const diffX = (elemRect.left + elemRect.width / 2) - (containerRect.left + containerRect.width / 2);
-      const diffY = (elemRect.top + elemRect.height / 2) - (containerRect.top + containerRect.height / 2);
-
-      // Rola de forma suave apenas a área interna do mapa
-      container.scrollBy({
-        left: diffX,
-        top: diffY,
-        behavior: 'smooth'
-      });
-    }
     function aplicarInteracaoNosNodes() {
       const nodesLinks = document.querySelectorAll('.tree li > a');
       const modalConf = document.getElementById('modal-confirmacao');
@@ -4470,13 +4456,13 @@
             }
           }
 
-          // Centraliza a caixa clicada na tela de forma suave e precisa
+          // Centraliza a caixa clicada na tela (scroll suave)
           if (!estaAtivo) {
+            // Pequeno delay para aguardar a expansão dos filhos antes de calcular posição
             const linkRef = this;
-            // Delay de 100ms para aguardar a expansão dos filhos antes do cálculo
             setTimeout(function () {
-              centralizarCaixaNoMapa(linkRef);
-            }, 100);
+              linkRef.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            }, 80);
           }
         };
 
