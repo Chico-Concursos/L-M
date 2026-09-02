@@ -984,17 +984,14 @@
       cursor: grabbing;
     }
 
-    /* --- ESTRUTURA DA ÁRVORE COM RESPIRO (V58) --- */
+   /* --- ESTRUTURA DA ÁRVORE COM PISTA DE MANOBRA (CORRIGIDO) --- */
     .tree {
       display: flex;
       margin: 0;
-      /* Remove centralização automática que pode travar o scroll */
-      padding: 10px 40px 60px 40px;
-
-      /* Garante que o mapa tenha espaço para crescer */
+      /* Pista ampla à direita e abaixo (80vw e 80vh) para permitir centralização total de qualquer caixa */
+      padding: 40px 80vw 80vh 40px;
       width: fit-content;
       min-width: 100%;
-      /* Ocupa pelo menos a tela toda */
       box-sizing: border-box;
     }
 
@@ -2381,10 +2378,9 @@
         /* Letra legível */
       }
 
-      /* 2. Ajusta apenas o espaçamento ao redor do mapa */
+      /* 2. Pista de manobra móvel (permite centralização no celular) */
       .tree {
-        padding: 10px 15px 60px 15px !important;
-        /* Menos borda para caber na tela */
+        padding: 20px 80vw 80vh 20px !important;
       }
 
       /* 3. Garante que o container do mapa aceite a altura */
@@ -2958,7 +2954,7 @@
           let fileName = "Apostila.pdf";
           let downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
-          const controller = new AbortController();
+         const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s por tentativa
 
           const response = await fetch(urlFinal, { signal: controller.signal });
@@ -3218,7 +3214,8 @@
         formData.append('password', password);
         formData.append('originUrl', window.location.href);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        // Tempo expandido para 25s (permite o Apps Script acordar em cold start)
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
         const response = await fetch(LOGIN_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -3324,12 +3321,21 @@
           const savedAllowedCourses = localStorage.getItem('leis_userAllowedCourses');
           userAllowedCourses = savedAllowedCourses ? JSON.parse(savedAllowedCourses) : [];
 
-          // --- TRAVA DE SEGURANÇA: VALIDAÇÃO AO REABRIR A PÁGINA ---
+          // --- TRAVA DE SEGURANÇA INTELIGENTE: RENOVAÇÃO DE PERMISSÕES ---
           if (urlSheetId && userAllowedCourses && userAllowedCourses.length > 0) {
             if (!userAllowedCourses.includes(urlSheetId)) {
+              // O navegador do aluno tem um crachá antigo. Limpamos a sessão antiga
+              // para que ele autentique e receba a lista atualizada do servidor.
+              localStorage.removeItem('leis_isAuthenticated');
+              localStorage.removeItem('leis_sessionToken');
+              localStorage.removeItem('leis_userAllowedCourses');
+              isAuthenticated = false;
+              if (savedEmail) {
+                document.getElementById('loginEmail').value = savedEmail;
+              }
               document.getElementById('loginModal').style.display = 'flex';
               document.getElementById('loginModal').style.opacity = '1';
-              showLoginError('⚠️ Acesso Negado: Sua conta não possui permissão para acessar este material.');
+              showLoginError('Novo material detectado: Confirme sua senha para liberar o acesso.');
               return;
             }
           }
@@ -3478,8 +3484,9 @@
       // ========================================================
       try {
         if (navigator.onLine) {
+          // Controller com 10s para dar tempo ao Apps Script de checar a versão
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
           const vigiaUrl = `${API_URL}?action=checkVersion&_t=${new Date().getTime()}`;
           const vigiaResponse = await fetch(vigiaUrl, { signal: controller.signal });
@@ -3524,8 +3531,6 @@
           mostrarNotificacao("⚡ Carregado da memória (Instantâneo)", "success");
           document.getElementById('texto-renderizado').scrollTop = 0;
 
-          // Menu preservado com sucesso
-
           loader.classList.remove('ativo');
           return; // Encerra aqui, economizando dados!
         } catch (e) {
@@ -3540,7 +3545,8 @@
       // ========================================================
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+        // Tempo expandido para 60 segundos (permite baixar apostilas longas sem cortar conexão)
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
 
         const timestamp = new Date().getTime();
         const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(idConteudo)}&sheetId=${encodeURIComponent(sheetId)}&_t=${timestamp}`;
@@ -3564,8 +3570,6 @@
         processarLei();
         mostrarNotificacao("Carregado: " + (dados.titulo || nomeDisplay), "success");
         document.getElementById('texto-renderizado').scrollTop = 0;
-
-        // Menu preservado com sucesso
 
         // --- SALVA NO CACHE LOCAL (Para próxima vez ser instantâneo) ---
         try {
@@ -3592,25 +3596,35 @@
             processarLei();
             mostrarNotificacao("⚠️ Erro na conexão. Usando versão anterior.", "error");
             document.getElementById('texto-renderizado').scrollTop = 0;
-
-            // Menu preservado com sucesso
           } catch (e2) {
-            // Cache também falhou, mostra erro
+            const isTimeout = error.name === 'AbortError' || (error.message && error.message.includes('abort'));
+            const msgAviso = isTimeout 
+              ? "O servidor demorou para responder (material extenso ou oscilação na rede)."
+              : `Falha no Carregamento: ${error.message}`;
+
             document.getElementById('texto-renderizado').innerHTML = `
-              <div style="text-align:center; padding:50px; color:#555;">
-                <h2 style="color:#c0392b">Falha no Carregamento</h2>
-                <p>${error.message}</p>
-                <small>Verifique sua conexão e o parâmetro <b>sheetId</b> na URL.</small>
+              <div style="text-align:center; padding:50px 20px; color:#555;">
+                <h2 style="color:#c0392b">⚠️ Falha no Carregamento</h2>
+                <p style="margin-bottom: 20px;">${msgAviso}</p>
+                <button onclick="carregarDaNuvem('${sheetId}', '${idConteudo}', '${nomeDisplay}')" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                  🔄 Tentar Novamente
+                </button>
               </div>`;
           }
         } else {
-          // Sem cache, mostra erro completo
-          mostrarNotificacao("Erro: " + error.message, "error");
+          const isTimeout = error.name === 'AbortError' || (error.message && error.message.includes('abort'));
+          const msgAviso = isTimeout 
+            ? "O servidor demorou para responder (material extenso ou oscilação na rede)."
+            : `Falha no Carregamento: ${error.message}`;
+
+          mostrarNotificacao("Erro ao carregar conteúdo", "error");
           document.getElementById('texto-renderizado').innerHTML = `
-            <div style="text-align:center; padding:50px; color:#555;">
-              <h2 style="color:#c0392b">Falha no Carregamento</h2>
-              <p>${error.message}</p>
-              <small>Verifique se o parâmetro <b>sheetId</b> está correto na URL.</small>
+            <div style="text-align:center; padding:50px 20px; color:#555;">
+              <h2 style="color:#c0392b">⚠️ Falha no Carregamento</h2>
+              <p style="margin-bottom: 20px;">${msgAviso}</p>
+              <button onclick="carregarDaNuvem('${sheetId}', '${idConteudo}', '${nomeDisplay}')" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                🔄 Tentar Novamente
+              </button>
             </div>`;
         }
       } finally {
@@ -3848,11 +3862,11 @@
       popularFiltroMapa(textoMapaAtual);
       aplicarInteracaoNosNodes();
 
-      // 2. Auto-Foco
+      // 2. Posição Inicial: Centraliza na caixa vermelha raiz e destaca
       setTimeout(() => {
         const noRaiz = document.querySelector('.tree > ul > li > a');
         if (noRaiz) {
-          noRaiz.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+          centralizarCaixaNoMapa(noRaiz);
           noRaiz.classList.add('node-focado');
           setTimeout(() => noRaiz.classList.remove('node-focado'), 2000);
         }
@@ -4365,7 +4379,25 @@
 
       mostrarNotificacao("Todos os nós expandidos 📂", "success");
     }
+// --- FUNÇÃO DE CENTRALIZAÇÃO RELATIVA DEDICADA (ABORDAGEM B + C) ---
+    function centralizarCaixaNoMapa(elemento) {
+      const container = document.querySelector('.mindmap-content');
+      if (!container || !elemento) return;
 
+      const containerRect = container.getBoundingClientRect();
+      const elemRect = elemento.getBoundingClientRect();
+
+      // Calcula o deslocamento exato para trazer o centro da caixa até o centro da tela
+      const diffX = (elemRect.left + elemRect.width / 2) - (containerRect.left + containerRect.width / 2);
+      const diffY = (elemRect.top + elemRect.height / 2) - (containerRect.top + containerRect.height / 2);
+
+      // Rola de forma suave apenas a área interna do mapa
+      container.scrollBy({
+        left: diffX,
+        top: diffY,
+        behavior: 'smooth'
+      });
+    }
     function aplicarInteracaoNosNodes() {
       const nodesLinks = document.querySelectorAll('.tree li > a');
       const modalConf = document.getElementById('modal-confirmacao');
@@ -4438,13 +4470,13 @@
             }
           }
 
-          // Centraliza a caixa clicada na tela (scroll suave)
+          // Centraliza a caixa clicada na tela de forma suave e precisa
           if (!estaAtivo) {
-            // Pequeno delay para aguardar a expansão dos filhos antes de calcular posição
             const linkRef = this;
+            // Delay de 100ms para aguardar a expansão dos filhos antes do cálculo
             setTimeout(function () {
-              linkRef.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-            }, 80);
+              centralizarCaixaNoMapa(linkRef);
+            }, 100);
           }
         };
 
