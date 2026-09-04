@@ -3285,14 +3285,11 @@
       modal.style.opacity = "0";
       setTimeout(() => { modal.style.display = 'none'; }, 500);
     }
-    // --- WARM-UP SILENCIOSO (Acorda os servidores Apps Script em segundo plano) ---
+    // --- WARM-UP SILENCIOSO (Acorda o servidor de conteúdo em segundo plano) ---
     function realizarWarmupSilencioso() {
       try {
         if (typeof API_URL !== 'undefined' && API_URL) {
           fetch(`${API_URL}?action=checkVersion&_t=${Date.now()}`).catch(() => { });
-        }
-        if (typeof PDF_PROXY_URL !== 'undefined' && PDF_PROXY_URL) {
-          fetch(`${PDF_PROXY_URL}?action=ping&_t=${Date.now()}`).catch(() => { });
         }
       } catch (e) { }
     }
