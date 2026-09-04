@@ -3039,6 +3039,7 @@
     let isAuthenticated = false;
     let userEmail = '';
     let userAllowedCourses = []; // Armazena os IDs das planilhas autorizadas para o aluno
+    let isForceRefreshLogin = false; // Flag para forçar atualização no servidor após detecção de novo material
 
     // =================================================================
     // 🔐 SISTEMA DE LOGIN E SEGURANÇA (V84)
@@ -3217,6 +3218,9 @@
         formData.append('email', email);
         formData.append('password', password);
         formData.append('originUrl', window.location.href);
+        if (typeof isForceRefreshLogin !== 'undefined' && isForceRefreshLogin) {
+          formData.append('forceRefresh', 'true');
+        }
         const controller = new AbortController();
         // Tempo expandido para 25s (permite o Apps Script acordar em cold start)
         const timeoutId = setTimeout(() => controller.abort(), 25000);
@@ -3229,6 +3233,7 @@
         clearTimeout(timeoutId);
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
         const result = await response.json();
+        isForceRefreshLogin = false; // Reset da flag de atualização forçada
         if (result.success) {
           userEmail = email;
           userAllowedCourses = result.allowedCourses || [];
@@ -3260,6 +3265,7 @@
           setLoginButtonLoading(false);
         }
       } catch (error) {
+        isForceRefreshLogin = false;
         if (error.name === 'AbortError') {
           showLoginError('Tempo limite excedido. Verifique sua conexão.');
         } else {
@@ -3330,6 +3336,7 @@
             if (!userAllowedCourses.includes(urlSheetId)) {
               // O navegador do aluno tem um crachá antigo. Limpamos a sessão antiga
               // para que ele autentique e receba a lista atualizada do servidor.
+              isForceRefreshLogin = true; // Força o backend a ignorar o cache da Via Expressa
               localStorage.removeItem('leis_isAuthenticated');
               localStorage.removeItem('leis_sessionToken');
               localStorage.removeItem('leis_userAllowedCourses');
