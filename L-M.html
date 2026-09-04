@@ -9,10 +9,6 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Merriweather:wght@300;400;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  </script>
   <style>
     /* --- VARIÁVEIS GERAIS (SISTEMA DE LEITURA) --- */
     :root {
@@ -2793,7 +2789,13 @@
         <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema">🚪 Sair</button>
       </div>
     </div>
-    <main class="content" id="texto-renderizado"></main>
+    <main class="content" id="texto-renderizado">
+      <div style="text-align: center; padding: 60px 20px; color: var(--cor-texto);">
+        <div class="spinner" style="display: block; margin: 0 auto 20px auto;"></div>
+        <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 8px;">Iniciando Leitor...</h3>
+        <p style="font-size: 0.95rem; opacity: 0.8;">Carregando configurações e materiais...</p>
+      </div>
+    </main>
 
     <div id="footer-impressao" style="display: none;">
       <div class="print-footer-inner">
@@ -2914,10 +2916,13 @@
     // --- FUNÇÃO AUXILIAR: DETECTAR ID DO GOOGLE DRIVE ---
     function extrairDriveId(str) {
       if (!str) return null;
-      const texto = str.trim();
+      let texto = str.trim();
+
+      // Remove aspas ou apóstrofos que possam ter vindo da planilha
+      texto = texto.replace(/^["']+|["']+$/g, '').trim();
 
       // Padrão 1: Prefixo explicito (ex: driveId:1ABC..., pdfId:1ABC..., drive:1ABC...)
-      const matchPrefixo = texto.match(/(?:driveId|pdfId|drive|id)\s*:\s*([a-zA-Z0-9_-]{25,50})/i);
+      const matchPrefixo = texto.match(/(?:driveId|pdfId|drive|id)\s*[:=]\s*([a-zA-Z0-9_-]{25,50})/i);
       if (matchPrefixo) return matchPrefixo[1];
 
       // Padrão 2: URL de arquivo do Google Drive (/file/d/ID/view ou open?id=ID)
@@ -2927,13 +2932,17 @@
       const matchUrlId = texto.match(/drive\.google\.com\/.*[?&]id=([a-zA-Z0-9_-]{25,50})/i);
       if (matchUrlId) return matchUrlId[1];
 
-      // Padrão 3: Se for um link terminando em .pdf com id do drive
-      if (texto.endsWith('.pdf') && texto.includes('drive.google.com')) {
-        const m = texto.match(/([a-zA-Z0-9_-]{28,45})/);
+      // Padrão 3: Link docs.google.com ou visualizador
+      const matchDocs = texto.match(/docs\.google\.com\/.*\/d\/([a-zA-Z0-9_-]{25,50})/i);
+      if (matchDocs) return matchDocs[1];
+
+      // Padrão 4: Se for um link contendo drive.google.com com código de arquivo
+      if (texto.includes('drive.google.com')) {
+        const m = texto.match(/([a-zA-Z0-9_-]{25,50})/);
         if (m) return m[1];
       }
 
-      // Padrão 4: ID puro do Google Drive (código alfanumérico de 25 a 50 caracteres)
+      // Padrão 5: ID puro do Google Drive (código alfanumérico de 25 a 50 caracteres)
       if (/^[a-zA-Z0-9_-]{25,50}$/.test(texto)) {
         return texto;
       }
@@ -2941,79 +2950,81 @@
       return null;
     }
 
-    // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + PDF.JS ---
-    async function carregarPdfSeguro(fileId, container) {
+    // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + ABERTURA IMEDIATA ---
+    function carregarPdfSeguro(fileId, container) {
       if (!container) container = document.getElementById('texto-renderizado');
 
       const sessionToken = localStorage.getItem('leis_sessionToken') || '';
-      let fileName = "Apostila em PDF";
+      const cachedTitle = localStorage.getItem('pdf_name_' + fileId);
+      let fileName = cachedTitle || "Apostila em PDF";
       let downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
-      function renderizarCardPdf(tituloArquivo) {
-        container.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
+      // 1. Renderiza o Card IMEDIATAMENTE (zero espera, botão 100% clicável no instante zero!)
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
+            <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+              📄 <span id="pdf-file-title">${fileName}</span>
+              ${!cachedTitle ? '<span id="pdf-title-loading" style="font-size: 0.8rem; color: #aaa; font-weight: normal; font-style: italic;">(identificando nome...)</span>' : ''}
+            </span>
+            <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
+            <a id="pdf-download-btn" href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+              📥 Baixar Apostila (PDF)
+            </a>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 260px; background-color: #121212; border: 1px solid rgba(210, 172, 71, 0.3); border-radius: 16px; padding: 45px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.1); text-align: center; gap: 25px; box-sizing: border-box;">
             
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
-              <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                📄 <span id="pdf-file-title">${tituloArquivo}</span>
-              </span>
-              <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
-              <a href="${downloadUrl}" target="_blank" download="${tituloArquivo}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
-                📥 Baixar Apostila (PDF)
-              </a>
-            </div>
+            <p style="color: #f5f5f5; font-size: 1.2rem; font-weight: 500; margin: 0; text-align: center; letter-spacing: 0.3px;">
+              📄 Clique no botão abaixo para abrir o material em tela cheia
+            </p>
 
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 260px; background-color: #121212; border: 1px solid rgba(210, 172, 71, 0.3); border-radius: 16px; padding: 45px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.1); text-align: center; gap: 25px; box-sizing: border-box;">
-              
-              <p style="color: #f5f5f5; font-size: 1.2rem; font-weight: 500; margin: 0; text-align: center; letter-spacing: 0.3px;">
-                📄 Clique no botão abaixo para abrir o material em tela cheia
-              </p>
-
-              <a href="https://drive.google.com/file/d/${fileId}/preview" target="_blank" class="tool-btn highlight-btn" style="text-decoration: none; font-size: 1.15rem; padding: 14px 32px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color: #000; box-shadow: 0 4px 18px rgba(210, 172, 71, 0.35); transition: all 0.2s ease-in-out;">
-                Clique aqui para abrir o arquivo
-              </a>
-
-            </div>
+            <a href="https://drive.google.com/file/d/${fileId}/preview" target="_blank" class="tool-btn highlight-btn" style="text-decoration: none; font-size: 1.15rem; padding: 14px 32px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color: #000; box-shadow: 0 4px 18px rgba(210, 172, 71, 0.35); transition: all 0.2s ease-in-out;">
+              Clique aqui para abrir o arquivo
+            </a>
 
           </div>
-        `;
-      }
 
-      // Mostra a tela de preparação inicial com tempo hábil
-      container.innerHTML = `
-        <div style="text-align:center; padding: 60px 20px; color: var(--cor-texto);">
-          <div class="spinner" style="display:block; margin: 0 auto 20px auto;"></div>
-          <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 10px;">🔒 Carregando Apostila Segura (PDF)...</h3>
-          <p style="font-size: 0.9em; opacity: 0.8;" id="status-pdf-loading">Conectando ao material...</p>
         </div>
       `;
 
-      try {
-        const timestamp = new Date().getTime();
-        const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
+      // 2. Consulta em segundo plano (assíncrona) para capturar o nome oficial do PDF sem travar a interface
+      (async () => {
+        try {
+          const timestamp = new Date().getTime();
+          const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
 
-        const controller = new AbortController();
-        // Tempo expandido para 15 segundos (permite acordar o Apps Script sem cortar)
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(urlFinal, { signal: controller.signal });
-        clearTimeout(timeoutId);
+          const response = await fetch(urlFinal, { signal: controller.signal });
+          clearTimeout(timeoutId);
 
-        if (response.ok) {
-          const json = await response.json();
-          if (json.success && json.fileName) fileName = json.fileName;
-          if (json.success && json.downloadUrl) downloadUrl = json.downloadUrl;
+          if (response.ok) {
+            const json = await response.json();
+            if (json.success && json.fileName) {
+              localStorage.setItem('pdf_name_' + fileId, json.fileName);
+              const titleEl = document.getElementById('pdf-file-title');
+              if (titleEl) titleEl.textContent = json.fileName;
+
+              const menuPdfEl = document.getElementById('menu-pdf-title');
+              if (menuPdfEl) menuPdfEl.textContent = "📄 " + json.fileName;
+
+              const downloadBtn = document.getElementById('pdf-download-btn');
+              if (downloadBtn) {
+                downloadBtn.setAttribute('download', json.fileName);
+                if (json.downloadUrl) downloadBtn.href = json.downloadUrl;
+              }
+            }
+          }
+        } catch (err) {
+          console.warn("Busca assíncrona de metadados do PDF em segundo plano finalizou:", err);
+        } finally {
+          const loaderTag = document.getElementById('pdf-title-loading');
+          if (loaderTag) loaderTag.remove();
         }
-
-        renderizarCardPdf(fileName);
-        mostrarNotificacao("Apostila PDF pronta! 📄", "success");
-
-      } catch (err) {
-        console.warn("Consulta ao proxy demorou ou falhou, liberando acesso direto ao PDF:", err);
-        // Não trava a tela! Apresenta o card pronto com o link direto oficial do Google Drive
-        renderizarCardPdf("Apostila em PDF");
-        mostrarNotificacao("Apostila PDF pronta! 📄", "success");
-      }
+      })();
     }
 
     // =================================================================
@@ -3363,6 +3374,18 @@
         seletor.disabled = true;
         seletor.innerHTML = '<option value="" disabled selected>⏳ Carregando matérias...</option>';
 
+        // Exibe feedback visual imediato na área central para nunca ficar tela em branco
+        const containerLeitura = document.getElementById('texto-renderizado');
+        if (containerLeitura && !containerLeitura.innerHTML.trim()) {
+          containerLeitura.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: var(--cor-texto);">
+              <div class="spinner" style="display: block; margin: 0 auto 20px auto;"></div>
+              <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 8px;">Conectando ao Material...</h3>
+              <p style="font-size: 0.95rem; opacity: 0.8;">Localizando capítulos e preparando visualização...</p>
+            </div>
+          `;
+        }
+
         // Pede o "cardápio" da planilha para o Apps Script
         const urlMenu = `${API_URL}?action=getMenu&sheetId=${encodeURIComponent(ID_DA_PLANILHA)}&_t=${new Date().getTime()}`;
 
@@ -3400,16 +3423,44 @@
             } else {
               seletor.innerHTML = '<option value="" disabled>Planilha Vazia ou Erro</option>';
               mostrarNotificacao("Não foi possível ler as matérias da planilha.", "error");
+              if (containerLeitura) {
+                containerLeitura.innerHTML = `
+                  <div style="text-align:center; padding: 50px 20px; color: #555;">
+                    <h2 style="color: #c0392b;">⚠️ Planilha sem Matérias</h2>
+                    <p style="margin-bottom: 20px;">A planilha informada não possui linhas válidas ou está sem conteúdo.</p>
+                  </div>
+                `;
+              }
             }
           })
           .catch(err => {
             console.error("Erro ao buscar cardápio:", err);
             seletor.innerHTML = '<option value="" disabled>Erro de conexão</option>';
             mostrarNotificacao("Sem internet ou erro no servidor.", "error");
+            if (containerLeitura) {
+              containerLeitura.innerHTML = `
+                <div style="text-align: center; padding: 50px 20px; color: #555;">
+                  <h2 style="color: #c0392b;">⚠️ Falha ao Conectar com a Planilha</h2>
+                  <p style="margin-bottom: 20px;">O servidor demorou a responder ou a conexão oscilou.</p>
+                  <button onclick="window.location.reload()" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                    🔄 Tentar Novamente
+                  </button>
+                </div>
+              `;
+            }
           });
 
       } else {
         seletor.innerHTML = '<option value="" disabled selected>⚠️ Faltou a Planilha no link!</option>';
+        const containerLeitura = document.getElementById('texto-renderizado');
+        if (containerLeitura) {
+          containerLeitura.innerHTML = `
+            <div style="text-align: center; padding: 50px 20px; color: #555;">
+              <h2 style="color: #c0392b;">⚠️ Link sem Planilha Definida</h2>
+              <p style="margin-bottom: 20px;">O endereço acessado precisa conter o parâmetro da planilha (exemplo: <code>?sheetId=...</code>).</p>
+            </div>
+          `;
+        }
       }
 
       setupFerramentas();
@@ -3423,31 +3474,50 @@
 
     function initDB() {
       return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = (e) => e.target.result.createObjectStore(STORE_NAME);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        try {
+          if (!window.indexedDB) return reject(new Error("IndexedDB não suportado"));
+          const request = indexedDB.open(DB_NAME, 1);
+          request.onupgradeneeded = (e) => e.target.result.createObjectStore(STORE_NAME);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+          request.onblocked = () => reject(new Error("IndexedDB bloqueado"));
+        } catch (e) {
+          reject(e);
+        }
       });
     }
 
     async function saveToGalpao(key, data) {
       try {
-        const db = await initDB();
-        return new Promise((resolve, reject) => {
+        const db = await Promise.race([
+          initDB(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout DB")), 1200))
+        ]);
+        return new Promise((resolve) => {
+          const timeout = setTimeout(() => resolve(), 1200);
           const tx = db.transaction(STORE_NAME, "readwrite");
+          tx.oncomplete = () => { clearTimeout(timeout); resolve(); };
+          tx.onerror = () => { clearTimeout(timeout); resolve(); };
+          tx.onabort = () => { clearTimeout(timeout); resolve(); };
           tx.objectStore(STORE_NAME).put(data, key);
-          tx.oncomplete = () => resolve();
         });
-      } catch (e) { console.warn("Erro ao salvar no galpão"); }
+      } catch (e) { console.warn("Erro ao salvar no galpão", e); }
     }
 
     async function loadFromGalpao(key) {
       try {
-        const db = await initDB();
-        return new Promise((resolve, reject) => {
+        const db = await Promise.race([
+          initDB(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout DB")), 1200))
+        ]);
+        return new Promise((resolve) => {
+          const timeout = setTimeout(() => resolve(null), 1200);
           const tx = db.transaction(STORE_NAME, "readonly");
+          tx.onerror = () => { clearTimeout(timeout); resolve(null); };
+          tx.onabort = () => { clearTimeout(timeout); resolve(null); };
           const request = tx.objectStore(STORE_NAME).get(key);
-          request.onsuccess = () => resolve(request.result);
+          request.onsuccess = () => { clearTimeout(timeout); resolve(request.result); };
+          request.onerror = () => { clearTimeout(timeout); resolve(null); };
         });
       } catch (e) { return null; }
     }
@@ -3645,7 +3715,8 @@
       // 0. DETECÇÃO DE APOSTILA PDF SEGURO DO GOOGLE DRIVE
       const driveId = extrairDriveId(txt);
       if (driveId) {
-        menu.innerHTML = `<div class="menu-grupo-titulo"><span>📄 Apostila PDF (Google Drive)</span></div>`;
+        const cachedPdfTitle = localStorage.getItem('pdf_name_' + driveId) || "Apostila PDF (Google Drive)";
+        menu.innerHTML = `<div class="menu-grupo-titulo"><span id="menu-pdf-title">📄 ${cachedPdfTitle}</span></div>`;
         carregarPdfSeguro(driveId, c);
         return;
       }
