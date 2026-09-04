@@ -2941,79 +2941,81 @@
       return null;
     }
 
-    // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + PDF.JS ---
-    async function carregarPdfSeguro(fileId, container) {
+    // --- CARREGADOR SEGURO DE PDF VIA PROXY LEVE + ABERTURA IMEDIATA ---
+    function carregarPdfSeguro(fileId, container) {
       if (!container) container = document.getElementById('texto-renderizado');
 
       const sessionToken = localStorage.getItem('leis_sessionToken') || '';
-      let fileName = "Apostila em PDF";
+      const cachedTitle = localStorage.getItem('pdf_name_' + fileId);
+      let fileName = cachedTitle || "Apostila em PDF";
       let downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
-      function renderizarCardPdf(tituloArquivo) {
-        container.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
+      // 1. Renderiza o Card IMEDIATAMENTE (zero espera, botão 100% clicável no instante zero!)
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
+            <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+              📄 <span id="pdf-file-title">${fileName}</span>
+              ${!cachedTitle ? '<span id="pdf-title-loading" style="font-size: 0.8rem; color: #aaa; font-weight: normal; font-style: italic;">(identificando nome...)</span>' : ''}
+            </span>
+            <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
+            <a id="pdf-download-btn" href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+              📥 Baixar Apostila (PDF)
+            </a>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 260px; background-color: #121212; border: 1px solid rgba(210, 172, 71, 0.3); border-radius: 16px; padding: 45px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.1); text-align: center; gap: 25px; box-sizing: border-box;">
             
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
-              <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                📄 <span id="pdf-file-title">${tituloArquivo}</span>
-              </span>
-              <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
-              <a href="${downloadUrl}" target="_blank" download="${tituloArquivo}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
-                📥 Baixar Apostila (PDF)
-              </a>
-            </div>
+            <p style="color: #f5f5f5; font-size: 1.2rem; font-weight: 500; margin: 0; text-align: center; letter-spacing: 0.3px;">
+              📄 Clique no botão abaixo para abrir o material em tela cheia
+            </p>
 
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 260px; background-color: #121212; border: 1px solid rgba(210, 172, 71, 0.3); border-radius: 16px; padding: 45px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.1); text-align: center; gap: 25px; box-sizing: border-box;">
-              
-              <p style="color: #f5f5f5; font-size: 1.2rem; font-weight: 500; margin: 0; text-align: center; letter-spacing: 0.3px;">
-                📄 Clique no botão abaixo para abrir o material em tela cheia
-              </p>
-
-              <a href="https://drive.google.com/file/d/${fileId}/preview" target="_blank" class="tool-btn highlight-btn" style="text-decoration: none; font-size: 1.15rem; padding: 14px 32px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color: #000; box-shadow: 0 4px 18px rgba(210, 172, 71, 0.35); transition: all 0.2s ease-in-out;">
-                Clique aqui para abrir o arquivo
-              </a>
-
-            </div>
+            <a href="https://drive.google.com/file/d/${fileId}/preview" target="_blank" class="tool-btn highlight-btn" style="text-decoration: none; font-size: 1.15rem; padding: 14px 32px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color: #000; box-shadow: 0 4px 18px rgba(210, 172, 71, 0.35); transition: all 0.2s ease-in-out;">
+              Clique aqui para abrir o arquivo
+            </a>
 
           </div>
-        `;
-      }
 
-      // Mostra a tela de preparação inicial com tempo hábil
-      container.innerHTML = `
-        <div style="text-align:center; padding: 60px 20px; color: var(--cor-texto);">
-          <div class="spinner" style="display:block; margin: 0 auto 20px auto;"></div>
-          <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 10px;">🔒 Carregando Apostila Segura (PDF)...</h3>
-          <p style="font-size: 0.9em; opacity: 0.8;" id="status-pdf-loading">Conectando ao material...</p>
         </div>
       `;
 
-      try {
-        const timestamp = new Date().getTime();
-        const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
+      // 2. Consulta em segundo plano (assíncrona) para capturar o nome oficial do PDF sem travar a interface
+      (async () => {
+        try {
+          const timestamp = new Date().getTime();
+          const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
 
-        const controller = new AbortController();
-        // Tempo expandido para 15 segundos (permite acordar o Apps Script sem cortar)
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(urlFinal, { signal: controller.signal });
-        clearTimeout(timeoutId);
+          const response = await fetch(urlFinal, { signal: controller.signal });
+          clearTimeout(timeoutId);
 
-        if (response.ok) {
-          const json = await response.json();
-          if (json.success && json.fileName) fileName = json.fileName;
-          if (json.success && json.downloadUrl) downloadUrl = json.downloadUrl;
+          if (response.ok) {
+            const json = await response.json();
+            if (json.success && json.fileName) {
+              localStorage.setItem('pdf_name_' + fileId, json.fileName);
+              const titleEl = document.getElementById('pdf-file-title');
+              if (titleEl) titleEl.textContent = json.fileName;
+
+              const menuPdfEl = document.getElementById('menu-pdf-title');
+              if (menuPdfEl) menuPdfEl.textContent = "📄 " + json.fileName;
+
+              const downloadBtn = document.getElementById('pdf-download-btn');
+              if (downloadBtn) {
+                downloadBtn.setAttribute('download', json.fileName);
+                if (json.downloadUrl) downloadBtn.href = json.downloadUrl;
+              }
+            }
+          }
+        } catch (err) {
+          console.warn("Busca assíncrona de metadados do PDF em segundo plano finalizou:", err);
+        } finally {
+          const loaderTag = document.getElementById('pdf-title-loading');
+          if (loaderTag) loaderTag.remove();
         }
-
-        renderizarCardPdf(fileName);
-        mostrarNotificacao("Apostila PDF pronta! 📄", "success");
-
-      } catch (err) {
-        console.warn("Consulta ao proxy demorou ou falhou, liberando acesso direto ao PDF:", err);
-        // Não trava a tela! Apresenta o card pronto com o link direto oficial do Google Drive
-        renderizarCardPdf("Apostila em PDF");
-        mostrarNotificacao("Apostila PDF pronta! 📄", "success");
-      }
+      })();
     }
 
     // =================================================================
@@ -3645,7 +3647,8 @@
       // 0. DETECÇÃO DE APOSTILA PDF SEGURO DO GOOGLE DRIVE
       const driveId = extrairDriveId(txt);
       if (driveId) {
-        menu.innerHTML = `<div class="menu-grupo-titulo"><span>📄 Apostila PDF (Google Drive)</span></div>`;
+        const cachedPdfTitle = localStorage.getItem('pdf_name_' + driveId) || "Apostila PDF (Google Drive)";
+        menu.innerHTML = `<div class="menu-grupo-titulo"><span id="menu-pdf-title">📄 ${cachedPdfTitle}</span></div>`;
         carregarPdfSeguro(driveId, c);
         return;
       }
