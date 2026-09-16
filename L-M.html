@@ -980,12 +980,12 @@
       cursor: grabbing;
     }
 
-    /* --- ESTRUTURA DA ÁRVORE COM RESPIRO (V58) --- */
+    /* --- ESTRUTURA DA ÁRVORE COM RESPIRO --- */
     .tree {
       display: flex;
       margin: 0;
       /* Remove centralização automática que pode travar o scroll */
-      padding: 10px 40px 60px 40px;
+      padding: 10px 50vw 60px 40px;
 
       /* Garante que o mapa tenha espaço para crescer */
       width: fit-content;
@@ -2379,8 +2379,8 @@
 
       /* 2. Ajusta apenas o espaçamento ao redor do mapa */
       .tree {
-        padding: 10px 15px 60px 15px !important;
-        /* Menos borda para caber na tela */
+        padding: 10px 50vw 60px 15px !important;
+        /* Respiro dinâmico à direita para centralização perfeita */
       }
 
       /* 3. Garante que o container do mapa aceite a altura */
@@ -2550,28 +2550,30 @@
       }
 
       #header-impressao {
-        display: table-header-group !important;
+        display: block !important;
+        width: 100% !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
 
       .print-header-inner {
         text-align: center;
-        font-family: 'Roboto', sans-serif;
-        font-weight: 900;
-        font-size: 1.5em;
         padding-top: 0;
         padding-bottom: 10px;
         border-bottom: 2px solid #ccc;
-        color: #D2AC47 !important;
         background-color: white !important;
-        margin-bottom: 1cm;
+        margin-bottom: 0.8cm;
       }
 
-      #header-impressao span {
-        color: #D2AC47 !important;
-        background: none !important;
-        -webkit-background-clip: unset !important;
-        background-clip: unset !important;
-        -webkit-text-fill-color: unset !important;
+      .print-logo {
+        display: block;
+        width: 52mm;
+        height: auto;
+        border: none;
+        border-radius: 8pt;
+        margin: 0 auto;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
 
       #footer-impressao {
@@ -2605,7 +2607,7 @@
 
       p,
       li {
-        font-size: 11pt !important;
+        font-size: 11.5pt !important;
         line-height: 1.5 !important;
         color: black !important;
         page-break-inside: avoid;
@@ -2728,7 +2730,7 @@
   <div class="main-wrapper">
     <div id="header-impressao" style="display: none;">
       <div class="print-header-inner">
-        CHICO <span>CONCURSOS</span>
+        <img src="https://lh3.googleusercontent.com/d/1oL4ih3-SgkXnUQLgZsvkekZnf9aR19mA" alt="Chico Concursos" class="print-logo">
       </div>
     </div>
 
@@ -2845,18 +2847,27 @@
             style="font-size:0.75rem; padding:4px 10px; border-radius:13px;"
             title="Recolhe todos os nós e limpa destaques">📁 Recolher</button>
           <button onclick="expandirTudoMapa()" class="tool-btn"
-            style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Expande todos os nós da árvore">📂
-            Expandir</button>
-        </div>
-        <button onclick="fecharMapaMental()" class="btn-close-map"
-          style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
-      </div>
-    </div>
-    <button class="btn-reabrir-header" onclick="alternarHeaderMapa()" title="Mostrar Menu">▼ MENU</button>
-    <div class="mindmap-content">
-      <div class="tree" id="arvore-visual"></div>
-    </div>
-  </div>
+                    style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Expande todos os nós da árvore">📂
+                    Expandir</button>
+                  <button id="btn-modo-foco" onclick="alternarModoFoco()" class="tool-btn"
+                    style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Modo Foco com Zoom e Navegação por Teclado">🎯 Foco</button>
+                </div>
+                <button onclick="fecharMapaMental()" class="btn-close-map"
+                  style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
+              </div>
+            </div>
+            <button class="btn-reabrir-header" onclick="alternarHeaderMapa()" title="Mostrar Menu">▼ MENU</button>
+            <div class="mindmap-content">
+              <div class="tree" id="arvore-visual"></div>
+            </div>
+
+            <!-- CONTROLE DE LUMINOSIDADE FLUTUANTE (ESTILO MINDMASTER) -->
+            <div id="mindmap-light-control" style="position:absolute; bottom:15px; left:15px; z-index:1500; display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:20px; backdrop-filter:blur(4px); box-shadow:0 4px 12px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2);">
+              <span style="font-size:0.95rem; color:#ffd700;" title="Ajustar Luminosidade do Fundo">☀️</span>
+              <input type="range" id="slider-brilho-mapa" min="0" max="100" value="100" oninput="ajustarLuminosidadeMapa(this.value)" style="width:75px; height:4px; accent-color:#ffd700; cursor:pointer;">
+              <button onclick="alternarModoFoco()" title="Sair do Modo Foco" style="background:none; border:none; color:#fff; font-size:0.85rem; cursor:pointer; padding:0 3px; opacity:0.8;">✕</button>
+            </div>
+          </div>
 
   <div id="modal-confirmacao"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
@@ -3390,12 +3401,21 @@
           .then(resposta => resposta.json())
           .then(json => {
             if (json.success && json.data && json.data.length > 0) {
-              // Converte o cardápio recebido na nossa BIBLIOTECA_LOCAL
-              BIBLIOTECA_LOCAL = json.data.map(item => ({
+             BIBLIOTECA_LOCAL = json.data.map(item => ({
                 nome: item.nome,
                 id: item.id,
                 sheetId: ID_DA_PLANILHA
               }));
+
+              // Se houver 2 ou mais títulos na mesma planilha, cria a Apostila Completa no início
+              if (BIBLIOTECA_LOCAL.length >= 2) {
+                BIBLIOTECA_LOCAL.unshift({
+                  nome: "📚 Apostila Completa",
+                  id: "APOSTILA_COMPLETA",
+                  sheetId: ID_DA_PLANILHA,
+                  isCompleta: true
+                });
+              }
 
               // Destranca e monta o botão superior com os títulos achados
               seletor.disabled = false;
@@ -3404,7 +3424,7 @@
               BIBLIOTECA_LOCAL.forEach((item, index) => {
                 const opt = document.createElement('option');
                 opt.value = index;
-                opt.textContent = "📂 " + item.nome;
+                opt.textContent = item.isCompleta ? item.nome : ("📂 " + item.nome);
                 seletor.appendChild(opt);
               });
 
@@ -3415,8 +3435,12 @@
               const indexEncontrado = BIBLIOTECA_LOCAL.findIndex(item => item.id === idFinal);
               if (indexEncontrado !== -1) seletor.value = indexEncontrado;
 
-              // Enfim, pede para carregar o texto daquela lei na tela
-              carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
+              // Enfim, pede para carregar o texto na tela
+              if (idFinal === "APOSTILA_COMPLETA") {
+                carregarApostilaCompleta(ID_DA_PLANILHA);
+              } else {
+                carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
+              }
             } else {
               seletor.innerHTML = '<option value="" disabled>Planilha Vazia ou Erro</option>';
               mostrarNotificacao("Não foi possível ler as matérias da planilha.", "error");
@@ -3768,7 +3792,15 @@
       }
 
       for (let i = indexInicial; i < lin.length; i++) {
-        let l = lin[i].trim(); if (!l) continue;
+        // ... dentro do for loop ...
+let l = lin[i].trim();
+
+// 🔧 CORREÇÃO UNIVERSAL: Remove marcadores de lista Markdown (* , - , + , numeração)
+// antes da seta, garantindo que o regex de destaque de cores funcione.
+l = l.replace(/^[\s]*[\*\-+]\s+/, '');        // Remove * , - , + e espaços
+l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
+
+// A partir daqui, a lógica original do HTML (matchSeta) roda normalmente... if (!l) continue;
 
         // --- 1. EXIBIÇÃO LIMPA (Visual na tela) ---
         let linhaExibicao = l.replace(/^[#]+\s*/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -4033,9 +4065,24 @@
     function iniciarAtalhos() {
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-          if (document.getElementById('modal-mapa').classList.contains('open')) { fecharMapaMental(); return; }
+          if (document.getElementById('modal-mapa').classList.contains('open')) {
+            if (modoFocoAtivo) { alternarModoFoco(); return; }
+            fecharMapaMental(); return;
+          }
           if (!document.body.classList.contains('menu-fechado')) { alternarMenu(); }
         }
+
+        // Controle por Teclado do Mapa Mental (Setas)
+        if (document.getElementById('modal-mapa').classList.contains('open')) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+            e.preventDefault();
+            navegarMapaPorTeclado(e.key);
+            return;
+          }
+        }
+
+        // Atalhos de leitura TTS (Espaço e Setas Laterais)
 
         // Atalhos de leitura TTS (Espaço e Setas Laterais)
         // Só desabilita o comportamento padrão do espaço se estivermos em contexto de leitura (ativo ou pausado)
@@ -4248,14 +4295,135 @@
       if (zoomAtualMapa > 2) zoomAtualMapa = 2;
       if (zoomAtualMapa < 0.5) zoomAtualMapa = 0.5;
       const arvore = document.getElementById('arvore-visual');
-      if (arvore) arvore.style.transform = `scale(${zoomAtualMapa})`;
+      if (arvore) {
+        // Âncora fixa no topo-esquerdo: impede que as caixas subam para trás do cabeçalho
+        arvore.style.transformOrigin = '0 0';
+        arvore.style.transform = `scale(${zoomAtualMapa})`;
+        
+        // Acompanha o zoom: expande o respiro vertical inferior dinamicamente
+        arvore.style.paddingBottom = Math.round(80 * zoomAtualMapa) + 'px';
+      }
       mostrarNotificacao("Zoom do Mapa: " + Math.round(zoomAtualMapa * 100) + "%", "success");
     }
     function resetarZoomMapa() {
       zoomAtualMapa = 1;
       const arvore = document.getElementById('arvore-visual');
-      if (arvore) arvore.style.transform = 'scale(1)';
+      if (arvore) {
+        arvore.style.transformOrigin = '0 0';
+        arvore.style.transform = 'scale(1)';
+        arvore.style.paddingBottom = '60px';
+      }
       mostrarNotificacao("Zoom Resetado");
+    }
+
+    // --- NOVO: FUNÇÕES DO MODO FOCO, NAVEGAÇÃO POR TECLADO E LUMINOSIDADE (MINDMASTER) ---
+    let modoFocoAtivo = false;
+
+    function alternarModoFoco() {
+      modoFocoAtivo = !modoFocoAtivo;
+      const btn = document.getElementById('btn-modo-foco');
+      if (btn) btn.classList.toggle('active-tool', modoFocoAtivo);
+
+      if (modoFocoAtivo) {
+        // Aplica o zoom ampliado automático (1.25x)
+        zoomAtualMapa = 1.25;
+        const arvore = document.getElementById('arvore-visual');
+        if (arvore) {
+          arvore.style.transformOrigin = '0 0';
+          arvore.style.transform = `scale(${zoomAtualMapa})`;
+          arvore.style.paddingBottom = Math.round(80 * zoomAtualMapa) + 'px';
+        }
+
+        // Seleciona a caixa ativa atual ou a caixa principal (raiz)
+        let alvo = document.querySelector('.tree .node-ativo') || document.querySelector('.tree > ul > li > a');
+        if (alvo) focarNodeMapa(alvo);
+
+        mostrarNotificacao("🎯 Modo Foco Ativo! (Use as setas ↑ ↓ ← → do teclado)", "success");
+      } else {
+        resetarZoomMapa();
+        mostrarNotificacao("Modo Foco Desativado");
+      }
+    }
+
+    function focarNodeMapa(node) {
+      if (!node) return;
+
+      // Remove destaque anterior e aplica na nova caixa
+      document.querySelectorAll('.tree .node-ativo').forEach(el => el.classList.remove('node-ativo'));
+      node.classList.add('node-ativo');
+
+      // Garante que todos os ramos pais até ela estejam expandidos
+      let paiAtual = node.closest('li');
+      while (paiAtual) {
+        if (paiAtual.classList.contains('filhos-ocultos')) {
+          paiAtual.classList.remove('filhos-ocultos');
+          const linkDoPai = paiAtual.querySelector(':scope > a');
+          if (linkDoPai) {
+            const btn = linkDoPai.querySelector('.mindmap-toggler');
+            if (btn) btn.innerHTML = '−';
+          }
+        }
+        paiAtual = paiAtual.parentElement.closest('li');
+      }
+
+      // Centraliza suavemente a caixa selecionada na visão do aluno
+      setTimeout(() => {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      }, 70);
+    }
+
+    function navegarMapaPorTeclado(direcao) {
+      let ativo = document.querySelector('.tree .node-ativo');
+      if (!ativo) ativo = document.querySelector('.tree > ul > li > a');
+      if (!ativo) return;
+
+      let liAtual = ativo.closest('li');
+      if (!liAtual) return;
+
+      let alvo = null;
+
+      if (direcao === 'ArrowRight') {
+        // Seta Direita: entra no primeiro nó filho
+        let primeiroFilho = liAtual.querySelector(':scope > ul > li > a');
+        if (primeiroFilho) {
+          if (liAtual.classList.contains('filhos-ocultos')) {
+            liAtual.classList.remove('filhos-ocultos');
+            const btn = ativo.querySelector('.mindmap-toggler');
+            if (btn) btn.innerHTML = '−';
+          }
+          alvo = primeiroFilho;
+        }
+      } else if (direcao === 'ArrowLeft') {
+        // Seta Esquerda: volta para o nó pai
+        let ulPai = liAtual.parentElement;
+        if (ulPai && !ulPai.classList.contains('tree')) {
+          let liPai = ulPai.closest('li');
+          if (liPai) alvo = liPai.querySelector(':scope > a');
+        }
+      } else if (direcao === 'ArrowDown') {
+        // Seta Baixo: vai para a próxima caixa irmã da mesma coluna
+        let proximoLi = liAtual.nextElementSibling;
+        if (proximoLi) alvo = proximoLi.querySelector(':scope > a');
+      } else if (direcao === 'ArrowUp') {
+        // Seta Cima: vai para a caixa irmã anterior da mesma coluna
+        let anteriorLi = liAtual.previousElementSibling;
+        if (anteriorLi) alvo = anteriorLi.querySelector(':scope > a');
+      }
+
+      if (alvo) focarNodeMapa(alvo);
+    }
+
+    function ajustarLuminosidadeMapa(val) {
+      const content = document.querySelector('.mindmap-content');
+      const modal = document.getElementById('modal-mapa');
+      if (!content) return;
+
+      // Varia suavemente de 0 (preto: rgb 18,18,18) a 100 (claro: rgb 248,249,250)
+      let c = Math.round(18 + (230 * (val / 100)));
+      let cor = `rgb(${c}, ${c}, ${c})`;
+
+      content.style.backgroundColor = cor;
+      if (modal) modal.style.backgroundColor = cor;
     }
 
     // NAVEGAÇÃO / FILTRO MAPA
@@ -4753,22 +4921,188 @@
       } catch (e) { }
     }
 
-    // --- TROCAR MATERIA (Compatibilidade V41) ---
+    // --- TROCAR MATERIA (Compatibilidade V41 + Suporte à Apostila Completa) ---
     function trocarMateria(valor) {
-      // Se for apenas índice numérico, tenta pegar da biblioteca local
-      // V41 carrega BIBLIOTECA_LOCAL no onload.
-      // Aqui assumimos que BIBLIOTECA_LOCAL está acessível (veja modificação no topo).
-
       if (typeof BIBLIOTECA_LOCAL !== 'undefined' && BIBLIOTECA_LOCAL[valor]) {
         const item = BIBLIOTECA_LOCAL[valor];
-        if (item.sheetId) {
+        if (item.id === "APOSTILA_COMPLETA") {
+          carregarApostilaCompleta(item.sheetId);
+        } else if (item.sheetId) {
           carregarDaNuvem(item.sheetId, item.id || "completa", item.nome);
         } else {
           mostrarNotificacao("Item de teste sem ID definido", "error");
         }
       } else {
         console.log("Seleção:", valor);
-        // Se não for índice válido, ignora ou avisa
+      }
+    }
+
+    // --- FUNÇÃO: UNIÃO DE TODOS OS CAPÍTULOS EM UMA ÚNICA APOSTILA ---
+    async function carregarApostilaCompleta(sheetId) {
+      const loader = document.getElementById('loader-api');
+      const loaderTexto = loader.querySelector('div:last-child');
+      loader.classList.add('ativo');
+
+      let divBruta = document.getElementById('dados-brutos-lei');
+      if (!divBruta) {
+        divBruta = document.createElement('div');
+        divBruta.id = 'dados-brutos-lei';
+        divBruta.style.display = 'none';
+        document.body.appendChild(divBruta);
+      }
+
+      // Limpa dados anteriores
+      textoMapaAtual = null;
+      divBruta.textContent = "";
+      document.getElementById('texto-renderizado').innerHTML = "";
+      document.getElementById('menu-dinamico').innerHTML = "";
+
+      const cacheKey = `cachedContent_${sheetId}_APOSTILA_COMPLETA`;
+      const versionKey = `version_${sheetId}_APOSTILA_COMPLETA`;
+
+      const localData = await loadFromGalpao(cacheKey);
+      const localVersion = localStorage.getItem(versionKey);
+
+      let serverVersion = null;
+      let shouldUseCache = false;
+
+      // 1. O Vigia: Verifica se a versão na nuvem mudou
+      try {
+        if (navigator.onLine) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+          const vigiaUrl = `${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${new Date().getTime()}`;
+          const vigiaResponse = await fetch(vigiaUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
+          if (vigiaResponse.ok) {
+            const vigiaJson = await vigiaResponse.json();
+            if (vigiaJson.success && vigiaJson.version) {
+              serverVersion = vigiaJson.version;
+            } else if (vigiaJson.result === 'success' && vigiaJson.version) {
+              serverVersion = vigiaJson.version;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("⚠️ O Vigia não conseguiu checar versão.", e.message);
+        if (localData) shouldUseCache = true;
+      }
+
+      if (localData && (localVersion === serverVersion || !serverVersion)) {
+        shouldUseCache = true;
+      }
+
+      // 2. Carregamento Ultrarrápido do Cache Local
+      if (shouldUseCache) {
+        try {
+          const dadosCache = JSON.parse(localData);
+          divBruta.textContent = dadosCache.html || "";
+          textoMapaAtual = dadosCache.mapa || null;
+          if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+
+          processarLei();
+          mostrarNotificacao("⚡ Apostila Completa carregada da memória!", "success");
+          document.getElementById('texto-renderizado').scrollTop = 0;
+          loader.classList.remove('ativo');
+          return;
+        } catch (e) {
+          console.error("Cache corrompido, refazendo união...", e);
+        }
+      }
+
+      // 3. Baixa cada capítulo e une os textos e mapas mentais
+      try {
+        const capitulos = BIBLIOTECA_LOCAL.filter(item => item.id !== "APOSTILA_COMPLETA");
+        const listaDados = [];
+
+        for (let i = 0; i < capitulos.length; i++) {
+          const cap = capitulos[i];
+          if (loaderTexto) loaderTexto.textContent = `Compilando apostila (${i + 1} de ${capitulos.length})...`;
+
+          // Tenta pegar do cache individual do capítulo se a versão coincidir
+          const capCacheKey = `cachedContent_${sheetId}_${cap.id}`;
+          let capData = null;
+          const cachedCap = await loadFromGalpao(capCacheKey);
+          if (cachedCap && localVersion === serverVersion) {
+            try { capData = JSON.parse(cachedCap); } catch(e) {}
+          }
+
+          if (!capData) {
+            const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(cap.id)}&sheetId=${encodeURIComponent(sheetId)}&_t=${new Date().getTime()}`;
+            const res = await fetch(urlFinal);
+            const json = await res.json();
+            if (json.success && json.data) {
+              capData = json.data;
+              saveToGalpao(capCacheKey, JSON.stringify(capData)).catch(() => {});
+            }
+          }
+
+          if (capData) listaDados.push(capData);
+        }
+
+        // União dos Textos
+        let temModoApostila = false;
+        const partesTexto = [];
+        const mapasValidos = [];
+
+        listaDados.forEach(d => {
+          if (!d) return;
+          if (d.html) {
+            let t = d.html.trim();
+            if (t.includes("MODO: APOSTILA")) {
+              temModoApostila = true;
+              t = t.replace(/^MODO:\s*APOSTILA\s*/i, '').trim();
+            }
+            if (t) partesTexto.push(t);
+          }
+          if (d.mapa && d.mapa.trim()) {
+            mapasValidos.push(d.mapa.trim());
+          }
+        });
+
+        const htmlUnificado = (temModoApostila ? "MODO: APOSTILA\n" : "") + partesTexto.join('\n\n');
+
+        // União dos Mapas Mentais sob um grande nó principal
+        let mapaUnificado = null;
+        if (mapasValidos.length > 0) {
+          let linhasMapa = ["# APOSTILA COMPLETA"];
+          mapasValidos.forEach(mapa => {
+            const linhas = mapa.replace(/\\n/g, '\n').split('\n');
+            linhas.forEach(l => {
+              const lTrim = l.trim();
+              if (!lTrim) return;
+              if (lTrim.startsWith('#')) {
+                // Adiciona um nível para que todos os ramos fiquem subordinados à APOSTILA COMPLETA
+                linhasMapa.push('#' + lTrim);
+              } else {
+                linhasMapa.push(lTrim);
+              }
+            });
+          });
+          mapaUnificado = linhasMapa.join('\n');
+        }
+
+        divBruta.textContent = htmlUnificado;
+        textoMapaAtual = mapaUnificado;
+
+        processarLei();
+        mostrarNotificacao("📚 Apostila Completa gerada com sucesso!", "success");
+        document.getElementById('texto-renderizado').scrollTop = 0;
+
+        // Salva a apostila unificada no Galpão para as próximas aberturas serem instantâneas
+        const dadosParaCache = { html: htmlUnificado, mapa: mapaUnificado, titulo: "Apostila Completa" };
+        await saveToGalpao(cacheKey, JSON.stringify(dadosParaCache));
+        if (serverVersion) {
+          localStorage.setItem(versionKey, serverVersion);
+        }
+
+      } catch (err) {
+        console.error("Erro ao compilar apostila completa:", err);
+        mostrarNotificacao("Erro ao juntar os capítulos da apostila.", "error");
+      } finally {
+        if (loaderTexto) loaderTexto.textContent = "Carregando Conteúdo...";
+        loader.classList.remove('ativo');
       }
     }
 
