@@ -1146,12 +1146,13 @@
 
     /* CORES */
     .tree>ul>li>a {
-      background: #e74c3c;
-      color: white;
-      border-color: #c0392b;
+      background: #6B1717;
+      color: #ffffff !important;
+      border-color: #4A0E0E;
       font-size: 1.1rem;
+      font-weight: 800;
       text-transform: uppercase;
-      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+      box-shadow: 0 4px 12px rgba(107, 23, 23, 0.4);
       max-width: 200px;
     }
 
@@ -1195,46 +1196,71 @@
       color: white !important;
     }
 
-    /* Animação para o nó focado */
-    @keyframes pulse-red {
+    /* Animação para o nó focado (Abertura e Busca Dourada) */
+    @keyframes pulse-gold {
       0% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.8);
         transform: scale(1);
       }
 
       70% {
-        box-shadow: 0 0 0 15px rgba(231, 76, 60, 0);
-        transform: scale(1.1);
+        box-shadow: 0 0 0 15px rgba(255, 215, 0, 0);
+        transform: scale(1.05);
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
         transform: scale(1);
       }
     }
 
     .node-focado {
-      animation: pulse-red 1.5s infinite;
-      background-color: #fff3e0 !important;
-      border-color: #e67e22 !important;
-      border-width: 3px !important;
+      animation: pulse-gold 1.5s infinite !important;
+      border-color: #FFD700 !important;
+      border-width: 2px !important;
       z-index: 100 !important;
     }
 
-    /* --- NÓ ATIVO (clicado pelo usuário) --- */
+   /* --- NÓ ATIVO (Destaque Dourado Chico Concursos) --- */
     .node-ativo {
       background-color: #1a1a1a !important;
       color: #fff !important;
       font-weight: 900 !important;
-      border-color: #333 !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+      border: 2px solid #FFD700 !important;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
     }
 
     .node-ativo>.mindmap-toggler {
-      background-color: #fff;
-      color: #1a1a1a;
-      border-color: #fff;
+      background-color: #FFD700 !important;
+      color: #1a1a1a !important;
+      border-color: #FFD700 !important;
+    }
+
+    /* --- NÓ LIDO / ESTUDADO (Concluído Verde Suave) --- */
+    .node-lido {
+      background-color: #1a1a1a !important;
+      color: #fff !important;
+      font-weight: 700 !important;
+      border: 2px solid #2ecc71 !important;
+      box-shadow: 0 0 8px rgba(46, 204, 113, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+    }
+
+    .node-lido>.mindmap-toggler {
+      background-color: #2ecc71 !important;
+      color: #1a1a1a !important;
+      border-color: #2ecc71 !important;
+    }
+
+    /* --- LINHAS CONECTORAS ADAPTÁVEIS AO FUNDO --- */
+    .tree li::before,
+    .tree li::after {
+      background: var(--cor-linha-mapa, #666) !important;
+    }
+
+    .tree li>a::before {
+      border-color: transparent transparent transparent var(--cor-linha-mapa, #666) !important;
     }
 
     /* --- BOTÃO DE EXPANDIR/RETRAIR --- */
@@ -2861,11 +2887,11 @@
               <div class="tree" id="arvore-visual"></div>
             </div>
 
-            <!-- CONTROLE DE LUMINOSIDADE FLUTUANTE (ESTILO MINDMASTER) -->
-            <div id="mindmap-light-control" style="position:absolute; bottom:15px; left:15px; z-index:1500; display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.7); padding:5px 12px; border-radius:20px; backdrop-filter:blur(4px); box-shadow:0 4px 12px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2);">
-              <span style="font-size:0.95rem; color:#ffd700;" title="Ajustar Luminosidade do Fundo">☀️</span>
-              <input type="range" id="slider-brilho-mapa" min="0" max="100" value="100" oninput="ajustarLuminosidadeMapa(this.value)" style="width:75px; height:4px; accent-color:#ffd700; cursor:pointer;">
-              <button onclick="alternarModoFoco()" title="Sair do Modo Foco" style="background:none; border:none; color:#fff; font-size:0.85rem; cursor:pointer; padding:0 3px; opacity:0.8;">✕</button>
+            <!-- CONTROLE DE LUMINOSIDADE FLUTUANTE SLIM (ESTILO MINDMASTER) -->
+            <div id="mindmap-light-control" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.35'" style="position:absolute; bottom:6px; left:10px; z-index:1500; display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.75); padding:2px 8px; border-radius:14px; backdrop-filter:blur(4px); box-shadow:0 2px 8px rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); opacity:0.35; transition:opacity 0.25s ease;">
+              <span style="font-size:0.8rem; color:#ffd700;" title="Ajustar Luminosidade do Fundo">☀️</span>
+              <input type="range" id="slider-brilho-mapa" min="0" max="100" value="100" oninput="ajustarLuminosidadeMapa(this.value)" style="width:65px; height:3px; accent-color:#ffd700; cursor:pointer;">
+              <button onclick="alternarModoFoco()" title="Sair do Modo Foco" style="background:none; border:none; color:#fff; font-size:0.75rem; cursor:pointer; padding:0 2px; opacity:0.8;">✕</button>
             </div>
           </div>
 
@@ -4023,6 +4049,8 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
     function ativarArrastarMapa() {
       const slider = document.querySelector('.mindmap-content');
       let isDown = false, startX, scrollLeft, scrollTop, startY;
+      
+      // 1. Arrastar com o mouse (Desktop)
       slider.addEventListener('mousedown', (e) => {
         if (e.target.tagName === 'A') return;
         isDown = true; startX = e.pageX - slider.offsetLeft; startY = e.pageY - slider.offsetTop;
@@ -4036,6 +4064,56 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
         const walkX = (x - startX) * 1.5; const walkY = (y - startY) * 1.5;
         slider.scrollLeft = scrollLeft - walkX; slider.scrollTop = scrollTop - walkY;
       });
+
+      // 2. Gesto de Pinça / Pinch-to-Zoom (Celular e Tablet)
+      let distInicial = 0;
+      let zoomBaseToque = 1;
+
+      slider.addEventListener('touchstart', (e) => {
+        // Detecta quando 2 dedos tocam a tela simultaneamente
+        if (e.touches.length === 2) {
+          distInicial = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY
+          );
+          zoomBaseToque = zoomAtualMapa;
+        }
+      }, { passive: true });
+
+      slider.addEventListener('touchmove', (e) => {
+        // Executa o zoom suave apenas quando houver 2 dedos se movendo
+        if (e.touches.length === 2 && distInicial > 0) {
+          e.preventDefault(); // Impede o zoom indesejado no iframe ou na página externa
+
+          const distAtual = Math.hypot(
+            e.touches[0].pageX - e.touches[1].pageX,
+            e.touches[0].pageY - e.touches[1].pageY
+          );
+
+          const fator = distAtual / distInicial;
+          let novoZoom = zoomBaseToque * fator;
+
+          // Trava nos limites definidos (0.5x até 2.0x)
+          if (novoZoom > 2) novoZoom = 2;
+          if (novoZoom < 0.5) novoZoom = 0.5;
+
+          zoomAtualMapa = novoZoom;
+
+          const arvore = document.getElementById('arvore-visual');
+          if (arvore) {
+            arvore.style.transformOrigin = '0 0';
+            arvore.style.transform = `scale(${zoomAtualMapa})`;
+            arvore.style.paddingBottom = Math.round(80 * zoomAtualMapa) + 'px';
+          }
+        }
+      }, { passive: false });
+
+      slider.addEventListener('touchend', (e) => {
+        // Finaliza o gesto quando os dedos saem da tela
+        if (e.touches.length < 2) {
+          distInicial = 0;
+        }
+      }, { passive: true });
     }
 
     function setupFerramentas() {
@@ -4318,6 +4396,7 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
 
     // --- NOVO: FUNÇÕES DO MODO FOCO, NAVEGAÇÃO POR TECLADO E LUMINOSIDADE (MINDMASTER) ---
     let modoFocoAtivo = false;
+    let ultimoNodeFocado = null; // Âncora sincronizada entre mouse e teclado
 
     function alternarModoFoco() {
       modoFocoAtivo = !modoFocoAtivo;
@@ -4325,7 +4404,6 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       if (btn) btn.classList.toggle('active-tool', modoFocoAtivo);
 
       if (modoFocoAtivo) {
-        // Aplica o zoom ampliado automático (1.25x)
         zoomAtualMapa = 1.25;
         const arvore = document.getElementById('arvore-visual');
         if (arvore) {
@@ -4334,8 +4412,8 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           arvore.style.paddingBottom = Math.round(80 * zoomAtualMapa) + 'px';
         }
 
-        // Seleciona a caixa ativa atual ou a caixa principal (raiz)
-        let alvo = document.querySelector('.tree .node-ativo') || document.querySelector('.tree > ul > li > a');
+        // Seleciona a caixa clicada por último, a ativa ou a raiz
+        let alvo = ultimoNodeFocado || document.querySelector('.tree .node-ativo') || document.querySelector('.tree > ul > li > a');
         if (alvo) focarNodeMapa(alvo);
 
         mostrarNotificacao("🎯 Modo Foco Ativo! (Use as setas ↑ ↓ ← → do teclado)", "success");
@@ -4348,8 +4426,17 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
     function focarNodeMapa(node) {
       if (!node) return;
 
-      // Remove destaque anterior e aplica na nova caixa
-      document.querySelectorAll('.tree .node-ativo').forEach(el => el.classList.remove('node-ativo'));
+      // 1. Qualquer caixa anteriormente dourada passa para verde (lida)
+      document.querySelectorAll('.tree .node-ativo').forEach(el => {
+        if (el !== node) {
+          el.classList.remove('node-ativo');
+          el.classList.add('node-lido');
+        }
+      });
+
+      // 2. A nova caixa em foco torna-se dourada e atualiza a âncora
+      ultimoNodeFocado = node;
+      node.classList.remove('node-lido');
       node.classList.add('node-ativo');
 
       // Garante que todos os ramos pais até ela estejam expandidos
@@ -4373,8 +4460,11 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
     }
 
     function navegarMapaPorTeclado(direcao) {
-      let ativo = document.querySelector('.tree .node-ativo');
-      if (!ativo) ativo = document.querySelector('.tree > ul > li > a');
+      // Prioridade total para a última caixa interagida (mouse ou teclado)
+      let ativo = ultimoNodeFocado;
+      if (!ativo || !document.body.contains(ativo)) {
+        ativo = document.querySelector('.tree .node-ativo') || document.querySelector('.tree > ul > li > a');
+      }
       if (!ativo) return;
 
       let liAtual = ativo.closest('li');
@@ -4424,6 +4514,11 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
 
       content.style.backgroundColor = cor;
       if (modal) modal.style.backgroundColor = cor;
+
+      // Ajusta a cor das linhas conectoras dinamicamente para contraste perfeito
+      // Fundo Claro (val 100) -> Linha grafite (#666) | Fundo Escuro (val 0) -> Linha clara (rgb 210,210,210)
+      let tomLinha = Math.round(210 - (110 * (val / 100)));
+      document.documentElement.style.setProperty('--cor-linha-mapa', `rgb(${tomLinha}, ${tomLinha}, ${tomLinha})`);
     }
 
     // NAVEGAÇÃO / FILTRO MAPA
@@ -4576,8 +4671,11 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       const arvore = document.getElementById('arvore-visual');
       if (!arvore) return;
 
-      // 1. Remove todos os destaques ativos
-      arvore.querySelectorAll('.node-ativo').forEach(el => el.classList.remove('node-ativo'));
+      // 1. Remove todos os destaques dourados e verdes, limpando a âncora
+      arvore.querySelectorAll('.node-ativo, .node-lido').forEach(el => {
+        el.classList.remove('node-ativo', 'node-lido');
+      });
+      ultimoNodeFocado = null;
 
       // 2. Recolhe todos os nós com filhos (nível ≥2, igual ao estado inicial)
       const todosLi = arvore.querySelectorAll('li');
@@ -4669,10 +4767,24 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           if (e.target.className === 'mindmap-toggler') return;
           e.preventDefault();
 
+         // Sincroniza imediatamente a âncora do teclado com a caixa clicada
+          ultimoNodeFocado = this;
+
           const estaAtivo = this.classList.contains('node-ativo');
 
-          // Toggle destaque visual (preto/branco + negrito)
-          this.classList.toggle('node-ativo');
+          if (estaAtivo) {
+            // Segundo clique na caixa dourada atual: desmarca (volta ao branco limpo)
+            this.classList.remove('node-ativo');
+          } else {
+            // Qualquer outra caixa que estava dourada vira verde (lida)
+            document.querySelectorAll('.tree .node-ativo').forEach(el => {
+              el.classList.remove('node-ativo');
+              el.classList.add('node-lido');
+            });
+            // A caixa clicada (nova ou que era verde) torna-se a dourada ativa
+            this.classList.remove('node-lido');
+            this.classList.add('node-ativo');
+          }
 
           // Se tem filhos, sincroniza expand/collapse com o estado REAL dos filhos
           if (temFilhos) {
