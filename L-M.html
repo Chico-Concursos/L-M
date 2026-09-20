@@ -1253,6 +1253,15 @@
       border-color: #2ecc71 !important;
     }
 
+    /* --- DESTAQUE SELETIVO DE PALAVRAS-CHAVE NO MAPA --- */
+    .mindmap-key {
+      font-weight: inherit;
+    }
+
+    .chaves-ativas .mindmap-key {
+      font-weight: 900 !important;
+    }
+
     /* --- LINHAS CONECTORAS ADAPTÁVEIS AO FUNDO --- */
     .tree li::before,
     .tree li::after {
@@ -2877,6 +2886,8 @@
                     Expandir</button>
                   <button id="btn-modo-foco" onclick="alternarModoFoco()" class="tool-btn"
                     style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Modo Foco com Zoom e Navegação por Teclado">🎯 Foco</button>
+                  <button id="btn-chaves-mapa" onclick="alternarDestaqueChaves()" class="tool-btn"
+                    style="font-size:0.75rem; padding:4px 10px; border-radius:13px;" title="Destacar Palavras-Chave em Negrito">✨ Chaves</button>
                 </div>
                 <button onclick="fecharMapaMental()" class="btn-close-map"
                   style="border-radius:50%; width:16px; height:16px; padding:0; display:flex; align-items:center; justify-content:center;">✖</button>
@@ -4029,7 +4040,11 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           const matchArt = no.texto.match(/Art\.?\s*(\d+)/i);
           let linkAction = 'javascript:void(0)', classeLink = '';
           if (matchArt) { linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchArt[1]}')`; classeLink = ' style="cursor:pointer; border-bottom:1px solid #999;"'; }
-          html += `<li><a href="${linkAction}"${classeLink}>${no.texto}</a>`;
+          
+          // Envolve os termos entre asteriscos na classe controlada pelo botão
+          const textoFormatado = no.texto.replace(/\*\*(.*?)\*\*/g, '<strong class="mindmap-key">$1</strong>');
+
+          html += `<li><a href="${linkAction}"${classeLink}>${textoFormatado}</a>`;
           if (no.filhos.length > 0) html += gerarHTML(no.filhos);
           html += '</li>';
         });
@@ -4397,6 +4412,18 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
     // --- NOVO: FUNÇÕES DO MODO FOCO, NAVEGAÇÃO POR TECLADO E LUMINOSIDADE (MINDMASTER) ---
     let modoFocoAtivo = false;
     let ultimoNodeFocado = null; // Âncora sincronizada entre mouse e teclado
+    let destaqueChavesMapaAtivo = false;
+
+    function alternarDestaqueChaves() {
+      destaqueChavesMapaAtivo = !destaqueChavesMapaAtivo;
+      const btn = document.getElementById('btn-chaves-mapa');
+      const modalMapa = document.getElementById('modal-mapa');
+
+      if (btn) btn.classList.toggle('active-tool', destaqueChavesMapaAtivo);
+      if (modalMapa) modalMapa.classList.toggle('chaves-ativas', destaqueChavesMapaAtivo);
+
+      mostrarNotificacao(destaqueChavesMapaAtivo ? "Palavras-chave Destacadas ✨" : "Texto Original Limpo");
+    }
 
     function alternarModoFoco() {
       modoFocoAtivo = !modoFocoAtivo;
@@ -4554,7 +4581,7 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
         if (!match) return null;
         return {
           nivel: match[1].length,
-          nome: match[2].trim(),
+          nome: match[2].replace(/\*\*/g, '').trim(),
           original: linha,
           id: index
         };
