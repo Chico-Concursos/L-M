@@ -1102,7 +1102,7 @@
       display: none;
     }
 
-    /* --- CARDS DO MAPA INTELIGENTES (V56) --- */
+    /* --- CARDS DO MAPA INTELIGENTES --- */
     .tree li>a {
       background: white;
       border: 1px solid #ccc;
@@ -1119,10 +1119,8 @@
       position: relative;
 
       /* A MÁGICA DO TAMANHO: */
-      display: inline-flex;
-      /* Flexível, mas respeita conteúdo */
-      align-items: center;
-      justify-content: center;
+      display: inline-block;
+      vertical-align: middle;
 
       width: max-content;
       /* Tenta crescer para caber o texto numa linha só */
@@ -1253,13 +1251,41 @@
       border-color: #2ecc71 !important;
     }
 
-    /* --- DESTAQUE SELETIVO DE PALAVRAS-CHAVE NO MAPA --- */
+    /* --- DESTAQUE SELETIVO DE PALAVRAS-CHAVE NO MAPA (CORES ADAPTATIVAS) --- */
     .mindmap-key {
       font-weight: inherit;
+      color: inherit;
     }
 
+    /* 1. ESTADO ATIVO: Peso elegante e sem quebras */
     .chaves-ativas .mindmap-key {
-      font-weight: 900 !important;
+      font-weight: 700 !important;
+    }
+
+    /* 2. CAIXAS DE FUNDO CLARO (Padrão do Mapa Mental) */
+    /* 1ª, 3ª, 5ª palavra: Azul Vibrante */
+    .chaves-ativas .tree li > a .mindmap-key:nth-of-type(odd) {
+      color: #0038ff !important;
+    }
+    /* 2ª, 4ª, 6ª palavra: Vermelho Vivo */
+    .chaves-ativas .tree li > a .mindmap-key:nth-of-type(even) {
+      color: #e60000 !important;
+    }
+
+    /* 3. CAIXAS DE FUNDO ESCURO (Caixa Ativa, Caixa Lida e Caixa Raiz Vinho) */
+    /* 1ª, 3ª, 5ª palavra: Amarelo Dourado Chico */
+    .chaves-ativas .tree li > a.node-ativo .mindmap-key:nth-of-type(odd),
+    .chaves-ativas .tree li > a.node-lido .mindmap-key:nth-of-type(odd),
+    .chaves-ativas .tree > ul > li > a .mindmap-key:nth-of-type(odd),
+    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key:nth-of-type(odd) {
+      color: #FFD700 !important;
+    }
+    /* 2ª, 4ª, 6ª palavra: Verde Lima / Fluorescente */
+    .chaves-ativas .tree li > a.node-ativo .mindmap-key:nth-of-type(even),
+    .chaves-ativas .tree li > a.node-lido .mindmap-key:nth-of-type(even),
+    .chaves-ativas .tree > ul > li > a .mindmap-key:nth-of-type(even),
+    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key:nth-of-type(even) {
+      color: #00e640 !important;
     }
 
     /* --- LINHAS CONECTORAS ADAPTÁVEIS AO FUNDO --- */
