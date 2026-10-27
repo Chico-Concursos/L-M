@@ -450,7 +450,7 @@
       margin-left: calc(var(--largura-menu) * -1);
     }
 
-    /* --- ÁREA PRINCIPAL --- */
+    /* --- ÁREA PRINCIPAL (ATUALIZADA PARA CHICO DARK) --- */
     .main-wrapper {
       flex-grow: 1;
       display: flex;
@@ -458,12 +458,28 @@
       overflow: hidden;
     }
 
-    /* --- ÁREA PRINCIPAL (ATUALIZADA PARA CHICO DARK) --- */
-    .main-wrapper {
+    /* Tabela real usada na impressão para repetir os espaçadores em todas as páginas.
+       Na tela, os invólucros da tabela desaparecem e o conteúdo continua sendo um flex item. */
+    .print-table {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      min-height: 0;
       overflow: hidden;
+      border-collapse: collapse;
+      border: 0;
+    }
+
+    .print-table > tbody,
+    .print-table > tbody > tr,
+    .print-table > tbody > tr > td {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      min-height: 0;
+      padding: 0;
+      border: 0;
     }
 
     /* --- PADRONIZAÇÃO GLOBAL DE CABEÇALHOS E BOTÕES --- */
@@ -610,7 +626,7 @@
     /* CONTEÚDO RENDERIZADO */
     .content {
       flex-grow: 1;
-      padding: 40px 80px;
+      padding: 40px 60px;
       overflow-y: auto;
       background-color: white;
       max-width: 100%;
@@ -618,6 +634,7 @@
       scroll-behavior: smooth;
       width: 100%;
       box-sizing: border-box;
+      font-family: 'Roboto', 'Segoe UI', Helvetica, Arial, sans-serif;
     }
 
     h1 {
@@ -763,6 +780,199 @@
       background-color: #fffde7;
       border-left-color: #fbc02d;
       color: #444;
+    }
+
+    /* --- NOVOS ESTILOS MARKDOWN AVANÇADO (V130) --- */
+    .divisor-bloco {
+      border: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cor-destaque), transparent);
+      margin: 35px 0;
+      opacity: 0.6;
+    }
+
+    .subtitulo-h4 {
+      font-size: 1.15rem;
+      color: #0d3b4c;
+      font-weight: 800;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      padding-left: 12px;
+      border-left: 4px solid var(--cor-destaque);
+    }
+
+    /* Tabelas Markdown (Padrão Chico Concursos) */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin: 22px 0;
+      border-radius: 8px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+      border: 1px solid #e0e0e0;
+    }
+
+    .tabela-chico {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      text-align: left;
+    }
+
+    .tabela-chico thead tr {
+      background-color: #121212;
+      color: #F7EF8A;
+      border-bottom: 3px solid var(--cor-destaque);
+    }
+
+    .tabela-chico th {
+      padding: 12px 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.4px;
+      border: 1px solid #2c2c2c;
+      line-height: 1.4;
+    }
+
+    .tabela-chico td {
+      padding: 11px 15px;
+      border: 1px solid #e0e0e0;
+      color: #333;
+      line-height: 1.6;
+      vertical-align: top;
+      font-size: 1.05rem;
+    }
+
+    .tabela-chico tbody tr:nth-child(even) {
+      background-color: #f8f9fb;
+    }
+
+    .tabela-chico tbody tr:hover {
+      background-color: #fffdf2;
+    }
+
+    /* Listas Hierárquicas (Nível 1 e Nível 2) */
+    .lista-item-n1,
+    .lista-item-num {
+      margin: 6px 0 10px 0;
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.7;
+      text-align: justify;
+      color: #444;
+      font-size: 1.15rem !important;
+    }
+
+    .lista-item-num {
+      padding-left: 8px;
+    }
+
+    .lista-item-n1::before {
+      content: "•";
+      color: var(--cor-destaque);
+      font-weight: 900;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      position: absolute;
+      left: 3px;
+      top: 0;
+    }
+
+    /* Mantém títulos consecutivos juntos na impressão sem alterar o layout de tela */
+    .keep-with-next {
+      display: contents;
+    }
+
+    .lista-item-n2 {
+      margin: 4px 0 8px 24px;
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.65;
+      text-align: justify;
+      color: #444;
+      font-size: 1.12rem !important;
+    }
+
+    .lista-item-n2::before {
+      content: "◦";
+      color: #1565c0;
+      font-weight: 900;
+      font-size: 1.15rem;
+      position: absolute;
+      left: 2px;
+      top: -1px;
+    }
+
+    /* Cards Didáticos: Mnemónicos, Questões CRS e Gabarito Comentado */
+    .caixa-mnemonico {
+      background-color: #fffdf0;
+      border-left: 5px solid #d4af37;
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin: 22px 0 10px 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+      color: #2c3e50;
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .questao-titulo {
+      background-color: #121212;
+      color: #F7EF8A;
+      padding: 10px 18px;
+      border-radius: 8px 8px 0 0;
+      border-left: 5px solid var(--cor-destaque);
+      font-weight: 800;
+      font-size: 1.12rem;
+      margin-top: 28px;
+      margin-bottom: 0;
+    }
+
+    .questao-alternativa {
+      background-color: #f8f9fa;
+      border-left: 4px solid #dcdcdc;
+      padding: 8px 16px;
+      margin: 4px 0 !important;
+      border-radius: 0 6px 6px 0;
+      font-size: 1.1rem !important;
+    }
+
+    .caixa-gabarito {
+      background-color: #e8f5e9;
+      border-left: 5px solid #2e7d32;
+      color: #1b5e20;
+      padding: 14px 18px;
+      margin: 8px 0 28px 0;
+      border-radius: 0 8px 8px 8px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      line-height: 1.65;
+      font-size: 1.12rem !important;
+      text-align: justify;
+    }
+
+    /* Adaptação ao Modo Livro */
+    body.modo-livro-ativo .tabela-chico {
+      background-color: #faf3e3;
+      color: #433422;
+    }
+
+    body.modo-livro-ativo .tabela-chico td {
+      color: #433422;
+      border-color: #dccbb1;
+    }
+
+    body.modo-livro-ativo .tabela-chico tbody tr:nth-child(even) {
+      background-color: #f0e5ce;
+    }
+
+    body.modo-livro-ativo .lista-item-n1,
+    body.modo-livro-ativo .lista-item-n2,
+    body.modo-livro-ativo .lista-item-num {
+      color: #433422 !important;
+      font-family: 'Merriweather', 'Georgia', serif !important;
+      font-size: 1.08rem !important;
+      line-height: 1.75 !important;
+      letter-spacing: 0.01em;
     }
 
     /* Notificações */
@@ -1011,17 +1221,6 @@
       align-items: center;
     }
 
-    /* CONEXÕES */
-    .tree li::before {
-      content: '';
-      position: absolute;
-      left: -50px;
-      top: 50%;
-      width: 50px;
-      height: 2px;
-      background: #666;
-    }
-
     .tree>ul>li::before {
       display: none;
     }
@@ -1177,16 +1376,19 @@
     body.modo-livro-ativo .content {
       background-color: #f4ecd8 !important;
       color: #433422 !important;
-      max-width: 850px !important;
+      max-width: 1150px !important;
       margin: 0 auto !important;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-      padding: 60px 100px !important;
+      padding: 40px 50px;
     }
 
-    body.modo-livro-ativo .content p {
+    body.modo-livro-ativo .content p,
+    body.modo-livro-ativo .content li {
       color: #433422 !important;
-      font-family: 'Georgia', serif;
-      font-size: 1.1em;
+      font-family: 'Merriweather', 'Georgia', serif !important;
+      font-size: 1.08rem !important;
+      line-height: 1.75 !important;
+      letter-spacing: 0.01em;
     }
 
     .tool-btn.active-book {
@@ -1570,7 +1772,7 @@
     }
 
     body.modo-zen .content {
-      max-width: 900px !important;
+      max-width: 100%;
       margin: 0 auto !important;
       border: none !important;
     }
@@ -1642,6 +1844,27 @@
         width: auto !important;
         word-break: normal !important;
         /* Reforça: não quebrar palavras */
+      }
+
+      /* Calibragem tipográfica mobile: evita buracos de justificação em ecrãs estreitos */
+      .content p,
+      .content li,
+      .lista-item-n1,
+      .lista-item-n2,
+      .lista-item-num,
+      .caixa-alerta,
+      .caixa-gabarito,
+      .questao-alternativa {
+        font-size: 1.02rem !important;
+        line-height: 1.6 !important;
+        text-align: left !important;
+      }
+
+      .caixa-mnemonico,
+      .questao-titulo,
+      .subtitulo-h4 {
+        font-size: 1.05rem !important;
+        line-height: 1.45 !important;
       }
 
       /* Imagens e tabelas responsivas */
@@ -2567,11 +2790,11 @@
       box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
     }
 
-    /* --- ESTILOS DE IMPRESSÃO (APOSTILA) --- */
+    /* --- ESTILOS DE IMPRESSÃO / PDF (PÁG 1: LOGO + TARJA BASE | PÁG 2+: TARJA TOPO + BASE) --- */
     @media print {
       @page {
-        margin: 1cm 2cm 1cm 3cm;
-        /* top, right, bottom, left */
+        size: A4;
+        margin: 0.9cm 1.2cm 0.9cm 1.2cm;
       }
 
       * {
@@ -2579,18 +2802,143 @@
         print-color-adjust: exact !important;
       }
 
+      html,
       body {
-        background-color: white !important;
-        color: black !important;
+        display: block !important;
+        position: static !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
         height: auto !important;
         overflow: visible !important;
         padding: 0 !important;
+        margin: 0 !important;
       }
 
-      .main-wrapper {
-        display: table !important;
+      /* 1. Logomarca exclusiva da 1ª Página (cobre a tarja do topo apenas na Pág. 1) */
+      #capa-logo-primeira-pagina {
+        display: block !important;
+        position: relative !important;
+        z-index: 99999 !important;
+        background-color: #ffffff !important;
+        margin-top: -2px !important;
+        margin-left: -4px !important;
+        margin-right: -4px !important;
+        padding-top: 2px !important;
+        width: calc(100% + 8px) !important;
+        min-height: 1.8cm !important;
+        margin-bottom: -1.65cm !important; /* Compensa o espaçador real da tabela na Pág. 1 */
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+
+      .print-header-inner {
+        text-align: center !important;
+        padding-top: 0 !important;
+        padding-bottom: 10px !important;
+        border-bottom: 2px solid #ccc !important;
+        background-color: #ffffff !important;
+        margin-bottom: 0 !important;
+      }
+
+      .print-logo {
+        display: block !important;
+        width: 52mm !important;
+        height: auto !important;
+        border: none !important;
+        border-radius: 8pt !important;
+        margin: 0 auto !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      /* 2. Tarjas Pretas com Filete Dourado (Padrão Chico Concursos) */
+      .print-dark-bar {
+        background-color: #050505 !important;
+        border: 1px solid #222222 !important;
+        border-radius: 10px !important;
+        text-align: center !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        font-family: 'Roboto', 'Segoe UI', sans-serif !important;
+      }
+
+      .print-dark-bar::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, #050505 0%, #AE8625 20%, #FFF3A1 50%, #AE8625 80%, #050505 100%) !important;
+      }
+
+      .print-brand-title {
+        font-weight: 900 !important;
+        letter-spacing: 1.5px !important;
+        color: #FFFFFF !important;
+        text-transform: uppercase !important;
+        line-height: 1.2 !important;
+      }
+
+      .print-brand-title span {
+        color: #DEC165 !important;
+        -webkit-text-fill-color: #DEC165 !important;
+        background: none !important;
+      }
+
+      .print-brand-subtitle {
+        color: #E0E0E0 !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.4px !important;
+        margin-top: 2px !important;
+        line-height: 1.2 !important;
+      }
+
+      /* Posicionamento Fixo da Tarja do Topo (visível nas Págs. 2+) */
+      #tarja-topo-fixa-impressao {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 1px !important; /* Recua 1px para a borda não coincidir com a máscara branca da Pág. 1 */
+        width: calc(100% - 2px) !important;
+        padding: 7px 15px 6px 15px !important;
+        z-index: 5000 !important;
+      }
+
+      .print-header-bar .print-brand-title {
+        font-size: 11pt !important;
+      }
+
+      .print-header-bar .print-brand-subtitle {
+        font-size: 8pt !important;
+      }
+
+      /* Posicionamento Fixo da Tarja da Base (visível em TODAS as páginas) */
+      #tarja-base-fixa-impressao {
+        display: block !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
         width: 100% !important;
-        background-color: white !important;
+        padding: 7px 15px 6px 15px !important;
+        z-index: 5000 !important;
+      }
+
+      .print-footer-bar .print-brand-title {
+        font-size: 10.5pt !important;
+      }
+
+      .print-footer-bar .print-brand-subtitle {
+        font-size: 8pt !important;
+      }
+
+      /* 3. Estrutura de Paginação: tabela real para repetir os espaçadores em todas as páginas */
+      .main-wrapper {
+        display: block !important;
+        width: 100% !important;
+        background-color: transparent !important;
         color: black !important;
         max-width: none !important;
         margin: 0 !important;
@@ -2599,9 +2947,11 @@
         overflow: visible !important;
       }
 
-      .content {
-        display: table-row-group !important;
-        background-color: white !important;
+      .print-table {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        background-color: transparent !important;
         color: black !important;
         max-width: none !important;
         margin: 0 !important;
@@ -2611,67 +2961,133 @@
       }
 
       #header-impressao {
-        display: block !important;
+        display: table-header-group !important;
         width: 100% !important;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      .print-header-inner {
-        text-align: center;
-        padding-top: 0;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #ccc;
-        background-color: white !important;
-        margin-bottom: 0.8cm;
-      }
-
-      .print-logo {
-        display: block;
-        width: 52mm;
-        height: auto;
-        border: none;
-        border-radius: 8pt;
-        margin: 0 auto;
-        page-break-inside: avoid;
-        break-inside: avoid;
       }
 
       #footer-impressao {
         display: table-footer-group !important;
-      }
-
-      #footer-impressao::after {
-        content: "";
-        display: block;
-        height: 1.5cm;
-        /* Espaço vazio reservado no final de cada página para o rodapé não sobrepor o texto */
-      }
-
-      .print-footer-inner {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
         width: 100% !important;
-        text-align: center;
-        font-family: 'Roboto', sans-serif;
-        font-size: 11pt;
-        font-weight: 600;
-        color: #555 !important;
-        padding-top: 10px !important;
-        padding-bottom: 0px !important;
-        border-top: 1px solid #ccc !important;
-        background-color: white !important;
-        margin: 0 !important;
-        z-index: 9999 !important;
       }
 
-      p,
-      li {
+      .print-table > tbody {
+        display: table-row-group !important;
+      }
+
+      .print-table > tbody > tr {
+        display: table-row !important;
+      }
+
+      .print-table > tbody > tr > td {
+        display: table-cell !important;
+        padding: 0 !important;
+        border: 0 !important;
+        vertical-align: top !important;
+      }
+
+      #header-impressao > tr,
+      #footer-impressao > tr {
+        display: table-row !important;
+      }
+
+      #header-impressao > tr > td,
+      #footer-impressao > tr > td {
+        display: table-cell !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
+
+      #header-impressao > tr > td {
+        height: 1.65cm !important; /* Reserva o espaço da tarja superior nas páginas 2+ */
+      }
+
+      #footer-impressao > tr > td {
+        height: 1.75cm !important; /* Reserva o espaço da tarja inferior em todas as páginas */
+      }
+
+      .content {
+        display: block !important;
+        background-color: transparent !important;
+        color: black !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+
+      /* 4. Tipografia, Títulos sem Órfãos e Tabelas Preta/Dourada */
+      h1, h2, h3, h4, .lei-titulo-TITULO, .lei-titulo-CAPÍTULO, .subtitulo-h4, .questao-titulo, .caixa-mnemonico {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      p, li, .lista-item-n1, .lista-item-n2, .lista-item-num, .questao-alternativa {
         font-size: 11.5pt !important;
         line-height: 1.5 !important;
         color: black !important;
         page-break-inside: avoid;
+      }
+
+      .caixa-alerta, .caixa-gabarito, .caixa-mnemonico, .questao-titulo {
+        font-size: 11pt !important;
+        line-height: 1.45 !important;
+        padding: 10px 14px !important;
+      }
+
+      .keep-with-next {
+        display: block !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .lista-item-n1::before {
+        font-size: 11.5pt !important;
+        line-height: 1.5 !important;
+        top: 0 !important;
+      }
+
+      .table-responsive {
+        overflow: visible !important;
+        box-shadow: none !important;
+        border: none !important; /* Evita linha vertical solta quando a tabela quebra de página */
+        margin: 14px 0 !important;
+      }
+
+      .tabela-chico {
+        width: 100% !important;
+        page-break-inside: auto;
+        font-size: 10pt !important;
+      }
+
+      .tabela-chico tr,
+      .caixa-gabarito,
+      .caixa-alerta {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .tabela-chico thead tr {
+        background-color: #121212 !important;
+        color: #F7EF8A !important;
+      }
+
+      .tabela-chico th {
+        background-color: #121212 !important;
+        color: #F7EF8A !important;
+        font-size: 9.5pt !important;
+        padding: 7px 8px !important;
+        border: 1px solid #333 !important;
+      }
+
+      .tabela-chico td {
+        font-size: 10pt !important;
+        padding: 6px 8px !important;
+        border: 1px solid #ccc !important;
+        color: #111 !important;
+        line-height: 1.35 !important;
       }
 
       .study-toolbar,
@@ -2788,13 +3204,27 @@
     <div class="menu-items" id="menu-dinamico"></div>
   </nav>
 
-  <div class="main-wrapper">
-    <div id="header-impressao" style="display: none;">
-      <div class="print-header-inner">
-        <img src="https://lh3.googleusercontent.com/d/1oL4ih3-SgkXnUQLgZsvkekZnf9aR19mA" alt="Chico Concursos" class="print-logo">
-      </div>
-    </div>
+  <!-- CAMADAS EXCLUSIVAS DE IMPRESSÃO / PDF -->
+  <!-- 1. Tarja Preta do Topo (aparece a partir da 2ª página; fica oculta sob a logo na 1ª página) -->
+  <div id="tarja-topo-fixa-impressao" class="print-dark-bar print-header-bar" style="display: none;">
+    <div class="print-brand-title">CHICO <span>CONCURSOS</span></div>
+    <div class="print-brand-subtitle">⚡ Mire, estude e acerte 🎯</div>
+  </div>
 
+  <!-- 2. Tarja Preta da Base (aparece no rodapé de TODAS as páginas, da 1ª à última) -->
+  <div id="tarja-base-fixa-impressao" class="print-dark-bar print-footer-bar" style="display: none;">
+    <div class="print-brand-title">CHICO <span>CONCURSOS</span></div>
+    <div class="print-brand-subtitle">⚡ Mire, estude e acerte 🎯</div>
+  </div>
+
+  <!-- 3. Logomarca Oficial Exclusiva do Topo da 1ª Página -->
+  <div id="capa-logo-primeira-pagina" style="display: none;">
+    <div class="print-header-inner">
+      <img src="https://lh3.googleusercontent.com/d/1oL4ih3-SgkXnUQLgZsvkekZnf9aR19mA" alt="Chico Concursos" class="print-logo">
+    </div>
+  </div>
+
+  <div class="main-wrapper">
     <div class="study-toolbar">
       <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">☰</button>
       <span class="study-label">Matéria:</span>
@@ -2852,19 +3282,28 @@
         <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema">🚪 Sair</button>
       </div>
     </div>
-    <main class="content" id="texto-renderizado">
+
+    <table class="print-table">
+      <thead id="header-impressao" style="display: none;">
+        <tr><td></td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <main class="content" id="texto-renderizado">
       <div style="text-align: center; padding: 60px 20px; color: var(--cor-texto);">
         <div class="spinner" style="display: block; margin: 0 auto 20px auto;"></div>
         <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 8px;">Iniciando Leitor...</h3>
         <p style="font-size: 0.95rem; opacity: 0.8;">Carregando configurações e materiais...</p>
       </div>
-    </main>
-
-    <div id="footer-impressao" style="display: none;">
-      <div class="print-footer-inner">
-        ⚡ Mire, estude e acerte 🎯
-      </div>
-    </div>
+            </main>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot id="footer-impressao" style="display: none;">
+        <tr><td></td></tr>
+      </tfoot>
+    </table>
   </div>
   <div id="modal-mapa" class="mindmap-modal">
     <div class="mindmap-header" id="header-mapa-conteudo">
@@ -3039,11 +3478,11 @@
           
           <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 20px; border-radius: 10px; border: 1px solid #333; color: white; flex-wrap: wrap; gap: 10px;">
             <span style="font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-              📄 <span id="pdf-file-title">${fileName}</span>
+              📄 <span id="pdf-file-title">${escapeHTML(fileName)}</span>
               ${!cachedTitle ? '<span id="pdf-title-loading" style="font-size: 0.8rem; color: #aaa; font-weight: normal; font-style: italic;">(identificando nome...)</span>' : ''}
             </span>
             <!-- BOTÃO DESATIVADO: Baixar Apostila PDF -->
-            <a id="pdf-download-btn" href="${downloadUrl}" target="_blank" download="${fileName}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
+            <a id="pdf-download-btn" href="${downloadUrl}" target="_blank" download="${escapeHTML(fileName)}" class="tool-btn highlight-btn" style="display: none !important; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; align-items: center; gap: 6px; background: linear-gradient(135deg, #d2ac47 0%, #ae8625 100%); color: #000;">
               📥 Baixar Apostila (PDF)
             </a>
           </div>
@@ -3067,7 +3506,8 @@
       (async () => {
         try {
           const timestamp = new Date().getTime();
-          const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
+          const emailSalvo = localStorage.getItem('leis_userEmail') || userEmail || '';
+          const urlFinal = `${PDF_PROXY_URL}?action=getPdf&fileId=${encodeURIComponent(fileId)}&email=${encodeURIComponent(emailSalvo)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
 
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -3108,6 +3548,7 @@
     let modoGrifoAtivo = false, modoBorrachaAtivo = false, analiseAutoAtiva = false, modoSchemaAtivo = false;
     let tamanhoFonte = 100;
     let textoMapaAtual = "";
+    let conteudoBrutoAtual = ""; // Armazena o texto/markdown diretamente em memória (substitui #dados-brutos-lei)
     let BIBLIOTECA_LOCAL = []; // Global para acesso no trocarMateria
 
     // --- SEGURANÇA (SISTEMA V84) ---
@@ -3118,6 +3559,59 @@
     let userEmail = '';
     let userAllowedCourses = []; // Armazena os IDs das planilhas autorizadas para o aluno
     let isForceRefreshLogin = false; // Flag para forçar atualização no servidor após detecção de novo material
+    let materialJaIniciado = false; // Garante carregamento único pós-autenticação
+    let currentMaterialLoadToken = 0; // Impede que o vigia de um capítulo antigo sobrescreva o capítulo atual
+
+    // =================================================================
+    // 🛡️ SANITIZAÇÃO E TRADUÇÃO AMIGÁVEL DE ERROS (PADRÃO FC)
+    // =================================================================
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function humanizeErrorMessage(error) {
+      if (!error) return "Ocorreu uma instabilidade momentânea. Tente novamente.";
+      const raw = (typeof error === 'string' ? error : (error.message || error.toString() || '')).toLowerCase();
+      console.error("[ChicoConcursos - Log Técnico]:", error);
+
+      if (raw.includes('illegal spreadsheet id') || raw.includes('not found') || raw.includes('id da planilha')) {
+        return "Este material está temporariamente indisponível. Entre em contato com o suporte Chico Concursos.";
+      }
+      if (raw.includes('aborterror') || raw.includes('timeout') || raw.includes('tempo limite') || raw.includes('abort')) {
+        return "A conexão demorou além do esperado. Verifique sua internet e tente novamente.";
+      }
+      if (raw.includes('failed to fetch') || raw.includes('networkerror') || raw.includes('erro de conexão') || raw.includes('offline')) {
+        return "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.";
+      }
+      if (raw.includes('acesso negado') || raw.includes('permissão') || raw.includes('permissao')) {
+        return "Sua conta ainda não possui acesso a este material. Se você já adquiriu, confirme com o suporte.";
+      }
+      if (raw.includes('too many') || raw.includes('quota') || raw.includes('cota') || raw.includes('bloqueio') || raw.includes('ocupado')) {
+        return "Servidor sincronizando dados neste momento. Aguarde alguns segundos e tente novamente.";
+      }
+      if (raw.includes('senha incorreta') || raw.includes('credenciais inválidas') || raw.includes('credenciais invalidas') || raw.includes('use post')) {
+        return "E-mail ou senha incorretos. Verifique seus dados de acesso.";
+      }
+      if (raw.includes('email não encontrado') || raw.includes('email nao encontrado')) {
+        return "Este e-mail não foi encontrado em nosso cadastro.";
+      }
+      if (raw.includes('conta desativada')) {
+        return "Sua conta está inativa. Entre em contato com o suporte.";
+      }
+
+      const technicalTerms = ['exception', 'error', 'http', 'token', 'undefined', 'post', 'get', 'script', 'null', 'syntax', 'stack'];
+      const hasTechnicalTerm = technicalTerms.some(term => raw.includes(term));
+      if (!hasTechnicalTerm && raw.length < 110) {
+        return typeof error === 'string' ? error : (error.message || String(error) || "Ocorreu uma instabilidade momentânea. Tente novamente.");
+      }
+      return "Ocorreu uma instabilidade na conexão. Tente novamente.";
+    }
 
     // =================================================================
     // 🔐 SISTEMA DE LOGIN E SEGURANÇA (V84)
@@ -3125,7 +3619,8 @@
 
     function showLoginError(message) {
       const errorElement = document.getElementById('loginError');
-      errorElement.textContent = message;
+      const cleanMsg = humanizeErrorMessage(message);
+      errorElement.textContent = cleanMsg;
       errorElement.style.display = 'block';
     }
 
@@ -3313,6 +3808,11 @@
         const result = await response.json();
         isForceRefreshLogin = false; // Reset da flag de atualização forçada
         if (result.success) {
+          if (!result.sessionToken || typeof result.sessionToken !== 'string' || !result.sessionToken.includes('.')) {
+            showLoginError('Não foi possível validar sua sessão. Atualize a página e tente novamente.');
+            setLoginButtonLoading(false);
+            return;
+          }
           userEmail = email;
           userAllowedCourses = result.allowedCourses || [];
 
@@ -3358,67 +3858,198 @@
       const modal = document.getElementById('loginModal');
       modal.style.opacity = "0";
       setTimeout(() => { modal.style.display = 'none'; }, 500);
+      iniciarCarregamentoMaterial();
     }
+
     // --- WARM-UP SILENCIOSO (Acorda o servidor de conteúdo em segundo plano) ---
     function realizarWarmupSilencioso() {
       try {
         if (typeof API_URL !== 'undefined' && API_URL) {
-          fetch(`${API_URL}?action=checkVersion&_t=${Date.now()}`).catch(() => { });
+          const params = new URLSearchParams(window.location.search);
+          let sId = params.get('sheetId') || (params.get('id') && params.get('id').length > 25 ? params.get('id') : '');
+          fetch(`${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sId)}&_t=${Date.now()}`).catch(() => { });
         }
       } catch (e) { }
     }
 
-    // --- INICIALIZAÇÃO INTELIGENTE ---
-    document.addEventListener("DOMContentLoaded", function () {
-      realizarWarmupSilencioso(); // Acorda os dois servidores na hora!
+    // --- CARREGAMENTO DO MENU E MATERIAL (EXECUTADO APÓS AUTENTICAÇÃO) ---
+    function iniciarCarregamentoMaterial() {
+      if (materialJaIniciado) return;
+      materialJaIniciado = true;
 
-      // --- LÓGICA DE BOAS-VINDAS (ABRE E FECHA EM 5s) ---
-
-      // 1. Força o menu a começar ABERTO (remove a classe que o esconde)
-      document.body.classList.remove('menu-fechado');
-
-      // 2. Agenda o fechamento automático
-      setTimeout(() => {
-        // Só fecha se ele ainda estiver aberto (caso o usuário não tenha fechado manualmente antes)
-        if (!document.body.classList.contains('menu-fechado')) {
-          alternarMenu(); // Chama a função que fecha o menu
-          mostrarNotificacao("Menu recolhido para leitura."); // Avisa o usuário (opcional)
-        }
-      }, 5000); // 5 segundos
-      const savedAuth = localStorage.getItem('leis_isAuthenticated');
-      const savedEmail = localStorage.getItem('leis_userEmail');
-
-      // 1. CAPTURA PARÂMETROS DA URL
       const params = new URLSearchParams(window.location.search);
-      let urlSheetId = params.get('sheetId'); // Pega o ID da planilha do link
-      const urlIdConteudo = params.get('id');   // Pega o ID da linha ou SheetID alternativo
+      let urlSheetId = params.get('sheetId');
+      const urlIdConteudo = params.get('id');
 
-      // Normalização: se id for longo, trata como sheetId
       if (!urlSheetId && urlIdConteudo && urlIdConteudo.length > 25) {
         urlSheetId = urlIdConteudo;
       }
 
-      if (savedAuth === 'true' && savedEmail) {
+      const ID_DA_PLANILHA = urlSheetId || "";
+      const seletor = document.getElementById('seletor-conteudo');
+      const containerLeitura = document.getElementById('texto-renderizado');
+      const bindRetryMenuButton = () => {
+        const retryBtn = document.getElementById('btn-retry-menu');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', () => {
+            materialJaIniciado = false;
+            iniciarCarregamentoMaterial();
+          });
+        }
+      };
+
+      if (!ID_DA_PLANILHA) {
+        seletor.innerHTML = '<option value="" disabled selected>⚠️ Faltou a Planilha no link!</option>';
+        if (containerLeitura) {
+          containerLeitura.innerHTML = `
+            <div style="text-align: center; padding: 50px 20px; color: #555;">
+              <h2 style="color: #c0392b;">⚠️ Link sem Planilha Definida</h2>
+              <p style="margin-bottom: 20px;">O endereço acessado precisa conter o parâmetro da planilha (exemplo: <code>?sheetId=...</code>).</p>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      seletor.disabled = true;
+      seletor.innerHTML = '<option value="" disabled selected>⏳ Carregando matérias...</option>';
+
+      if (containerLeitura && !containerLeitura.innerHTML.trim()) {
+        containerLeitura.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: var(--cor-texto);">
+            <div class="spinner" style="display: block; margin: 0 auto 20px auto;"></div>
+            <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 8px;">Conectando ao Material...</h3>
+            <p style="font-size: 0.95rem; opacity: 0.8;">Localizando capítulos e preparando visualização...</p>
+          </div>
+        `;
+      }
+
+      const sessionToken = localStorage.getItem('leis_sessionToken') || '';
+      const emailAtual = localStorage.getItem('leis_userEmail') || userEmail || '';
+      const urlMenu = `${API_URL}?action=getMenu&sheetId=${encodeURIComponent(ID_DA_PLANILHA)}&email=${encodeURIComponent(emailAtual)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${new Date().getTime()}`;
+
+      fetch(urlMenu)
+        .then(resposta => resposta.json())
+        .then(json => {
+          if (json.success && json.data && json.data.length > 0) {
+            BIBLIOTECA_LOCAL = json.data.map(item => ({
+              nome: item.nome,
+              id: item.id,
+              sheetId: ID_DA_PLANILHA
+            }));
+
+            if (BIBLIOTECA_LOCAL.length >= 2) {
+              BIBLIOTECA_LOCAL.unshift({
+                nome: "📚 Apostila Completa",
+                id: "APOSTILA_COMPLETA",
+                sheetId: ID_DA_PLANILHA,
+                isCompleta: true
+              });
+            }
+
+            seletor.disabled = false;
+            seletor.innerHTML = '<option value="" disabled>Escolha o Capítulo...</option>';
+
+            BIBLIOTECA_LOCAL.forEach((item, index) => {
+              const opt = document.createElement('option');
+              opt.value = index;
+              opt.textContent = item.isCompleta ? item.nome : ("📂 " + item.nome);
+              seletor.appendChild(opt);
+            });
+
+            let idFinal = (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) ? urlIdConteudo : BIBLIOTECA_LOCAL[0].id;
+
+            const indexEncontrado = BIBLIOTECA_LOCAL.findIndex(item => item.id === idFinal);
+            if (indexEncontrado !== -1) seletor.value = indexEncontrado;
+
+            if (idFinal === "APOSTILA_COMPLETA") {
+              carregarApostilaCompleta(ID_DA_PLANILHA);
+            } else {
+              carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
+            }
+          } else {
+            seletor.innerHTML = '<option value="" disabled>Planilha Vazia ou Erro</option>';
+            const msgErroMenu = json.error ? humanizeErrorMessage(json.error) : "A planilha informada não possui linhas válidas ou está sem conteúdo.";
+            mostrarNotificacao(msgErroMenu, "error");
+            if (containerLeitura) {
+              containerLeitura.innerHTML = `
+                <div style="text-align:center; padding: 50px 20px; color: #555;">
+                  <h2 style="color: #c0392b;">⚠️ Não foi possível abrir o material</h2>
+                  <p style="margin-bottom: 20px;">${escapeHTML(msgErroMenu)}</p>
+                  <button id="btn-retry-menu" type="button" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                    🔄 Tentar Novamente
+                  </button>
+                </div>
+              `;
+              bindRetryMenuButton();
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao buscar cardápio:", err);
+          seletor.innerHTML = '<option value="" disabled>Erro de conexão</option>';
+          const msgAmigavel = humanizeErrorMessage(err);
+          mostrarNotificacao(msgAmigavel, "error");
+          if (containerLeitura) {
+            containerLeitura.innerHTML = `
+              <div style="text-align: center; padding: 50px 20px; color: #555;">
+                <h2 style="color: #c0392b;">⚠️ Falha ao Conectar com o Material</h2>
+                <p style="margin-bottom: 20px;">${escapeHTML(msgAmigavel)}</p>
+                <button id="btn-retry-menu" type="button" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                  🔄 Tentar Novamente
+                </button>
+              </div>
+            `;
+            bindRetryMenuButton();
+          }
+        });
+    }
+
+    // --- INICIALIZAÇÃO INTELIGENTE ---
+    document.addEventListener("DOMContentLoaded", function () {
+      realizarWarmupSilencioso(); // Acorda o servidor de suporte na hora!
+
+      // 1. Força o menu a começar ABERTO e agenda o fechamento em 5s
+      document.body.classList.remove('menu-fechado');
+      setTimeout(() => {
+        if (!document.body.classList.contains('menu-fechado')) {
+          alternarMenu();
+          mostrarNotificacao("Menu recolhido para leitura.");
+        }
+      }, 5000);
+
+      setupFerramentas();
+      ativarArrastarMapa();
+      iniciarAtalhos();
+
+      const savedAuth = localStorage.getItem('leis_isAuthenticated');
+      const savedEmail = localStorage.getItem('leis_userEmail');
+      const savedToken = localStorage.getItem('leis_sessionToken');
+
+      const params = new URLSearchParams(window.location.search);
+      let urlSheetId = params.get('sheetId');
+      const urlIdConteudo = params.get('id');
+      if (!urlSheetId && urlIdConteudo && urlIdConteudo.length > 25) {
+        urlSheetId = urlIdConteudo;
+      }
+
+      // Exige sessão ativa e token no formato assinado (contendo ponto '.')
+      if (savedAuth === 'true' && savedEmail && savedToken && savedToken.includes('.')) {
         if (isSessionExpired()) {
           expireSession();
         } else {
-          // Recupera permissões salvas no navegador
           const savedAllowedCourses = localStorage.getItem('leis_userAllowedCourses');
           userAllowedCourses = savedAllowedCourses ? JSON.parse(savedAllowedCourses) : [];
 
           // --- TRAVA DE SEGURANÇA INTELIGENTE: RENOVAÇÃO DE PERMISSÕES ---
           if (urlSheetId && userAllowedCourses && userAllowedCourses.length > 0) {
             if (!userAllowedCourses.includes(urlSheetId)) {
-              // O navegador do aluno tem um crachá antigo. Limpamos a sessão antiga
-              // para que ele autentique e receba a lista atualizada do servidor.
-              isForceRefreshLogin = true; // Força o backend a ignorar o cache da Via Expressa
+              isForceRefreshLogin = true;
               localStorage.removeItem('leis_isAuthenticated');
               localStorage.removeItem('leis_sessionToken');
               localStorage.removeItem('leis_userAllowedCourses');
               isAuthenticated = false;
-              if (savedEmail) {
-                document.getElementById('loginEmail').value = savedEmail;
-              }
+              document.getElementById('loginEmail').value = savedEmail;
               document.getElementById('loginModal').style.display = 'flex';
               document.getElementById('loginModal').style.opacity = '1';
               showLoginError('Novo material detectado: Confirme sua senha para liberar o acesso.');
@@ -3433,123 +4064,14 @@
           startSessionHeartbeat();
         }
       } else {
+        localStorage.removeItem('leis_isAuthenticated');
+        localStorage.removeItem('leis_sessionToken');
+        if (savedEmail) {
+          const emailInput = document.getElementById('loginEmail');
+          if (emailInput) emailInput.value = savedEmail;
+        }
         document.getElementById('loginModal').style.display = 'flex';
       }
-
-      // --- MODO: MENU 100% DINÂMICO ---
-      const ID_DA_PLANILHA = urlSheetId || "";
-      const seletor = document.getElementById('seletor-conteudo');
-
-      if (ID_DA_PLANILHA) {
-        // Tranca temporariamente enquanto baixa o cardápio
-        seletor.disabled = true;
-        seletor.innerHTML = '<option value="" disabled selected>⏳ Carregando matérias...</option>';
-
-        // Exibe feedback visual imediato na área central para nunca ficar tela em branco
-        const containerLeitura = document.getElementById('texto-renderizado');
-        if (containerLeitura && !containerLeitura.innerHTML.trim()) {
-          containerLeitura.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; color: var(--cor-texto);">
-              <div class="spinner" style="display: block; margin: 0 auto 20px auto;"></div>
-              <h3 style="color: var(--cor-destaque, #b08d28); margin-bottom: 8px;">Conectando ao Material...</h3>
-              <p style="font-size: 0.95rem; opacity: 0.8;">Localizando capítulos e preparando visualização...</p>
-            </div>
-          `;
-        }
-
-        // Pede o "cardápio" da planilha para o Apps Script
-        const urlMenu = `${API_URL}?action=getMenu&sheetId=${encodeURIComponent(ID_DA_PLANILHA)}&_t=${new Date().getTime()}`;
-
-        fetch(urlMenu)
-          .then(resposta => resposta.json())
-          .then(json => {
-            if (json.success && json.data && json.data.length > 0) {
-             BIBLIOTECA_LOCAL = json.data.map(item => ({
-                nome: item.nome,
-                id: item.id,
-                sheetId: ID_DA_PLANILHA
-              }));
-
-              // Se houver 2 ou mais títulos na mesma planilha, cria a Apostila Completa no início
-              if (BIBLIOTECA_LOCAL.length >= 2) {
-                BIBLIOTECA_LOCAL.unshift({
-                  nome: "📚 Apostila Completa",
-                  id: "APOSTILA_COMPLETA",
-                  sheetId: ID_DA_PLANILHA,
-                  isCompleta: true
-                });
-              }
-
-              // Destranca e monta o botão superior com os títulos achados
-              seletor.disabled = false;
-              seletor.innerHTML = '<option value="" disabled>Escolha o Capítulo...</option>';
-
-              BIBLIOTECA_LOCAL.forEach((item, index) => {
-                const opt = document.createElement('option');
-                opt.value = index;
-                opt.textContent = item.isCompleta ? item.nome : ("📂 " + item.nome);
-                seletor.appendChild(opt);
-              });
-
-              // Decide qual texto exibir primeiro na tela
-              let idFinal = (urlIdConteudo && urlIdConteudo.length < 25 && urlIdConteudo !== urlSheetId) ? urlIdConteudo : BIBLIOTECA_LOCAL[0].id;
-
-              // Marca no botão superior o item que está sendo lido
-              const indexEncontrado = BIBLIOTECA_LOCAL.findIndex(item => item.id === idFinal);
-              if (indexEncontrado !== -1) seletor.value = indexEncontrado;
-
-              // Enfim, pede para carregar o texto na tela
-              if (idFinal === "APOSTILA_COMPLETA") {
-                carregarApostilaCompleta(ID_DA_PLANILHA);
-              } else {
-                carregarDaNuvem(urlSheetId, idFinal, "Carregando...");
-              }
-            } else {
-              seletor.innerHTML = '<option value="" disabled>Planilha Vazia ou Erro</option>';
-              mostrarNotificacao("Não foi possível ler as matérias da planilha.", "error");
-              if (containerLeitura) {
-                containerLeitura.innerHTML = `
-                  <div style="text-align:center; padding: 50px 20px; color: #555;">
-                    <h2 style="color: #c0392b;">⚠️ Planilha sem Matérias</h2>
-                    <p style="margin-bottom: 20px;">A planilha informada não possui linhas válidas ou está sem conteúdo.</p>
-                  </div>
-                `;
-              }
-            }
-          })
-          .catch(err => {
-            console.error("Erro ao buscar cardápio:", err);
-            seletor.innerHTML = '<option value="" disabled>Erro de conexão</option>';
-            mostrarNotificacao("Sem internet ou erro no servidor.", "error");
-            if (containerLeitura) {
-              containerLeitura.innerHTML = `
-                <div style="text-align: center; padding: 50px 20px; color: #555;">
-                  <h2 style="color: #c0392b;">⚠️ Falha ao Conectar com a Planilha</h2>
-                  <p style="margin-bottom: 20px;">O servidor demorou a responder ou a conexão oscilou.</p>
-                  <button onclick="window.location.reload()" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
-                    🔄 Tentar Novamente
-                  </button>
-                </div>
-              `;
-            }
-          });
-
-      } else {
-        seletor.innerHTML = '<option value="" disabled selected>⚠️ Faltou a Planilha no link!</option>';
-        const containerLeitura = document.getElementById('texto-renderizado');
-        if (containerLeitura) {
-          containerLeitura.innerHTML = `
-            <div style="text-align: center; padding: 50px 20px; color: #555;">
-              <h2 style="color: #c0392b;">⚠️ Link sem Planilha Definida</h2>
-              <p style="margin-bottom: 20px;">O endereço acessado precisa conter o parâmetro da planilha (exemplo: <code>?sheetId=...</code>).</p>
-            </div>
-          `;
-        }
-      }
-
-      setupFerramentas();
-      ativarArrastarMapa();
-      iniciarAtalhos();
     });
 
     // --- NOVO: SISTEMA DE GALPÃO (IndexedDB) PARA LEIS E MAPAS ---
@@ -3606,195 +4128,228 @@
       } catch (e) { return null; }
     }
 
-    // --- FUNÇÃO DE CARREGAMENTO UNIVERSAL (COM SISTEMA "O VIGIA" DO V84) ---
+    // --- FUNÇÃO DE CARREGAMENTO UNIVERSAL (GALPÃO INSTANTÂNEO 0,1s + VIGIA EM 2º PLANO) ---
     async function carregarDaNuvem(sheetId, idConteudo, nomeDisplay) {
       const loader = document.getElementById('loader-api');
-      loader.classList.add('ativo');
+      const loadToken = ++currentMaterialLoadToken;
 
-      // Garante que o container de dados brutos exista antes de limpar
-      let divBruta = document.getElementById('dados-brutos-lei');
-      if (!divBruta) {
-        divBruta = document.createElement('div');
-        divBruta.id = 'dados-brutos-lei';
-        divBruta.style.display = 'none';
-        document.body.appendChild(divBruta);
-      }
-
-      // Limpa dados anteriores para evitar "fantasma"
       textoMapaAtual = null;
-      divBruta.textContent = "";
+      conteudoBrutoAtual = "";
       document.getElementById('texto-renderizado').innerHTML = "";
       document.getElementById('menu-dinamico').innerHTML = "";
 
-      // --- CHAVES DO CACHE LOCAL (Por documento) ---
       const cacheKey = `cachedContent_${sheetId}_${idConteudo}`;
       const versionKey = `version_${sheetId}_${idConteudo}`;
+      const sessionToken = localStorage.getItem('leis_sessionToken') || '';
+      const emailAtual = localStorage.getItem('leis_userEmail') || userEmail || '';
 
-      // Recupera o que temos guardado no celular (AGORA DO GALPÃO ASSÍNCRONO)
       const localData = await loadFromGalpao(cacheKey);
-      const localVersion = localStorage.getItem(versionKey); // Versão continua na mochila (é leve)
+      if (loadToken !== currentMaterialLoadToken) return;
+      const localVersion = localStorage.getItem(versionKey);
 
-      let serverVersion = null;
-      let shouldUseCache = false;
-
-      // ========================================================
-      // ETAPA 1: O VIGIA (Pergunta ao servidor qual a versão atual)
-      // ========================================================
-      try {
-        if (navigator.onLine) {
-          // Controller com 10s para dar tempo ao Apps Script de checar a versão
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-          const vigiaUrl = `${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${new Date().getTime()}`;
-          const vigiaResponse = await fetch(vigiaUrl, { signal: controller.signal });
-          clearTimeout(timeoutId);
-
-          if (vigiaResponse.ok) {
-            const vigiaJson = await vigiaResponse.json();
-            if (vigiaJson.success && vigiaJson.version) {
-              serverVersion = vigiaJson.version;
-            } else if (vigiaJson.result === 'success' && vigiaJson.version) {
-              serverVersion = vigiaJson.version; // Formato alternativo do App Script
-            }
-            console.log(`📡 Vigia: Versão Servidor=${serverVersion} | Local=${localVersion}`);
-          }
-        }
-      } catch (e) {
-        console.warn("⚠️ O Vigia não conseguiu contatar o servidor (Offline ou timeout).", e.message);
-        // Se falhou a verificação mas temos cache, usamos ele
-        if (localData) shouldUseCache = true;
-      }
-
-      // ========================================================
-      // ETAPA 2: A DECISÃO (Cache local é válido?)
-      // ========================================================
-      if (localData && (localVersion === serverVersion || !serverVersion)) {
-        shouldUseCache = true;
-      }
-
-      // ========================================================
-      // ETAPA 3A: CAMINHO RÁPIDO (Cache Local - Instantâneo)
-      // ========================================================
-      if (shouldUseCache) {
-        try {
-          console.log("🚀 O Vigia liberou: Carregando do Cache Local (Instantâneo)");
-          const dadosCache = JSON.parse(localData);
-
-          divBruta.textContent = dadosCache.html || "";
-          textoMapaAtual = dadosCache.mapa || null;
-          if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
-
-          processarLei();
-          mostrarNotificacao("⚡ Carregado da memória (Instantâneo)", "success");
-          document.getElementById('texto-renderizado').scrollTop = 0;
-
-          loader.classList.remove('ativo');
-          return; // Encerra aqui, economizando dados!
-        } catch (e) {
-          console.error("Cache corrompido, forçando download...", e);
-          localStorage.removeItem(cacheKey);
-          localStorage.removeItem(versionKey);
-        }
-      }
-
-      // ========================================================
-      // ETAPA 3B: DOWNLOAD DA NUVEM (Versão mudou ou sem cache)
-      // ========================================================
-      try {
+      const baixarCapituloDoServidor = async (versaoServidorParaSalvar) => {
         const controller = new AbortController();
-        // Tempo expandido para 60 segundos (permite baixar apostilas longas sem cortar conexão)
         const timeoutId = setTimeout(() => controller.abort(), 60000);
-
         const timestamp = new Date().getTime();
-        const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(idConteudo)}&sheetId=${encodeURIComponent(sheetId)}&_t=${timestamp}`;
-        console.log("📥 Baixando da nuvem: ", urlFinal);
+        const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(idConteudo)}&sheetId=${encodeURIComponent(sheetId)}&email=${encodeURIComponent(emailAtual)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${timestamp}`;
 
         const response = await fetch(urlFinal, { signal: controller.signal });
         clearTimeout(timeoutId);
 
         const json = await response.json();
-
-        if (!json.success) throw new Error(json.error || "Erro na API (Verifique o ID da Planilha)");
-
+        if (!json.success) throw new Error(json.error || "Erro ao carregar conteúdo.");
         const dados = json.data;
 
-        // Injeta os dados
-        divBruta.textContent = dados.html;
-        textoMapaAtual = dados.mapa;
+        const dadosParaCache = { html: dados.html, mapa: dados.mapa, titulo: dados.titulo };
+        await saveToGalpao(cacheKey, JSON.stringify(dadosParaCache));
+
+        if (versaoServidorParaSalvar) {
+          localStorage.setItem(versionKey, versaoServidorParaSalvar);
+        } else {
+          fetch(`${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${Date.now()}`)
+            .then(r => r.json())
+            .then(d => { if (d && d.version) localStorage.setItem(versionKey, d.version); })
+            .catch(() => {});
+        }
+        return dados;
+      };
+
+      // 1. SE JÁ EXISTE NO GALPÃO: Abre na tela instantaneamente (0,1s) e aciona o Vigia em 2º plano
+      if (localData) {
+        try {
+          const dadosCache = JSON.parse(localData);
+          conteudoBrutoAtual = dadosCache.html || "";
+          textoMapaAtual = dadosCache.mapa || null;
+          if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+
+          processarLei(conteudoBrutoAtual);
+          mostrarNotificacao("⚡ Carregado da memória (Instantâneo)", "success");
+          document.getElementById('texto-renderizado').scrollTop = 0;
+          loader.classList.remove('ativo');
+
+          if (navigator.onLine) {
+            setTimeout(async () => {
+              if (loadToken !== currentMaterialLoadToken) return;
+              try {
+                const vigiaUrl = `${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${Date.now()}`;
+                const vigiaRes = await fetch(vigiaUrl);
+                if (!vigiaRes.ok) return;
+                const vigiaJson = await vigiaRes.json();
+                const serverVersion = vigiaJson.version || null;
+
+                if (loadToken !== currentMaterialLoadToken) return;
+                if (serverVersion && serverVersion !== localVersion) {
+                  const dadosAtualizados = await baixarCapituloDoServidor(serverVersion);
+                  if (dadosAtualizados && loadToken === currentMaterialLoadToken) {
+                    conteudoBrutoAtual = dadosAtualizados.html || "";
+                    textoMapaAtual = dadosAtualizados.mapa || null;
+                    if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
+                    processarLei(conteudoBrutoAtual);
+                    mostrarNotificacao("🔄 Material atualizado pelo professor!", "success");
+                  }
+                }
+              } catch (e) {
+                console.warn("Vigia silencioso aguardando próxima conexão:", e);
+              }
+            }, 1500);
+          }
+          return;
+        } catch (e) {
+          localStorage.removeItem(versionKey);
+        }
+      }
+
+      // 2. SE NÃO EXISTE NO GALPÃO: Baixa direto da nuvem sem chamada dupla
+      loader.classList.add('ativo');
+      try {
+        const dados = await baixarCapituloDoServidor(null);
+        if (loadToken !== currentMaterialLoadToken) return;
+        conteudoBrutoAtual = dados.html || "";
+        textoMapaAtual = dados.mapa || null;
         if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
 
-        // Renderiza
-        processarLei();
+        processarLei(conteudoBrutoAtual);
         mostrarNotificacao("Carregado: " + (dados.titulo || nomeDisplay), "success");
         document.getElementById('texto-renderizado').scrollTop = 0;
-
-        // --- SALVA NO CACHE LOCAL (Para próxima vez ser instantâneo) ---
-        try {
-          const dadosParaCache = { html: dados.html, mapa: dados.mapa, titulo: dados.titulo };
-          await saveToGalpao(cacheKey, JSON.stringify(dadosParaCache));
-          if (serverVersion) {
-            localStorage.setItem(versionKey, serverVersion);
-          }
-          console.log("💾 Dados salvos no Galpão (IndexedDB) com sucesso.");
-        } catch (e) {
-          console.warn("Erro ao salvar no Galpão offline.", e);
-        }
-
       } catch (error) {
-        // --- FALLBACK: Se falhar download mas tiver cache antigo, usa ele ---
-        if (localData) {
-          try {
-            console.warn("🔄 Download falhou, usando cache antigo como fallback.");
-            const dadosCache = JSON.parse(localData);
-            divBruta.textContent = dadosCache.html || "";
-            textoMapaAtual = dadosCache.mapa || null;
-            if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
-
-            processarLei();
-            mostrarNotificacao("⚠️ Erro na conexão. Usando versão anterior.", "error");
-            document.getElementById('texto-renderizado').scrollTop = 0;
-          } catch (e2) {
-            const isTimeout = error.name === 'AbortError' || (error.message && error.message.includes('abort'));
-            const msgAviso = isTimeout 
-              ? "O servidor demorou para responder (material extenso ou oscilação na rede)."
-              : `Falha no Carregamento: ${error.message}`;
-
-            document.getElementById('texto-renderizado').innerHTML = `
-              <div style="text-align:center; padding:50px 20px; color:#555;">
-                <h2 style="color:#c0392b">⚠️ Falha no Carregamento</h2>
-                <p style="margin-bottom: 20px;">${msgAviso}</p>
-                <button onclick="carregarDaNuvem('${sheetId}', '${idConteudo}', '${nomeDisplay}')" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
-                  🔄 Tentar Novamente
-                </button>
-              </div>`;
-          }
-        } else {
-          const isTimeout = error.name === 'AbortError' || (error.message && error.message.includes('abort'));
-          const msgAviso = isTimeout 
-            ? "O servidor demorou para responder (material extenso ou oscilação na rede)."
-            : `Falha no Carregamento: ${error.message}`;
-
-          mostrarNotificacao("Erro ao carregar conteúdo", "error");
-          document.getElementById('texto-renderizado').innerHTML = `
-            <div style="text-align:center; padding:50px 20px; color:#555;">
-              <h2 style="color:#c0392b">⚠️ Falha no Carregamento</h2>
-              <p style="margin-bottom: 20px;">${msgAviso}</p>
-              <button onclick="carregarDaNuvem('${sheetId}', '${idConteudo}', '${nomeDisplay}')" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
-                🔄 Tentar Novamente
-              </button>
-            </div>`;
+        if (loadToken === currentMaterialLoadToken) {
+          exibirErroCarregamento(error, sheetId, idConteudo, nomeDisplay);
         }
       } finally {
-        loader.classList.remove('ativo');
+        if (loadToken === currentMaterialLoadToken) loader.classList.remove('ativo');
       }
     }
 
-    // --- PROCESSAR LEI (VERSÃO HÍBRIDA 3.0) ---
-    // --- PROCESSAR LEI (VERSÃO HÍBRIDA 3.0) ---
-    function processarLei() {
-      const d = document.getElementById('dados-brutos-lei'); if (!d) return;
-      const txt = d.textContent.trim(), menu = document.getElementById('menu-dinamico'), c = document.getElementById('texto-renderizado');
+    function exibirErroCarregamento(error, sheetId, idConteudo, nomeDisplay) {
+      const msgAviso = humanizeErrorMessage(error);
+      mostrarNotificacao(msgAviso, "error");
+      const container = document.getElementById('texto-renderizado');
+      container.innerHTML = `
+        <div style="text-align:center; padding:50px 20px; color:#555;">
+          <h2 style="color:#c0392b">⚠️ Falha no Carregamento</h2>
+          <p style="margin-bottom: 20px;">${escapeHTML(msgAviso)}</p>
+          <button id="btn-recarregar-capitulo" type="button" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+            🔄 Tentar Novamente
+          </button>
+        </div>`;
+      const retryBtn = document.getElementById('btn-recarregar-capitulo');
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => carregarDaNuvem(sheetId, idConteudo, nomeDisplay));
+      }
+    }
+
+    // --- FORMATADOR INLINE MARKDOWN E SANITIZADOR (V130) ---
+    function limparMarcacoesCitacao(str) {
+      if (!str) return "";
+      return str
+        .replace(/\[\s*cite\s*:\s*[^\]]+\]/gi, '')
+        .replace(/\\?\$\s*\\(?:ge|GE|geq)\s*\\?\$/g, '≥')
+        .replace(/\\?\$\s*\\(?:le|LE|leq)\s*\\?\$/g, '≤')
+        .replace(/\\(?:ge|GE|geq)\b/g, '≥')
+        .replace(/\\(?:le|LE|leq)\b/g, '≤')
+        .replace(/\$\s*(\d+\.?)\^\{\\circ\}\s*\$/g, '$1º')
+        .replace(/\^\{\\circ\}/g, 'º')
+        .replace(/\\underline\{([^}]+)\}/g, '$1')
+        .replace(/\$([^$\n]{1,35})\$/g, (_, expr) => expr.replace(/~/g, ' '));
+    }
+
+    function formatarInlineMarkdown(str) {
+      if (!str) return "";
+      let s = limparMarcacoesCitacao(str);
+
+      // 1. Negrito + Itálico (***texto***)
+      s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+
+      // 2. Negrito (**texto**)
+      s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+      // 3. Itálico (*texto*) — sem afetar asteriscos isolados
+      s = s.replace(/(^|[^\*])\*([^\*\s][^\*]*?)\*(?!\*)/g, '$1<em>$2</em>');
+
+      // 4. Links diretos (https://...) que não estejam já dentro de atributos HTML
+      // Grupo de captura em vez de lookbehind: mesmo resultado e compatível com Safari < 16.4
+      s = s.replace(/(^|[^="'>])(https?:\/\/[^\s<]+)/gi, (m, prefixo, url) => prefixo + `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--cor-destaque); text-decoration: underline; word-break: break-all;">${url}</a>`);
+
+      return s;
+    }
+
+    // --- INTERPRETADOR DE TABELAS MARKDOWN ---
+    function extrairCelulasTabela(linha) {
+      let l = linha.trim();
+      if (l.startsWith('|')) l = l.substring(1);
+      if (l.endsWith('|')) l = l.slice(0, -1);
+      return l.split('|').map(c => c.trim());
+    }
+
+    function ehLinhaSeparadoraTabela(linha) {
+      if (!linha || !linha.includes('|')) return false;
+      const celulas = extrairCelulasTabela(linha);
+      return celulas.length > 0 && celulas.every(c => /^:?-{2,}:?$/.test(c));
+    }
+
+    function renderizarTabelaMarkdown(linhasTabela, atualizarArtigoBloco) {
+      if (linhasTabela.length < 2) return "";
+      const cabecalhos = extrairCelulasTabela(linhasTabela[0]);
+      const separadores = extrairCelulasTabela(linhasTabela[1]);
+
+      const alinhamentos = separadores.map(sep => {
+        if (sep.startsWith(':') && sep.endsWith(':')) return 'center';
+        if (sep.endsWith(':')) return 'right';
+        return 'left';
+      });
+
+      let html = '<div class="table-responsive"><table class="tabela-chico"><thead><tr>';
+      cabecalhos.forEach((cab, idx) => {
+        const align = alinhamentos[idx] || 'left';
+        html += `<th style="text-align:${align};">${formatarInlineMarkdown(cab)}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      for (let r = 2; r < linhasTabela.length; r++) {
+        const celulas = extrairCelulasTabela(linhasTabela[r]);
+        if (celulas.length === 1 && celulas[0] === '') continue;
+        html += '<tr>';
+        for (let c = 0; c < cabecalhos.length; c++) {
+          const valorBruto = celulas[c] !== undefined ? celulas[c] : '';
+          if (atualizarArtigoBloco) atualizarArtigoBloco(valorBruto);
+          const align = alinhamentos[c] || 'left';
+          html += `<td style="text-align:${align};">${formatarInlineMarkdown(valorBruto)}</td>`;
+        }
+        html += '</tr>';
+      }
+
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    // --- PROCESSAR LEI E MARKDOWN (MOTOR HÍBRIDO V130) ---
+    function processarLei(textoParam) {
+      const rawInput = (textoParam !== undefined && textoParam !== null) ? textoParam : conteudoBrutoAtual;
+      if (!rawInput) return;
+
+      const txt = limparMarcacoesCitacao(rawInput).trim();
+      const menu = document.getElementById('menu-dinamico');
+      const c = document.getElementById('texto-renderizado');
 
       // 0. DETECÇÃO DE APOSTILA PDF SEGURO DO GOOGLE DRIVE
       const driveId = extrairDriveId(txt);
@@ -3805,165 +4360,352 @@
         return;
       }
 
-      // 1. TENTATIVA HTML (PRIORIDADE PARA CONTEÚDO DA NUVEM)
-      // Se parece HTML (começa com <), renderizamos e buscamos headers reais
+      // 1. MODO HTML PURO
       if (txt.startsWith("<")) {
         c.innerHTML = txt;
-        aplicarLinks(c); // Aplica links em artigos citados no HTML
-
+        aplicarLinks(c);
         const headers = c.querySelectorAll('h1, h2, h3, h4');
-
         if (headers.length > 0) {
           let htmlMenu = "";
           headers.forEach((header, index) => {
-            if (!header.id) header.id = "header-" + index; // Garante ID
+            if (!header.id) header.id = "header-" + index;
             let indent = header.tagName === 'H1' ? '' : (header.tagName === 'H2' ? 'margin-left:10px;' : 'margin-left:20px; font-size:0.9em;');
             htmlMenu += `<a class="menu-link" style="${indent}" onclick="document.getElementById('${header.id}').scrollIntoView({behavior:'smooth'})">${header.innerText}</a>`;
           });
           menu.innerHTML = htmlMenu;
-          return; // SUCESSO DO MODO HTML
+          return;
         }
       }
 
-      // 2. MODO TEXTO (APRIMORADO — DETECTA APOSTILAS E LEIS AUTOMATICAMENTE)
-      const lin = txt.split('\n'); let h = '', cid = 0, bloco = null, contMenu = null; menu.innerHTML = "";
+      // 2. MOTOR HÍBRIDO (LEIS + APOSTILAS NUMÉRICAS + MARKDOWN COMPLETO)
+      const lin = txt.split('\n');
+      let h = '', cid = 0, bloco = null, contMenu = null;
+      menu.innerHTML = "";
 
-      // Auto-detecção: Se o conteúdo tem padrões numéricos X.Y, é apostila
-      let modoApostila = lin[0].includes("MODO: APOSTILA") || lin.some(l => l.trim().match(/^[•○o\-]?\s*\d+\.\d+\s/));
+      let modoApostila = lin[0].includes("MODO: APOSTILA") || lin.some(l => l.trim().match(/^(?:[•○o\-\*]|#{1,4})?\s*\d+\.\d+\s/));
       let indexInicial = lin[0].includes("MODO: APOSTILA") ? 1 : 0;
       let termoReferencia = modoApostila ? "Tópico" : "Art.";
+      let jaRenderizouH1 = false;
+
+      function registrarArtigoNoBloco(textoLinha) {
+        if (!bloco || !textoLinha) return;
+        const mArt = textoLinha.match(/\b(?:Art\.?|Artigo)\s*(\d+(?:\.[º°]|\º|\°)?(?:-[A-Z])?)/i);
+        if (mArt) {
+          const numLimpo = mArt[1].replace(/\./g, '');
+          if (!bloco.primeiroArt) bloco.primeiroArt = numLimpo;
+          bloco.ultimoArt = numLimpo;
+        }
+      }
 
       function fimBloco() {
         if (!bloco) return;
         let it = "";
         if (bloco.primeiroArt) {
-          it = (bloco.primeiroArt === bloco.ultimoArt) ? ` (${termoReferencia} ${bloco.primeiroArt})` : ` (${termoReferencia} ${bloco.primeiroArt}-${bloco.ultimoArt})`;
+          it = (bloco.primeiroArt === bloco.ultimoArt)
+            ? ` (${termoReferencia} ${bloco.primeiroArt})`
+            : ` (${termoReferencia} ${bloco.primeiroArt}-${bloco.ultimoArt})`;
         }
 
+        const idRef = bloco.id;
         if (bloco.tipo === 'MAIOR') {
-          const bt = document.createElement('div'); bt.className = 'menu-grupo-titulo'; bt.innerHTML = `<span>${bloco.nome}</span> <span class="menu-seta">▶</span>`;
-          const cf = document.createElement('div'); cf.className = 'menu-lista-filhos';
-          bt.onclick = () => { cf.classList.toggle('aberto'); bt.classList.toggle('ativo'); };
-          menu.appendChild(bt); menu.appendChild(cf); contMenu = cf;
+          const bt = document.createElement('div');
+          bt.className = 'menu-grupo-titulo';
+          bt.innerHTML = `<span>${bloco.nome}</span> <span class="menu-seta">▶</span>`;
+          const cf = document.createElement('div');
+          cf.className = 'menu-lista-filhos';
+          bt.onclick = () => {
+            if (cf.children.length > 0) {
+              cf.classList.toggle('aberto');
+              bt.classList.toggle('ativo');
+            }
+            document.getElementById(idRef)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          };
+          menu.appendChild(bt);
+          menu.appendChild(cf);
+          contMenu = cf;
         } else {
-          const l = document.createElement('a'); l.className = 'menu-link'; l.innerHTML = bloco.nome + `<span class='menu-meta'>${it}</span>`;
-          const idRef = bloco.id;
-          l.onclick = () => { document.getElementById(idRef)?.scrollIntoView({ behavior: 'smooth' }); };
-          if (contMenu) contMenu.appendChild(l); else menu.appendChild(l);
+          const l = document.createElement('a');
+          l.className = 'menu-link';
+          l.innerHTML = bloco.nome + `<span class='menu-meta'>${it}</span>`;
+          l.onclick = () => { document.getElementById(idRef)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+          if (contMenu) contMenu.appendChild(l);
+          else menu.appendChild(l);
         }
         bloco = null;
       }
 
       for (let i = indexInicial; i < lin.length; i++) {
-        // ... dentro do for loop ...
-let l = lin[i].trim();
+        let rawLine = lin[i].replace(/\u00A0/g, ' '); // Normaliza espaços non-breaking
+        let lTrim = rawLine.trim();
+        if (!lTrim) continue;
 
-// 🔧 CORREÇÃO UNIVERSAL: Remove marcadores de lista Markdown (* , - , + , numeração)
-// antes da seta, garantindo que o regex de destaque de cores funcione.
-l = l.replace(/^[\s]*[\*\-+]\s+/, '');        // Remove * , - , + e espaços
-l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
+        // --- A. LINHA DIVISÓRIA MARKDOWN (--- ou ***) ---
+        if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(lTrim)) {
+          h += `<hr class="divisor-bloco">`;
+          continue;
+        }
 
-// A partir daqui, a lógica original do HTML (matchSeta) roda normalmente... if (!l) continue;
+        // --- B. TABELAS MARKDOWN (| Coluna | Coluna |) ---
+        if (lTrim.includes('|') && (i + 1 < lin.length) && ehLinhaSeparadoraTabela(lin[i + 1])) {
+          const linhasTabela = [lTrim, lin[i + 1].trim()];
+          i += 2;
+          while (i < lin.length && lin[i].trim().includes('|')) {
+            linhasTabela.push(lin[i].trim());
+            i++;
+          }
+          i--; // Ajusta o ponteiro do for
+          h += renderizarTabelaMarkdown(linhasTabela, registrarArtigoNoBloco);
+          continue;
+        }
 
-        // --- 1. EXIBIÇÃO LIMPA (Visual na tela) ---
-        let linhaExibicao = l.replace(/^[#]+\s*/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // --- C. CABEÇALHOS MARKDOWN EXPLÍCITOS (#, ##, ###, ####) ---
+        const matchHeadingMD = lTrim.match(/^(#{1,6})\s+(.*)$/);
+        if (matchHeadingMD) {
+          const nivelHash = matchHeadingMD[1].length;
+          const textoTituloBruto = matchHeadingMD[2].trim();
+          const textoTituloLimpo = textoTituloBruto.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+          const textoTituloFormatado = formatarInlineMarkdown(textoTituloBruto);
 
-        // --- 2. GATILHO AUTOMÁTICO DO DOIS-PONTOS (:) ---
+          if (nivelHash === 1) {
+            jaRenderizouH1 = true;
+            h += `<h1>${textoTituloFormatado}</h1>`;
+            continue;
+          }
+
+          if (nivelHash === 2) {
+            fimBloco();
+            cid++;
+            const id = 'ref-' + cid;
+            contMenu = null;
+            bloco = { id: id, tipo: 'MAIOR', nome: textoTituloLimpo, primeiroArt: null, ultimoArt: null };
+            registrarArtigoNoBloco(textoTituloLimpo);
+            h += `<h2 id="${id}" class="lei-titulo-TITULO" style="font-size: 1.45rem; margin-top: 45px; text-align: left;">${textoTituloFormatado}</h2>`;
+            continue;
+          }
+
+          if (nivelHash === 3) {
+            fimBloco();
+            cid++;
+            const id = 'ref-' + cid;
+            bloco = { id: id, tipo: 'MENOR', nome: textoTituloLimpo, primeiroArt: null, ultimoArt: null };
+            registrarArtigoNoBloco(textoTituloLimpo);
+            h += `<h3 id="${id}" class="lei-titulo-CAPÍTULO">${textoTituloFormatado}</h3>`;
+            continue;
+          }
+
+          if (nivelHash >= 4) {
+            if (/mnem[ôo]nicos|fixa[çc][ãa]o/i.test(textoTituloLimpo)) {
+              h += `<div class="caixa-mnemonico">🧠 ${textoTituloFormatado}</div>`;
+            } else {
+              h += `<h4 class="subtitulo-h4">${textoTituloFormatado}</h4>`;
+            }
+            continue;
+          }
+        }
+
+        // --- D. DETECÇÃO DE GABARITO COMENTADO E QUESTÕES PADRÃO CRS ---
+        const textoSemMarcadorLista = lTrim.replace(/^[\*\-•●○◦▪▸►]\s+/, '').trim();
+
+        if (/^(?:\*\*)?Gabarito\s*Comentado\s*:/i.test(textoSemMarcadorLista)) {
+          let htmlGabarito = `<div><strong>✅ ${formatarInlineMarkdown(textoSemMarcadorLista)}</strong></div>`;
+          // Agrupa as linhas seguintes de Gabarito/Comentário/Justificativa dentro do mesmo card verde
+          while (i + 1 < lin.length) {
+            let proxRaw = lin[i + 1].replace(/\u00A0/g, ' ').trim();
+            if (!proxRaw) { i++; continue; }
+            let proxSemBullet = proxRaw.replace(/^[\*\-•●○◦▪▸►o0O]\s+/, '').trim();
+            if (/^(?:\*\*)?(?:Gabarito|Coment[áa]rio|Justificativa)\s*:/i.test(proxSemBullet)) {
+              htmlGabarito += `<div style="margin-top: 6px;">${formatarInlineMarkdown(proxSemBullet)}</div>`;
+              i++;
+            } else {
+              break;
+            }
+          }
+          h += `<div class="caixa-gabarito">${htmlGabarito}</div>`;
+          continue;
+        }
+
+        if (/^(?:\*\*)?Quest[ãa]o\s+\d+/i.test(lTrim)) {
+          h += `<div class="questao-titulo">📝 ${formatarInlineMarkdown(lTrim)}</div>`;
+          continue;
+        }
+
+        const matchAlternativa = lTrim.match(/^([A-E])\)\s+(.*)$/);
+        if (matchAlternativa) {
+          h += `<p class="questao-alternativa"><strong>${matchAlternativa[1]})</strong> ${formatarInlineMarkdown(matchAlternativa[2])}</p>`;
+          continue;
+        }
+
+        // --- E. DETECÇÃO DE LISTAS (MARCADORES, SUBITENS "o/0" E LISTAS NUMERADAS DE INCISOS) ---
+        const espacosIniciais = rawLine.match(/^(\s*)/)[1].length;
+        const matchBullet = lTrim.match(/^([\*\-•●○◦▪▸►])\s+(.*)$/);
+        const matchSubZero = lTrim.match(/^[o0]\s+((?:[IVXLCDM]+\s*[-–—]|\*\*|[A-ZÁÉÍÓÚÂÊÔÃÕÇ]).*)$/);
+        const matchListaNumeradaInciso = lTrim.match(/^(\d+[\.\)])\s+((?:(?:\*\*)?[IVXLCDM]+\s*[-–—]|(?:\*\*)?[^:]{1,60}:).*|[A-ZÁÉÍÓÚÂÊÔÃÕÇ].*[;\.])$/);
+
+        // 1. Subitem iniciado por "0 " ou "o "
+        if (matchSubZero) {
+          let textoSub = matchSubZero[1];
+          let conteudoSub = formatarInlineMarkdown(textoSub);
+          registrarArtigoNoBloco(textoSub);
+          h += `<div class="lista-item-n2">${conteudoSub}</div>`;
+          continue;
+        }
+
+        // 2. Lista numerada que é inciso ou definição (usa .lista-item-num sem bolinha duplicada)
+        if (matchListaNumeradaInciso && !/^(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE|BLOCO)\b/i.test(matchListaNumeradaInciso[2])) {
+          let numPrefix = matchListaNumeradaInciso[1];
+          let conteudoNum = formatarInlineMarkdown(matchListaNumeradaInciso[2]);
+          registrarArtigoNoBloco(matchListaNumeradaInciso[2]);
+          h += `<div class="lista-item-num"><strong style="color: var(--cor-destaque);">${numPrefix}</strong> ${conteudoNum}</div>`;
+          continue;
+        }
+
+        // 3. Lista com Bullet padrão (- , * , •)
+        if (matchBullet && !/^([➔→➔⮕➜➞►]|->|=>)/.test(matchBullet[2]) && !/^(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE|BLOCO)\s/i.test(matchBullet[2])) {
+          let conteudoItem = formatarInlineMarkdown(matchBullet[2]);
+          registrarArtigoNoBloco(matchBullet[2]);
+
+          let mSetaInterna = conteudoItem.match(/^([➔→➔⮕➜➞►]|->|=>)\s*(?:<strong>)?([^:]+:)(?:<\/strong>)?(.*)$/);
+          if (mSetaInterna) {
+            conteudoItem = `<strong style="color: #d35400;">${mSetaInterna[1]} ${mSetaInterna[2]}</strong><span style="color: #444;">${mSetaInterna[3]}</span>`;
+          }
+
+          const ehSubitem = espacosIniciais >= 1 || ['○', '◦'].includes(matchBullet[1]) || (matchBullet[1] === '*' && espacosIniciais > 0);
+          const classeLista = ehSubitem ? 'lista-item-n2' : 'lista-item-n1';
+          h += `<div class="${classeLista}">${conteudoItem}</div>`;
+          continue;
+        }
+
+        // --- F. FLUXO CLÁSSICO (LEIS SECAS, TÍTULOS NUMÉRICOS CURTOS E SETAS) ---
+        let l = lTrim.replace(/^[\s]*[\*\-+]\s+/, '');
+        if (!l) continue;
+
+        let linhaExibicao = formatarInlineMarkdown(l.replace(/^[#]+\s*/g, ''));
+
         if (linhaExibicao.match(/^\d+[\.\d]*\s+[^:]+:/) && !linhaExibicao.includes('<strong>')) {
           linhaExibicao = linhaExibicao.replace(/^(\d+[\.\d]*\s+[^:]+:)(.*)$/, '<strong>$1</strong><span style="font-weight: normal; color: #444; font-size: 1.15rem;">$2</span>');
         }
 
-        if (linhaExibicao.match(/^\d+[\.\d]*\s+[^:]+:/) && !linhaExibicao.includes('<strong>')) {
-          linhaExibicao = linhaExibicao.replace(/^(\d+[\.\d]*\s+[^:]+:)(.*)$/, '<strong>$1</strong><span style="font-weight: normal; color: #444; font-size: 1.15rem;">$2</span>');
-        }
-
-        // --- NOVO: GATILHO PARA LISTAS COM SETA (Laranja) ---
         let matchSeta = linhaExibicao.match(/^([➔→➔⮕➜➞►]|->|=>)\s*(?:<strong>)?([^:]+:)(?:<\/strong>)?(.*)$/);
         if (matchSeta) {
-          // matchSeta[1] = A seta | matchSeta[2] = Texto até os dois pontos | matchSeta[3] = A explicação
           linhaExibicao = `<strong style="color: #d35400;">${matchSeta[1]} ${matchSeta[2]}</strong><span style="color: #444;">${matchSeta[3]}</span>`;
         }
 
-        // --- 3. MOTOR INTERNO (Limpeza para o Índice) ---
-        let cleanLine = l.replace(/^[•●○◦▪▸►\-\*#]+\s*/g, '').replace(/\*\*/g, '').trim();
+        let cleanLine = l.replace(/^[•●○◦▪▸►\-\*#]+\s*/g, '').replace(/\*\*/g, '').replace(/\*/g, '').trim();
         cleanLine = cleanLine.replace(/^o\s+(?=\d)/i, '').trim();
 
-        // Teste 1: Palavra-chave de seção
-        let m = cleanLine.match(/^(?:\d+[\.\d]*\s*[-–—]?\s*)?(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE)\s/i);
+        let m = cleanLine.match(/^(?:\d+[\.\d]*\s*[-–—]?\s*)?(CAPÍTULO|TÍTULO|SEÇÃO|MÓDULO|UNIDADE|AULA|PARTE|BLOCO|GUIA GERAL|COMPILADO GERAL|SIMULADO)\b/i);
 
-        // Teste 2: Padrão numérico (AGORA ACEITA "1.", "2.", "1.1")
-        let mNumerico = cleanLine.match(/^(\d+[\.\d]*)\s/);
+        let mNumerico = (!cleanLine.endsWith(';') && cleanLine.length < 120) ? cleanLine.match(/^(\d+[\.\d]*)\s/) : null;
 
         if (m || mNumerico) {
-          fimBloco(); cid++; const id = 'ref-' + cid;
+          fimBloco();
+          cid++;
+          const id = 'ref-' + cid;
           let tipoBloco;
-          let nivelEstilo = 'class="lei-titulo-CAPÍTULO"'; // Padrão Inicial (Dourado)
+          let nivelEstilo = 'class="lei-titulo-CAPÍTULO"';
 
           if (m) {
             let palavraChave = m[1].toUpperCase();
-            tipoBloco = (['TÍTULO', 'MÓDULO', 'UNIDADE', 'PARTE'].includes(palavraChave)) ? 'MAIOR' : 'MENOR';
+            tipoBloco = (['TÍTULO', 'MÓDULO', 'UNIDADE', 'PARTE', 'BLOCO', 'GUIA GERAL', 'COMPILADO GERAL'].includes(palavraChave)) ? 'MAIOR' : 'MENOR';
           } else {
             let num = mNumerico[1];
             tipoBloco = (num.endsWith('.0') || !num.includes('.') || num.match(/^\d+\.$/)) ? 'MAIOR' : 'MENOR';
 
-            // --- NOVA LÓGICA DA ESCADINHA VISUAL ---
-            // Conta a quantidade de números removendo o ponto final, se houver.
             let qtdNumeros = num.replace(/\.$/, '').split('.').length;
-
             if (qtdNumeros === 1) {
-              // Nível 1: Dourado Nobre (Ex: "2. TÉCNICA...")
               nivelEstilo = 'class="lei-titulo-CAPÍTULO"';
             } else if (qtdNumeros === 2) {
-              // Nível 2: Azul Clássico, MAIÚSCULAS e linha divisória suave
               nivelEstilo = 'style="font-size: 1.25rem; color: #1565c0; text-transform: uppercase; margin-top: 35px; margin-bottom: 15px; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px;"';
             } else if (qtdNumeros === 3) {
-              // Nível 3 (PAI): AZUL PETRÓLEO, Negrito Forte
               nivelEstilo = 'style="font-size: 1.15rem; color: #0d3b4c; font-weight: 800; margin-top: 20px; margin-bottom: 5px; border-bottom: none;"';
             } else {
-              // Nível 4 em diante (FILHO): CINZA MÉDIO, Semi-bold, Borda lateral (Efeito Árvore)
               nivelEstilo = 'style="font-size: 1.05rem; color: #555555; font-weight: 600; margin-top: 8px; margin-bottom: 5px; margin-left: 20px; padding-left: 12px; border-left: 3px solid #e0e0e0; border-bottom: none;"';
             }
           }
-          if (tipoBloco === 'MAIOR') contMenu = null;
 
+          if (tipoBloco === 'MAIOR') contMenu = null;
           bloco = { id: id, tipo: tipoBloco, nome: cleanLine, primeiroArt: null, ultimoArt: null };
+          registrarArtigoNoBloco(cleanLine);
 
           h += `<h3 id="${id}" ${nivelEstilo}>${linhaExibicao}</h3>`;
-        } else if (cleanLine.match(/^(Art\.|Questão|Item)\s/i) || cleanLine.match(/^\d+\.\d+\.\d+\s/)) {
+
+        } else if (cleanLine.match(/^(Art\.|Item)\s/i) || cleanLine.match(/^\d+\.\d+\.\d+\s/)) {
           let match = cleanLine.match(/^([\d\.]+)/) || cleanLine.match(/(Art\.|Item)\s*([\d\wº\.]+)/i);
           let numeroRef = match ? (match[2] || match[1]) : "";
-          if (bloco) { if (!bloco.primeiroArt) bloco.primeiroArt = numeroRef; bloco.ultimoArt = numeroRef; }
+          if (bloco && numeroRef) {
+            if (!bloco.primeiroArt) bloco.primeiroArt = numeroRef;
+            bloco.ultimoArt = numeroRef;
+          }
           let idArt = "art_" + numeroRef.toString().replace(/\./g, '_');
+          h += `<p id="${idArt}">${linhaExibicao.replace(/^((?:Art\.?|Item)?\s*[\w\dº\.]+\s?[-–]?)/i, '<span class="destaque-artigo">$1</span>')}</p>`;
 
-          h += `<p id="${idArt}">${linhaExibicao.replace(/^([\w\d\.]+\s?[-–]?)/, '<span class="destaque-artigo">$1</span>')}</p>`;
         } else {
+          registrarArtigoNoBloco(cleanLine);
 
-          // --- DETECÇÃO DE CAIXAS DE ALERTA (V65) ---
+          // Detecção de Caixas de Alerta (V65)
           let matchAlerta = cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)[:\-\s]/i) || cleanLine.match(/^(REVISÃO RÁPIDA|REVISÃO|ATENÇÃO|CUIDADO|IMPORTANTE|NOTA|PALAVRAS-CHAVE|PALAVRA-CHAVE)$/i);
 
           if (matchAlerta) {
             let tipoAlerta = matchAlerta[1].toUpperCase();
-            let classeCaixa = "caixa-revisao"; // Assume azul suave como padrão
-
-            // Define as cores com base na palavra-chave
+            let classeCaixa = "caixa-revisao";
             if (tipoAlerta === "ATENÇÃO" || tipoAlerta === "CUIDADO") classeCaixa = "caixa-atencao";
             if (tipoAlerta === "IMPORTANTE" || tipoAlerta === "NOTA") classeCaixa = "caixa-importante";
             if (tipoAlerta === "PALAVRAS-CHAVE" || tipoAlerta === "PALAVRA-CHAVE") classeCaixa = "caixa-palavras-chave";
 
             h += `<div class="caixa-alerta ${classeCaixa}">${linhaExibicao}</div>`;
           } else {
-            // Se não for nenhum alerta, renderiza como parágrafo normal
-            h += (i === indexInicial) ? `<h1>${linhaExibicao}</h1>` : `<p>${linhaExibicao}</p>`;
+            if (!jaRenderizouH1 && i === indexInicial) {
+              jaRenderizouH1 = true;
+              h += `<h1>${linhaExibicao}</h1>`;
+            } else {
+              h += `<p>${linhaExibicao}</p>`;
+            }
           }
-
         }
       }
+
       fimBloco();
-      c.innerHTML = h; aplicarLinks(c);
+      c.innerHTML = h;
+      aplicarLinks(c);
+
+      // Mantém títulos e cabeçalhos de questão sempre unidos ao primeiro bloco de conteúdo na impressão
+      c.querySelectorAll('h2, h3, h4, .questao-titulo, .caixa-mnemonico').forEach((titulo) => {
+        if (titulo.closest('.keep-with-next')) return;
+        const proximo = titulo.nextElementSibling;
+        if (!proximo || proximo.classList.contains('table-responsive')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'keep-with-next';
+        titulo.parentNode.insertBefore(wrapper, titulo);
+        wrapper.appendChild(titulo);
+
+        // Se o próximo elemento for outro subtítulo (ex: H2 seguido de H3), inclui o H3 e também o 1º item abaixo do H3
+        if (/^(H2|H3|H4)$/.test(proximo.tagName)) {
+          const aposSubtitulo = proximo.nextElementSibling;
+          wrapper.appendChild(proximo);
+          if (aposSubtitulo && !aposSubtitulo.classList.contains('table-responsive')) {
+            wrapper.appendChild(aposSubtitulo);
+          }
+        } else {
+          wrapper.appendChild(proximo);
+        }
+      });
+
+      // Oculta a seta ▶ dos grupos MAIOR que não possuam subtópicos filhos
+      menu.querySelectorAll('.menu-grupo-titulo').forEach(grupo => {
+        const listaFilhos = grupo.nextElementSibling;
+        if (!listaFilhos || listaFilhos.children.length === 0) {
+          const seta = grupo.querySelector('.menu-seta');
+          if (seta) seta.style.display = 'none';
+        }
+      });
     }
 
     function aplicarLinks(c) {
-      c.innerHTML = c.innerHTML.replace(/\b(art\.?|artigo)\s*(\d+[º]?)/gi, '<a class="lei-link-interno" onclick="irParaArtigo(\'$2\')">$1 $2</a>');
+      c.innerHTML = c.innerHTML.replace(
+        /\b(art\.?|artigo)\s*(\d+(?:\.[º°]|[º°])?(?:-[A-Z])?)/gi,
+        '<a class="lei-link-interno" onclick="irParaArtigo(\'$2\')">$1 $2</a>'
+      );
     }
 
     window.irParaArtigo = function (n) {
@@ -4068,7 +4810,9 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           if (matchArt) { linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchArt[1]}')`; classeLink = ' style="cursor:pointer; border-bottom:1px solid #999;"'; }
           
           // Envolve os termos entre asteriscos na classe controlada pelo botão
-          const textoFormatado = no.texto.replace(/\*\*(.*?)\*\*/g, '<strong class="mindmap-key">$1</strong>');
+          const textoFormatado = limparMarcacoesCitacao(no.texto)
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="mindmap-key">$1</strong>')
+            .replace(/(^|[^\*])\*([^\*\s][^\*]*?)\*(?!\*)/g, '$1<em>$2</em>');
 
           html += `<li><a href="${linkAction}"${classeLink}>${textoFormatado}</a>`;
           if (no.filhos.length > 0) html += gerarHTML(no.filhos);
@@ -4077,11 +4821,6 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
         html += '</ul>'; return html;
       }
       return '<div class="tree">' + gerarHTML(raiz) + '</div>';
-    }
-
-    function popularFiltroMapa(texto) {
-      // (Mantido simples para não estourar o limite de caracteres do chat, 
-      //  mas a estrutura está pronta para receber o código completo se desejar)
     }
 
     // --- FUNÇÕES DE APOIO ---
@@ -5086,7 +5825,7 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       } catch (e) { }
     }
 
-    // --- TROCAR MATERIA (Compatibilidade V41 + Suporte à Apostila Completa) ---
+    // --- TROCAR MATÉRIA (V130 LIMPO) ---
     function trocarMateria(valor) {
       if (typeof BIBLIOTECA_LOCAL !== 'undefined' && BIBLIOTECA_LOCAL[valor]) {
         const item = BIBLIOTECA_LOCAL[valor];
@@ -5094,119 +5833,101 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           carregarApostilaCompleta(item.sheetId);
         } else if (item.sheetId) {
           carregarDaNuvem(item.sheetId, item.id || "completa", item.nome);
-        } else {
-          mostrarNotificacao("Item de teste sem ID definido", "error");
         }
-      } else {
-        console.log("Seleção:", valor);
       }
     }
 
-    // --- FUNÇÃO: UNIÃO DE TODOS OS CAPÍTULOS EM UMA ÚNICA APOSTILA ---
-    async function carregarApostilaCompleta(sheetId) {
+    // --- UNIÃO DE TODOS OS CAPÍTULOS EM UMA ÚNICA APOSTILA (GALPÃO INSTANTÂNEO + VIGIA) ---
+    async function carregarApostilaCompleta(sheetId, forcarRecompilacao = false) {
       const loader = document.getElementById('loader-api');
       const loaderTexto = loader.querySelector('div:last-child');
-      loader.classList.add('ativo');
-
-      let divBruta = document.getElementById('dados-brutos-lei');
-      if (!divBruta) {
-        divBruta = document.createElement('div');
-        divBruta.id = 'dados-brutos-lei';
-        divBruta.style.display = 'none';
-        document.body.appendChild(divBruta);
-      }
-
-      // Limpa dados anteriores
-      textoMapaAtual = null;
-      divBruta.textContent = "";
-      document.getElementById('texto-renderizado').innerHTML = "";
-      document.getElementById('menu-dinamico').innerHTML = "";
+      const loadToken = ++currentMaterialLoadToken;
 
       const cacheKey = `cachedContent_${sheetId}_APOSTILA_COMPLETA`;
       const versionKey = `version_${sheetId}_APOSTILA_COMPLETA`;
+      const sessionToken = localStorage.getItem('leis_sessionToken') || '';
+      const emailAtual = localStorage.getItem('leis_userEmail') || userEmail || '';
 
-      const localData = await loadFromGalpao(cacheKey);
+      const localData = !forcarRecompilacao ? await loadFromGalpao(cacheKey) : null;
+      if (loadToken !== currentMaterialLoadToken) return;
       const localVersion = localStorage.getItem(versionKey);
 
-      let serverVersion = null;
-      let shouldUseCache = false;
-
-      // 1. O Vigia: Verifica se a versão na nuvem mudou
-      try {
-        if (navigator.onLine) {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
-          const vigiaUrl = `${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${new Date().getTime()}`;
-          const vigiaResponse = await fetch(vigiaUrl, { signal: controller.signal });
-          clearTimeout(timeoutId);
-
-          if (vigiaResponse.ok) {
-            const vigiaJson = await vigiaResponse.json();
-            if (vigiaJson.success && vigiaJson.version) {
-              serverVersion = vigiaJson.version;
-            } else if (vigiaJson.result === 'success' && vigiaJson.version) {
-              serverVersion = vigiaJson.version;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn("⚠️ O Vigia não conseguiu checar versão.", e.message);
-        if (localData) shouldUseCache = true;
-      }
-
-      if (localData && (localVersion === serverVersion || !serverVersion)) {
-        shouldUseCache = true;
-      }
-
-      // 2. Carregamento Ultrarrápido do Cache Local
-      if (shouldUseCache) {
+      // 1. Abertura Instantânea do Galpão (0,1s) se já estiver compilada
+      if (localData) {
         try {
           const dadosCache = JSON.parse(localData);
-          divBruta.textContent = dadosCache.html || "";
+          conteudoBrutoAtual = dadosCache.html || "";
           textoMapaAtual = dadosCache.mapa || null;
           if (textoMapaAtual) textoMapaAtual = textoMapaAtual.replace(/\\n/g, '\n');
 
-          processarLei();
+          processarLei(conteudoBrutoAtual);
           mostrarNotificacao("⚡ Apostila Completa carregada da memória!", "success");
           document.getElementById('texto-renderizado').scrollTop = 0;
           loader.classList.remove('ativo');
+
+          if (navigator.onLine) {
+            setTimeout(async () => {
+              if (loadToken !== currentMaterialLoadToken) return;
+              try {
+                const vigiaUrl = `${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${Date.now()}`;
+                const vigiaRes = await fetch(vigiaUrl);
+                if (!vigiaRes.ok) return;
+                const vigiaJson = await vigiaRes.json();
+                const serverVersion = vigiaJson.version || null;
+                if (loadToken !== currentMaterialLoadToken) return;
+                if (serverVersion && serverVersion !== localVersion) {
+                  // A versão só é gravada ao final de uma recompilação bem-sucedida.
+                  // Se a rede falhar, o próximo acesso tenta atualizar novamente.
+                  carregarApostilaCompleta(sheetId, true);
+                }
+              } catch (e) {}
+            }, 1500);
+          }
           return;
-        } catch (e) {
-          console.error("Cache corrompido, refazendo união...", e);
-        }
+        } catch (e) {}
       }
 
-      // 3. Baixa cada capítulo e une os textos e mapas mentais
+      // 2. Compilação dos Capítulos
+      loader.classList.add('ativo');
+      textoMapaAtual = null;
+      conteudoBrutoAtual = "";
+      document.getElementById('texto-renderizado').innerHTML = "";
+      document.getElementById('menu-dinamico').innerHTML = "";
+
       try {
         const capitulos = BIBLIOTECA_LOCAL.filter(item => item.id !== "APOSTILA_COMPLETA");
         const listaDados = [];
 
         for (let i = 0; i < capitulos.length; i++) {
+          if (loadToken !== currentMaterialLoadToken) return;
           const cap = capitulos[i];
           if (loaderTexto) loaderTexto.textContent = `Compilando apostila (${i + 1} de ${capitulos.length})...`;
 
-          // Tenta pegar do cache individual do capítulo se a versão coincidir
           const capCacheKey = `cachedContent_${sheetId}_${cap.id}`;
           let capData = null;
-          const cachedCap = await loadFromGalpao(capCacheKey);
-          if (cachedCap && localVersion === serverVersion) {
-            try { capData = JSON.parse(cachedCap); } catch(e) {}
-          }
-
-          if (!capData) {
-            const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(cap.id)}&sheetId=${encodeURIComponent(sheetId)}&_t=${new Date().getTime()}`;
-            const res = await fetch(urlFinal);
-            const json = await res.json();
-            if (json.success && json.data) {
-              capData = json.data;
-              saveToGalpao(capCacheKey, JSON.stringify(capData)).catch(() => {});
+          if (!forcarRecompilacao) {
+            const cachedCap = await loadFromGalpao(capCacheKey);
+            if (cachedCap) {
+              try { capData = JSON.parse(cachedCap); } catch (e) {}
             }
           }
 
+          if (!capData) {
+            const urlFinal = `${API_URL}?action=getConteudo&id=${encodeURIComponent(cap.id)}&sheetId=${encodeURIComponent(sheetId)}&email=${encodeURIComponent(emailAtual)}&sessionToken=${encodeURIComponent(sessionToken)}&_t=${new Date().getTime()}`;
+            const res = await fetch(urlFinal);
+            const json = await res.json();
+            if (!json.success || !json.data) {
+              throw new Error(json.error || `Não foi possível carregar o capítulo ${cap.nome || cap.id}.`);
+            }
+            capData = json.data;
+            saveToGalpao(capCacheKey, JSON.stringify(capData)).catch(() => {});
+          }
+
+          if (loadToken !== currentMaterialLoadToken) return;
           if (capData) listaDados.push(capData);
         }
 
-        // União dos Textos
+        if (loadToken !== currentMaterialLoadToken) return;
         let temModoApostila = false;
         const partesTexto = [];
         const mapasValidos = [];
@@ -5228,7 +5949,6 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
 
         const htmlUnificado = (temModoApostila ? "MODO: APOSTILA\n" : "") + partesTexto.join('\n\n');
 
-        // União dos Mapas Mentais sob um grande nó principal
         let mapaUnificado = null;
         if (mapasValidos.length > 0) {
           let linhasMapa = ["# APOSTILA COMPLETA"];
@@ -5238,7 +5958,6 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
               const lTrim = l.trim();
               if (!lTrim) return;
               if (lTrim.startsWith('#')) {
-                // Adiciona um nível para que todos os ramos fiquem subordinados à APOSTILA COMPLETA
                 linhasMapa.push('#' + lTrim);
               } else {
                 linhasMapa.push(lTrim);
@@ -5248,26 +5967,47 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
           mapaUnificado = linhasMapa.join('\n');
         }
 
-        divBruta.textContent = htmlUnificado;
+        if (loadToken !== currentMaterialLoadToken) return;
+        conteudoBrutoAtual = htmlUnificado;
         textoMapaAtual = mapaUnificado;
 
-        processarLei();
-        mostrarNotificacao("📚 Apostila Completa gerada com sucesso!", "success");
+        processarLei(conteudoBrutoAtual);
+        mostrarNotificacao(forcarRecompilacao ? "🔄 Apostila Completa atualizada!" : "📚 Apostila Completa gerada com sucesso!", "success");
         document.getElementById('texto-renderizado').scrollTop = 0;
 
-        // Salva a apostila unificada no Galpão para as próximas aberturas serem instantâneas
         const dadosParaCache = { html: htmlUnificado, mapa: mapaUnificado, titulo: "Apostila Completa" };
         await saveToGalpao(cacheKey, JSON.stringify(dadosParaCache));
-        if (serverVersion) {
-          localStorage.setItem(versionKey, serverVersion);
-        }
+
+        fetch(`${API_URL}?action=checkVersion&sheetId=${encodeURIComponent(sheetId)}&_t=${Date.now()}`)
+          .then(r => r.json())
+          .then(d => { if (d && d.version) localStorage.setItem(versionKey, d.version); })
+          .catch(() => {});
 
       } catch (err) {
-        console.error("Erro ao compilar apostila completa:", err);
-        mostrarNotificacao("Erro ao juntar os capítulos da apostila.", "error");
+        if (loadToken === currentMaterialLoadToken) {
+          const msgErroApostila = humanizeErrorMessage(err);
+          mostrarNotificacao(msgErroApostila, "error");
+          const container = document.getElementById('texto-renderizado');
+          if (container) {
+            container.innerHTML = `
+              <div style="text-align:center; padding:50px 20px; color:#555;">
+                <h2 style="color:#c0392b">⚠️ Falha ao montar a Apostila Completa</h2>
+                <p style="margin-bottom: 20px;">${escapeHTML(msgErroApostila)}</p>
+                <button id="btn-retry-apostila" type="button" class="tool-btn highlight-btn" style="margin: 0 auto; padding: 10px 22px; cursor: pointer; font-size: 1rem;">
+                  🔄 Tentar Novamente
+                </button>
+              </div>`;
+            const retryApostilaBtn = document.getElementById('btn-retry-apostila');
+            if (retryApostilaBtn) {
+              retryApostilaBtn.addEventListener('click', () => carregarApostilaCompleta(sheetId, true));
+            }
+          }
+        }
       } finally {
-        if (loaderTexto) loaderTexto.textContent = "Carregando Conteúdo...";
-        loader.classList.remove('ativo');
+        if (loadToken === currentMaterialLoadToken) {
+          if (loaderTexto) loaderTexto.textContent = "Carregando Conteúdo...";
+          loader.classList.remove('ativo');
+        }
       }
     }
 
@@ -5502,28 +6242,195 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       }
     }
 
-    // --- GERAR ÁUDIO PIPER (função pura, sem side-effects de reprodução) ---
+    // --- GERAR ÁUDIO PIPER COM WEB WORKER E STREAMING (PADRÃO FC) ---
+    let currentSpeechToken = 0;
+    let piperWorker = null;
+    let piperWorkerCallbacks = {};
+    let piperWorkerMsgId = 0;
+    let piperWorkerFailed = false;
+
+    function failPiperWorker(error) {
+      piperWorkerFailed = true;
+      const pending = piperWorkerCallbacks;
+      piperWorkerCallbacks = {};
+      if (piperWorker) {
+        try { piperWorker.terminate(); } catch (ignore) { }
+        piperWorker = null;
+      }
+      Object.keys(pending).forEach((id) => {
+        try { pending[id].reject(error); } catch (ignore) { }
+      });
+    }
+
+    function getOrCreatePiperWorker() {
+      if (piperWorkerFailed) return null;
+      if (piperWorker) return piperWorker;
+      try {
+        const workerCode = `
+          let piperMod = null;
+          let piperQueue = Promise.resolve();
+          self.onmessage = function(e) {
+            const { id, text, voiceId } = e.data || {};
+            piperQueue = piperQueue.then(async function() {
+              try {
+                if (!piperMod) {
+                  piperMod = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.3/+esm");
+                }
+                const wav = await piperMod.predict({ text: text, voiceId: voiceId });
+                let arrayBuf;
+                if (wav instanceof Blob) {
+                  arrayBuf = await wav.arrayBuffer();
+                } else if (wav instanceof ArrayBuffer) {
+                  arrayBuf = wav;
+                } else if (ArrayBuffer.isView(wav)) {
+                  arrayBuf = wav.buffer.slice(wav.byteOffset, wav.byteOffset + wav.byteLength);
+                } else {
+                  throw new Error("Formato de áudio Piper não suportado");
+                }
+                self.postMessage({ id: id, ok: true, audioData: arrayBuf }, [arrayBuf]);
+              } catch (err) {
+                self.postMessage({ id: id, ok: false, error: err ? (err.message || String(err)) : "Worker synth error" });
+              }
+            }).catch(function() {});
+          };
+        `;
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        piperWorker = new Worker(URL.createObjectURL(blob), { type: 'module' });
+        piperWorker.onmessage = function(e) {
+          const { id, ok, audioData, error } = e.data || {};
+          const cb = piperWorkerCallbacks[id];
+          if (!cb) return;
+          delete piperWorkerCallbacks[id];
+          if (ok) cb.resolve(audioData);
+          else cb.reject(new Error(error || "Piper worker synth error"));
+        };
+        piperWorker.onerror = function(event) {
+          const message = event && event.message ? event.message : "Piper worker error";
+          console.error("Erro no Piper Worker:", message);
+          failPiperWorker(new Error(message));
+        };
+        piperWorker.onmessageerror = function() {
+          failPiperWorker(new Error("Piper worker message error"));
+        };
+      } catch (err) {
+        piperWorkerFailed = true;
+        piperWorker = null;
+      }
+      return piperWorker;
+    }
+
+    async function synthesizePiperChunk(chunkText, voiceId) {
+      const worker = getOrCreatePiperWorker();
+      if (worker) {
+        try {
+          return await new Promise((resolve, reject) => {
+            const id = ++piperWorkerMsgId;
+            piperWorkerCallbacks[id] = { resolve, reject };
+            try {
+              worker.postMessage({ id: id, text: chunkText, voiceId: voiceId });
+            } catch (err) {
+              delete piperWorkerCallbacks[id];
+              reject(err);
+            }
+          });
+        } catch (err) {
+          console.warn("Fallback para thread principal no Piper:", err);
+          failPiperWorker(err instanceof Error ? err : new Error(String(err)));
+        }
+      }
+      await new Promise(r => setTimeout(r, 30));
+      const wav = await piperModule.predict({ text: chunkText, voiceId: voiceId });
+      if (wav instanceof Blob) return await wav.arrayBuffer();
+      if (wav instanceof ArrayBuffer) return wav;
+      if (ArrayBuffer.isView(wav)) return wav.buffer.slice(wav.byteOffset, wav.byteOffset + wav.byteLength);
+      throw new Error("Formato de áudio Piper não suportado");
+    }
+
+    function splitTextIntoChunks(text) {
+      if (!text) return [];
+      const clean = text.replace(/\s+/g, ' ').trim();
+      const MAX_CHARS = 120;
+      if (!clean) return [];
+      if (clean.length <= MAX_CHARS) return [clean];
+
+      const protectedText = clean.replace(
+        /(^|[\s(])((?:art|arts|inc|inciso|al|alínea|par|parágrafo|§|nº|no|p|pp|etc|cf|stf|stj))\./gi,
+        (match, prefix, abbr) => prefix + abbr + '\u0000'
+      );
+
+      const sentences = protectedText
+        .split(/(?<=[.!?;:])\s+/)
+        .map(s => s.replace(/\u0000/g, '.').trim())
+        .filter(Boolean);
+
+      const chunks = [];
+      let current = '';
+      const pushCurrent = () => {
+        if (current) {
+          chunks.push(current);
+          current = '';
+        }
+      };
+
+      const appendSegment = (segment) => {
+        if (!segment) return;
+        const candidate = current ? current + ' ' + segment : segment;
+        if (candidate.length <= MAX_CHARS) {
+          current = candidate;
+          return;
+        }
+        pushCurrent();
+        if (segment.length <= MAX_CHARS) {
+          current = segment;
+          return;
+        }
+
+        const commaParts = segment.split(/(?<=,)\s+/);
+        for (const commaPart of commaParts) {
+          const commaCandidate = current ? current + ' ' + commaPart : commaPart;
+          if (commaCandidate.length <= MAX_CHARS) {
+            current = commaCandidate;
+            continue;
+          }
+          pushCurrent();
+          if (commaPart.length <= MAX_CHARS) {
+            current = commaPart;
+            continue;
+          }
+
+          let wordChunk = '';
+          for (const word of commaPart.split(/\s+/)) {
+            const wordCandidate = wordChunk ? wordChunk + ' ' + word : word;
+            if (wordCandidate.length <= MAX_CHARS) {
+              wordChunk = wordCandidate;
+              continue;
+            }
+            if (wordChunk) chunks.push(wordChunk);
+            if (word.length > MAX_CHARS) {
+              for (let i = 0; i < word.length; i += MAX_CHARS) {
+                chunks.push(word.slice(i, i + MAX_CHARS));
+              }
+              wordChunk = '';
+            } else {
+              wordChunk = word;
+            }
+          }
+          if (wordChunk) current = wordChunk;
+        }
+      };
+
+      sentences.forEach(appendSegment);
+      pushCurrent();
+      return chunks.length ? chunks : [clean];
+    }
+
     async function generatePiperAudio(text) {
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
 
-      // Gera o WAV via Piper WASM (texto limpo, sem padding de texto)
-      const wav = await piperModule.predict({ text: text, voiceId: voiceId });
-
-      // Garante que o AudioContext existe
+      const rawData = await synthesizePiperChunk(text, voiceId);
       ensurePiperAudioCtx();
-
-      // Converte WAV → AudioBuffer
-      let rawData;
-      if (wav instanceof Blob) {
-        rawData = await wav.arrayBuffer();
-      } else {
-        rawData = wav;
-      }
       const audioBuffer = await parseWavToAudioBuffer(rawData, piperAudioCtx);
-
-      // Protege contra truncamento no início da reprodução:
-      // Prepend 30ms de silêncio digital (custo zero, não passa pelo Piper)
       return prependSilence(audioBuffer, piperAudioCtx, 0.03);
     }
 
@@ -5554,7 +6461,7 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
     function limparTextoParaTTS(rawText) {
       if (!rawText) return '';
 
-      let cleanText = rawText
+      let cleanText = limparMarcacoesCitacao(rawText)
         .replace(/<[^>]*>/g, '')
         .replace(/&nbsp;/g, ' ');
 
@@ -5660,6 +6567,7 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
 
     // --- INVALIDAR CACHES DE PRE-BUFFER E PRÉ-PROCESSAMENTO ---
     function invalidatePiperPreBuffer() {
+      currentSpeechToken++;
       piperPreBufferCache.clear();
       piperPreBufferingSet.clear();
       nativePreProcessedText = null;
@@ -5679,77 +6587,137 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       nativePreProcessedIndex = nextIndex;
     }
 
-    // --- SINTETIZAR COM PIPER (AudioContext + pre-buffering pipeline) ---
+    // --- SINTETIZAR COM PIPER (STREAMING EM FRASES CURTAS + PRE-BUFFERING) ---
     async function speakWithPiper(text) {
       if (!piperModule || !piperReady) return;
 
       const expectedParagraph = ttsCurrentParagraph;
+      const speechToken = ++currentSpeechToken;
 
       try {
-        let audioBuffer;
+        window.speechSynthesis.cancel();
+        ensurePiperAudioCtx();
 
-        // 1. Verifica se já existe um buffer pré-gerado no cache (Map)
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const voiceId = isMobile ? PIPER_MODELS.mobile : PIPER_MODELS.desktop;
+
+        // 1. Se o parágrafo completo já foi pré-gerado no cache, reproduz imediatamente
         if (piperPreBufferCache.has(expectedParagraph)) {
-          audioBuffer = piperPreBufferCache.get(expectedParagraph);
+          const cachedBuffer = piperPreBufferCache.get(expectedParagraph);
           piperPreBufferCache.delete(expectedParagraph);
-        } else {
-          // 2. Gera normalmente (primeira frase ou cache miss)
-          audioBuffer = await generatePiperAudio(text);
-        }
 
-        // 3. Verifica se o usuário pausou enquanto o Piper processava
-        if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph) {
+          if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) return;
+
+          if (piperSourceNode) {
+            try { piperSourceNode.stop(); } catch (ignore) { }
+            piperSourceNode = null;
+          }
+
+          piperSourceNode = piperAudioCtx.createBufferSource();
+          piperSourceNode.buffer = cachedBuffer;
+          const rateRange = document.getElementById('rateRangeLeis');
+          piperSourceNode.playbackRate.value = rateRange ? parseFloat(rateRange.value) : 1.1;
+          piperSourceNode.connect(piperAudioCtx.destination);
+
+          piperSourceNode.onended = function () {
+            if (!ttsAtivo || speechToken !== currentSpeechToken) return;
+            piperErrorCount = 0;
+            piperSourceNode = null;
+            const item = ttsParagraphs[ttsCurrentParagraph];
+            if (item && item.element) {
+              item.element.style.outline = '';
+              item.element.style.outlineOffset = '';
+            }
+            ttsCurrentParagraph++;
+            if (ttsHandsFree && ttsAtivo) {
+              ttsHandsFreeTimer = setTimeout(() => {
+                if (ttsHandsFree && ttsAtivo) lerProximoParagrafo();
+              }, ttsHandsFreeDelay * 1000);
+            } else if (ttsAtivo) {
+              lerProximoParagrafo();
+            }
+          };
+
+          piperSourceNode.start(0);
+          preBufferNext();
           return;
         }
 
-        // 4. Cala a voz nativa
-        window.speechSynthesis.cancel();
-
-        // 5. Garante que o AudioContext existe e está desbloqueado
-        ensurePiperAudioCtx();
-
-        // 6. Para qualquer reprodução anterior
-        if (piperSourceNode) {
-          try { piperSourceNode.stop(); } catch (ignore) { }
-          piperSourceNode = null;
+        // 2. Caso contrário, divide em frases curtas (streaming) para começar a falar quase na hora
+        const chunks = splitTextIntoChunks(text);
+        if (chunks.length === 0) {
+          fallbackNextParagraph();
+          return;
         }
 
-        // 7. Cria BufferSource e toca
-        piperSourceNode = piperAudioCtx.createBufferSource();
-        piperSourceNode.buffer = audioBuffer;
-
-        // Velocidade de reprodução
-        const rateRange = document.getElementById('rateRangeLeis');
-        piperSourceNode.playbackRate.value = rateRange ? parseFloat(rateRange.value) : 1.1;
-
-        piperSourceNode.connect(piperAudioCtx.destination);
-
-        // 8. Quando terminar de tocar
-        piperSourceNode.onended = function () {
-          piperErrorCount = 0; // Sucesso!
-          piperSourceNode = null;
-          const item = ttsParagraphs[ttsCurrentParagraph];
-          if (item && item.element) {
-            item.element.style.outline = '';
-            item.element.style.outlineOffset = '';
-          }
-          ttsCurrentParagraph++;
-
-          if (ttsHandsFree && ttsAtivo) {
-            ttsHandsFreeTimer = setTimeout(() => {
-              if (ttsHandsFree && ttsAtivo) lerProximoParagrafo();
-            }, ttsHandsFreeDelay * 1000);
-          } else if (ttsAtivo) {
-            lerProximoParagrafo();
-          }
+        const prepareChunkBuffer = async (chunkText, isFirst) => {
+          const rawData = await synthesizePiperChunk(chunkText, voiceId);
+          if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) return null;
+          const audioBuffer = await parseWavToAudioBuffer(rawData, piperAudioCtx);
+          if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) return null;
+          return prependSilence(audioBuffer, piperAudioCtx, isFirst ? 0.05 : 0.04);
         };
 
-        piperSourceNode.start(0);
+        let nextBufferPromise = prepareChunkBuffer(chunks[0], true);
 
-        // 9. PIPELINE: Inicia pre-buffer da PRÓXIMA frase em background
-        preBufferNext();
+        for (let i = 0; i < chunks.length; i++) {
+          const currentBuffer = await nextBufferPromise;
+          if (!currentBuffer || !ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) return;
+
+          if (i + 1 < chunks.length) {
+            nextBufferPromise = prepareChunkBuffer(chunks[i + 1], false);
+          } else {
+            // Na última frase deste parágrafo, já dispara o pre-buffer do próximo parágrafo
+            preBufferNext();
+          }
+
+          await new Promise((resolve) => {
+            if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) {
+              resolve();
+              return;
+            }
+            if (piperSourceNode) {
+              try { piperSourceNode.stop(); } catch (ignore) { }
+              piperSourceNode = null;
+            }
+
+            const source = piperAudioCtx.createBufferSource();
+            piperSourceNode = source;
+            source.buffer = currentBuffer;
+
+            const rateRange = document.getElementById('rateRangeLeis');
+            source.playbackRate.value = rateRange ? parseFloat(rateRange.value) : 1.1;
+            source.connect(piperAudioCtx.destination);
+
+            source.onended = function () {
+              if (piperSourceNode === source) piperSourceNode = null;
+              resolve();
+            };
+
+            source.start(0);
+          });
+
+          if (!ttsAtivo || expectedParagraph !== ttsCurrentParagraph || speechToken !== currentSpeechToken) return;
+        }
+
+        piperErrorCount = 0;
+        const item = ttsParagraphs[ttsCurrentParagraph];
+        if (item && item.element) {
+          item.element.style.outline = '';
+          item.element.style.outlineOffset = '';
+        }
+        ttsCurrentParagraph++;
+
+        if (ttsHandsFree && ttsAtivo && speechToken === currentSpeechToken) {
+          ttsHandsFreeTimer = setTimeout(() => {
+            if (ttsHandsFree && ttsAtivo && speechToken === currentSpeechToken) lerProximoParagrafo();
+          }, ttsHandsFreeDelay * 1000);
+        } else if (ttsAtivo && speechToken === currentSpeechToken) {
+          lerProximoParagrafo();
+        }
 
       } catch (e) {
+        if (speechToken !== currentSpeechToken) return;
         console.error("Erro Piper synth:", e);
         piperErrorCount++;
 
@@ -5906,9 +6874,25 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       "ex.:": "Exemplo",
       "ex.": "Exemplo",
       "NYPD": "New York City Police Department",
+      "GDO": "G-D-O",
+      "DOP": "DO-P",
 
-      // === 9. DIVERSOS ===
+      // === 9. NÚMEROS E NOMES ENTRE PARÊNTESES ===
+      "1 (um)": "1",
+      "2 (dois)": "2",
+      "3 (Três)": "3",
+      "4 (quatro)": "4",
+      "5 (cinco)": "5",
+      "6 (seis)": "6",
+      "7 (sete)": "7",
+      "8 (oito)": "8",
+      "9 (nove)": "9",
+      "10 (dez)": "10",
+      "24 (vinte e quatro)": "24",
+
+      // === 10. DIVERSOS ===
       "Pag.": "Página",
+      "Pág.": "Página",
       "EPI": "E-P-I",
       "Profissional": "Profissionau",
       "Letal": "Letau",
@@ -5917,7 +6901,13 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       "Policial": "Policiau",
       "Funcional": "Funcionau",
       "Diagonal": "Diagonau",
-
+      "Federal": "Federau",
+      "Inicial": "Iniciau",
+      "Social": "Sociau",
+      "Penal": "Penau",
+      "45º": "45 graus",
+      "Perimetral": "Perimetrau",
+      "Criminal": "Criminau",
     };
 
     // --- COMPILAÇÃO ÚNICA DO DICIONÁRIO FONÉTICO (Performance) ---
@@ -6269,7 +7259,9 @@ l = l.replace(/^[\s]*\d+[\.\)]\s+/, '');      // Remove "1. ", "2) " e similares
       if (!conteudo) { ttsParagraphs = []; return; }
 
       // Coleta todos os elementos de texto: p, li, h1, h2, h3, divs de alerta, spans com classe específica
-      const elementos = conteudo.querySelectorAll('p, li, h1, h2, h3, .lei-descricao, .destaque-artigo, .caixa-alerta, div[style]');
+      const elementos = conteudo.querySelectorAll(
+        'h1, h2, h3, h4, p, li, .lista-item-n1, .lista-item-n2, .lista-item-num, .lei-descricao, .caixa-alerta, .caixa-mnemonico, .questao-titulo, .caixa-gabarito, .tabela-chico tbody tr'
+      );
       ttsParagraphs = [];
 
       elementos.forEach(el => {
