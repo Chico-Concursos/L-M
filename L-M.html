@@ -950,6 +950,177 @@
       text-align: justify;
     }
 
+    /* --- CAIXA DE LETRA DA LEI / LITERALIDADE (BLOCKQUOTE >) --- */
+    .caixa-lei-seca {
+      background-color: #162032;
+      color: #e2e8f0;
+      border-left: 5px solid var(--cor-destaque);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 22px;
+      margin: 14px 0 26px 0;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .lei-seca-linha {
+      position: relative;
+      padding: 7px 10px;
+      margin: 2px 0;
+      line-height: 1.72;
+      font-size: 1.12rem;
+      text-align: justify;
+      color: #e2e8f0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      transition: background-color 0.15s ease;
+    }
+
+    .lei-seca-linha:last-child {
+      border-bottom: none;
+    }
+
+    .lei-seca-linha:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .caixa-lei-seca strong {
+      color: #F7EF8A;
+      font-weight: 700;
+    }
+
+    .caixa-lei-seca em {
+      color: #94a3b8;
+      font-size: 0.92em;
+    }
+
+    .caixa-lei-seca .lei-link-interno,
+    .caixa-lei-seca .destaque-artigo {
+      color: #FFD700 !important;
+      border-bottom-color: #FFD700 !important;
+    }
+
+    /* Escadinha Jurídica (Hierarquia Visual Anti-Fadiga) */
+    .lei-seca-linha.lei-nivel-rubrica {
+      margin-top: 14px;
+      padding-bottom: 2px;
+      border-bottom: none;
+      font-size: 0.96rem;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #93c5fd;
+    }
+
+    .lei-seca-linha.lei-nivel-rubrica:first-child {
+      margin-top: 0;
+    }
+
+    .lei-seca-linha.lei-nivel-rubrica strong {
+      color: #93c5fd;
+    }
+
+    .lei-seca-linha.lei-nivel-caput {
+      padding-left: 6px;
+    }
+
+    .lei-seca-linha.lei-nivel-pena {
+      padding-left: 16px;
+      background-color: rgba(255, 215, 0, 0.05);
+      border-left: 2px solid rgba(247, 239, 138, 0.4);
+    }
+
+    .lei-seca-linha.lei-nivel-inciso {
+      padding-left: 26px;
+    }
+
+    .lei-seca-linha.lei-nivel-alinea {
+      padding-left: 48px;
+    }
+
+    /* Adaptação Automática da Lei Seca ao Modo Livro (Sépia) */
+    body.modo-livro-ativo .caixa-lei-seca {
+      background-color: #eaddc5;
+      color: #3e2723;
+      border-left-color: #8d6e63;
+      box-shadow: inset 0 0 0 1px #d7c4a3;
+    }
+
+    body.modo-livro-ativo .lei-seca-linha {
+      color: #3e2723 !important;
+      border-bottom-color: rgba(67, 52, 34, 0.1);
+      font-family: 'Merriweather', 'Georgia', serif !important;
+      font-size: 1.06rem !important;
+    }
+
+    body.modo-livro-ativo .caixa-lei-seca strong,
+    body.modo-livro-ativo .caixa-lei-seca .lei-link-interno,
+    body.modo-livro-ativo .caixa-lei-seca .destaque-artigo {
+      color: #6b1717 !important;
+      border-bottom-color: #6b1717 !important;
+    }
+
+    body.modo-livro-ativo .caixa-lei-seca em {
+      color: #6d4c41;
+    }
+
+    /* Calibragem Mobile para a Escadinha Jurídica */
+    @media (max-width: 768px) {
+      .caixa-lei-seca {
+        padding: 12px 14px;
+      }
+      .lei-seca-linha {
+        font-size: 1.02rem !important;
+        line-height: 1.6 !important;
+        text-align: left !important;
+      }
+      .lei-seca-linha.lei-nivel-inciso {
+        padding-left: 16px;
+      }
+      .lei-seca-linha.lei-nivel-alinea {
+        padding-left: 30px;
+      }
+    }
+
+    /* Economia Total de Tinta na Impressão / PDF */
+    @media print {
+      .caixa-lei-seca {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #cccccc !important;
+        border-left: 4px solid #000000 !important;
+        box-shadow: none !important;
+        padding: 10px 14px !important;
+        margin: 10px 0 18px 0 !important;
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+      }
+      .lei-seca-linha {
+        background-color: transparent !important;
+        color: #000000 !important;
+        border-bottom: 1px dotted #e0e0e0 !important;
+        font-size: 10.5pt !important;
+        line-height: 1.45 !important;
+        padding: 4px 6px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .lei-seca-linha.lei-nivel-rubrica {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        border-bottom: none !important;
+      }
+      .lei-seca-linha.lei-nivel-inciso {
+        padding-left: 20px !important;
+      }
+      .lei-seca-linha.lei-nivel-alinea {
+        padding-left: 38px !important;
+      }
+      .caixa-lei-seca strong,
+      .caixa-lei-seca em,
+      .caixa-lei-seca .lei-link-interno,
+      .caixa-lei-seca .destaque-artigo {
+        color: #000000 !important;
+      }
+    }
+
     /* Adaptação ao Modo Livro */
     body.modo-livro-ativo .tabela-chico {
       background-color: #faf3e3;
@@ -4445,6 +4616,65 @@
           continue;
         }
 
+        // --- A2. BLOCO DE CITAÇÃO / LETRA DA LEI (> ...) ---
+        if (lTrim.startsWith('>')) {
+          let htmlCitacao = '<div class="caixa-lei-seca">';
+          let temLinhaCitacao = false;
+          while (i < lin.length) {
+            let linhaCitRaw = lin[i].replace(/\u00A0/g, ' ').trim();
+            if (!linhaCitRaw.startsWith('>')) {
+              // Linha em branco no meio da citação: só encerra se a próxima linha não for citação
+              if (!linhaCitRaw) {
+                let j = i + 1;
+                while (j < lin.length && !lin[j].replace(/\u00A0/g, ' ').trim()) j++;
+                if (j < lin.length && lin[j].replace(/\u00A0/g, ' ').trim().startsWith('>')) {
+                  i++;
+                  continue;
+                }
+              }
+              break;
+            }
+
+            let conteudoCit = linhaCitRaw.replace(/^>\s*/, '').trim();
+            if (conteudoCit) {
+              registrarArtigoNoBloco(conteudoCit);
+              let textoPuro = conteudoCit.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+
+              // Identifica o nível da Escadinha Jurídica
+              let classeNivel = 'lei-nivel-caput';
+              if (/^[a-z]\)\s/i.test(textoPuro)) {
+                classeNivel = 'lei-nivel-alinea';
+              } else if (/^[IVXLCDM]+\s*[-–—\.]/i.test(textoPuro)) {
+                classeNivel = 'lei-nivel-inciso';
+              } else if (/^Pena\s*[-–—:]/i.test(textoPuro)) {
+                classeNivel = 'lei-nivel-pena';
+              } else if (
+                !/^(?:Art\.?|Artigo|§|Par[áa]grafo)\b/i.test(textoPuro) &&
+                textoPuro.length < 85 &&
+                !/[:;\.]$/.test(textoPuro)
+              ) {
+                classeNivel = 'lei-nivel-rubrica';
+              }
+
+              // Preserva a âncora id="art_..." para o Mapa Mental e Links Internos
+              let attrId = '';
+              let matchArtCit = textoPuro.match(/^(?:Art\.?|Item)\s*([\d\wº\.\-]+)/i);
+              if (matchArtCit) {
+                let numRefCit = matchArtCit[1].replace(/\.$/, '');
+                attrId = ` id="art_${numRefCit.replace(/\./g, '_')}"`;
+              }
+
+              htmlCitacao += `<div${attrId} class="lei-seca-linha ${classeNivel}">${formatarInlineMarkdown(conteudoCit)}</div>`;
+              temLinhaCitacao = true;
+            }
+            i++;
+          }
+          i--; // Ajusta o ponteiro do loop principal
+          htmlCitacao += '</div>';
+          if (temLinhaCitacao) h += htmlCitacao;
+          continue;
+        }
+
         // --- B. TABELAS MARKDOWN (| Coluna | Coluna |) ---
         if (lTrim.includes('|') && (i + 1 < lin.length) && ehLinhaSeparadoraTabela(lin[i + 1])) {
           const linhasTabela = [lTrim, lin[i + 1].trim()];
@@ -4672,7 +4902,7 @@
       c.querySelectorAll('h2, h3, h4, .questao-titulo, .caixa-mnemonico').forEach((titulo) => {
         if (titulo.closest('.keep-with-next')) return;
         const proximo = titulo.nextElementSibling;
-        if (!proximo || proximo.classList.contains('table-responsive')) return;
+        if (!proximo || proximo.classList.contains('table-responsive') || proximo.classList.contains('caixa-lei-seca')) return;
 
         const wrapper = document.createElement('div');
         wrapper.className = 'keep-with-next';
@@ -4683,7 +4913,7 @@
         if (/^(H2|H3|H4)$/.test(proximo.tagName)) {
           const aposSubtitulo = proximo.nextElementSibling;
           wrapper.appendChild(proximo);
-          if (aposSubtitulo && !aposSubtitulo.classList.contains('table-responsive')) {
+          if (aposSubtitulo && !aposSubtitulo.classList.contains('table-responsive') && !aposSubtitulo.classList.contains('caixa-lei-seca')) {
             wrapper.appendChild(aposSubtitulo);
           }
         } else {
@@ -7260,7 +7490,7 @@
 
       // Coleta todos os elementos de texto: p, li, h1, h2, h3, divs de alerta, spans com classe específica
       const elementos = conteudo.querySelectorAll(
-        'h1, h2, h3, h4, p, li, .lista-item-n1, .lista-item-n2, .lista-item-num, .lei-descricao, .caixa-alerta, .caixa-mnemonico, .questao-titulo, .caixa-gabarito, .tabela-chico tbody tr'
+        'h1, h2, h3, h4, p, li, .lista-item-n1, .lista-item-n2, .lista-item-num, .lei-seca-linha, .lei-descricao, .caixa-alerta, .caixa-mnemonico, .questao-titulo, .caixa-gabarito, .tabela-chico tbody tr'
       );
       ttsParagraphs = [];
 
