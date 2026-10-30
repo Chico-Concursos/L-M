@@ -1079,23 +1079,15 @@
       }
     }
 
-    /* Economia Total de Tinta na Impressão / PDF */
+    /* Impressão / PDF: Regra Padrão (Economia de Tinta) vs. Exceção (Card Azul Digital) */
     @media print {
       .caixa-lei-seca {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border: 1px solid #cccccc !important;
-        border-left: 4px solid #000000 !important;
-        box-shadow: none !important;
         padding: 10px 14px !important;
         margin: 10px 0 18px 0 !important;
         page-break-inside: auto !important;
         break-inside: auto !important;
       }
       .lei-seca-linha {
-        background-color: transparent !important;
-        color: #000000 !important;
-        border-bottom: 1px dotted #e0e0e0 !important;
         font-size: 10.5pt !important;
         line-height: 1.45 !important;
         padding: 4px 6px !important;
@@ -1113,11 +1105,61 @@
       .lei-seca-linha.lei-nivel-alinea {
         padding-left: 38px !important;
       }
-      .caixa-lei-seca strong,
-      .caixa-lei-seca em,
-      .caixa-lei-seca .lei-link-interno,
-      .caixa-lei-seca .destaque-artigo {
+
+      /* 1. REGRA PADRÃO: Economia Total de Tinta (Fundo Branco) */
+      body:not(.pdf-card-azul) .caixa-lei-seca {
+        background-color: #ffffff !important;
         color: #000000 !important;
+        border: 1px solid #cccccc !important;
+        border-left: 4px solid #000000 !important;
+        box-shadow: none !important;
+      }
+      body:not(.pdf-card-azul) .lei-seca-linha {
+        background-color: transparent !important;
+        color: #000000 !important;
+        border-bottom: 1px dotted #e0e0e0 !important;
+      }
+      body:not(.pdf-card-azul) .caixa-lei-seca strong,
+      body:not(.pdf-card-azul) .caixa-lei-seca em,
+      body:not(.pdf-card-azul) .caixa-lei-seca .lei-link-interno,
+      body:not(.pdf-card-azul) .caixa-lei-seca .destaque-artigo {
+        color: #000000 !important;
+      }
+
+      /* 2. EXCEÇÃO: Leitura Digital Offline (Preserva o Card Azul-Escuro) */
+      body.pdf-card-azul .caixa-lei-seca {
+        background-color: #162032 !important;
+        color: #e2e8f0 !important;
+        border: none !important;
+        border-left: 5px solid #b08d28 !important;
+        border-radius: 0 8px 8px 0 !important;
+        box-shadow: none !important;
+      }
+      body.pdf-card-azul .lei-seca-linha {
+        color: #e2e8f0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+      body.pdf-card-azul .lei-seca-linha:last-child {
+        border-bottom: none !important;
+      }
+      body.pdf-card-azul .caixa-lei-seca strong {
+        color: #F7EF8A !important;
+      }
+      body.pdf-card-azul .caixa-lei-seca em {
+        color: #94a3b8 !important;
+      }
+      body.pdf-card-azul .lei-seca-linha.lei-nivel-rubrica,
+      body.pdf-card-azul .lei-seca-linha.lei-nivel-rubrica strong {
+        color: #93c5fd !important;
+      }
+      body.pdf-card-azul .lei-seca-linha.lei-nivel-pena {
+        background-color: rgba(255, 215, 0, 0.06) !important;
+        border-left: 2px solid rgba(247, 239, 138, 0.45) !important;
+      }
+      body.pdf-card-azul .caixa-lei-seca .lei-link-interno,
+      body.pdf-card-azul .caixa-lei-seca .destaque-artigo {
+        color: #FFD700 !important;
+        border-bottom-color: #FFD700 !important;
       }
     }
 
@@ -1735,27 +1777,30 @@
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
 
-    /* --- CORREÇÃO POSIÇÃO MENU FILTRAR (V54) --- */
+    /* --- MENU DE NAVEGAÇÃO / FILTRAR MAPA (PADRÃO DARK EXECUTIVO) --- */
     .map-nav-dropdown {
       display: none;
       position: absolute;
-
-      /* AQUI ESTÁ A MÁGICA DA POSIÇÃO: */
-      top: 100% !important;
-      /* Fica logo abaixo do container do botão */
-      margin-top: 8px !important;
-      /* Um pequeno respiro estético (pode diminuir para 5px se quiser mais perto) */
+      top: calc(100% + 5px) !important;
       left: 0 !important;
-      /* Alinha perfeitamente à esquerda do botão */
-
-      width: 300px;
-      max-height: 70vh;
+      width: 320px;
+      max-height: 68vh;
       overflow-y: auto;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      background-color: #181e27 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7) !important;
       z-index: 5000;
-      border: 1px solid #eee;
+      border: 1px solid rgba(210, 172, 71, 0.35) !important;
+      padding: 6px !important;
+    }
+
+    .map-nav-dropdown::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .map-nav-dropdown::-webkit-scrollbar-thumb {
+      background: rgba(210, 172, 71, 0.35);
+      border-radius: 3px;
     }
 
     .map-nav-dropdown.ativo {
@@ -1765,70 +1810,79 @@
     .nav-item {
       display: flex;
       align-items: center;
-      padding: 8px 15px;
-      border-bottom: 1px solid #f1f1f1;
+      padding: 5px 8px !important;
+      margin-bottom: 2px !important;
+      border-bottom: none !important;
+      border-radius: 5px !important;
       cursor: pointer;
-      transition: background 0.1s;
+      transition: background 0.15s, color 0.15s;
       user-select: none;
+      background-color: transparent !important;
+      color: #e2e8f0 !important;
+      font-size: 0.76rem !important;
+      line-height: 1.3 !important;
     }
 
     .nav-item:hover {
-      background-color: #e3f2fd;
-      color: #1565c0;
+      background-color: rgba(210, 172, 71, 0.14) !important;
+      color: #F7EF8A !important;
     }
 
     .nav-nivel-1 {
-      font-weight: 800;
-      background-color: #f8f9fa;
-      color: #c0392b;
-      border-left: 4px solid #c0392b;
+      font-weight: 700 !important;
+      background-color: rgba(255, 255, 255, 0.04) !important;
+      color: #F7EF8A !important;
+      border-left: 3px solid #D2AC47 !important;
     }
 
     .nav-nivel-2 {
       font-weight: 600;
-      padding-left: 25px;
-      border-left: 4px solid #2980b9;
+      padding-left: 16px !important;
+      border-left: 3px solid #3498db !important;
     }
 
     .nav-nivel-3 {
-      font-weight: 400;
-      padding-left: 40px;
-      border-left: 4px solid #27ae60;
+      font-weight: 500;
+      padding-left: 26px !important;
+      border-left: 3px solid #2ecc71 !important;
     }
 
     .nav-nivel-4 {
-      font-style: italic;
-      padding-left: 55px;
-      border-left: 4px solid #f39c12;
+      font-weight: 400;
+      font-size: 0.73rem !important;
+      padding-left: 36px !important;
+      border-left: 3px solid #f39c12 !important;
+      color: #cbd5e1 !important;
     }
 
     .nav-nivel-5 {
-      font-style: italic;
-      font-size: 0.9em;
-      padding-left: 70px;
-      border-left: 4px solid #8e44ad;
+      font-size: 0.71rem !important;
+      padding-left: 46px !important;
+      border-left: 3px solid #9b59b6 !important;
+      color: #94a3b8 !important;
     }
 
     .nav-nivel-6 {
-      font-style: italic;
-      font-size: 0.85em;
-      padding-left: 85px;
-      border-left: 4px solid #34495e;
+      font-size: 0.7rem !important;
+      padding-left: 54px !important;
+      border-left: 3px solid #64748b !important;
+      color: #94a3b8 !important;
     }
 
     .nav-seta {
       display: inline-block;
-      width: 20px;
+      width: 14px;
+      flex-shrink: 0;
       text-align: center;
       cursor: pointer;
       transition: transform 0.2s;
-      font-size: 0.8rem;
-      color: #7f8c8d;
-      margin-right: 5px;
+      font-size: 0.65rem;
+      color: #D2AC47;
+      margin-right: 4px;
     }
 
     .nav-seta:hover {
-      color: var(--cor-destaque);
+      color: #F7EF8A;
       font-weight: bold;
     }
 
@@ -1842,28 +1896,34 @@
 
     .nav-texto {
       flex-grow: 1;
-      padding-left: 5px;
+      padding-left: 3px;
+      word-break: break-word;
     }
 
     .nav-btn-ir {
-      opacity: 0.4;
-      padding: 4px 8px;
+      opacity: 0.65;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.8rem;
-      margin-left: 10px;
-      background: #eee;
+      font-size: 0.68rem;
+      margin-left: 6px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.08);
+      color: #F7EF8A;
+      border: 1px solid rgba(210, 172, 71, 0.3);
+      transition: all 0.15s;
     }
 
     .nav-item:hover .nav-btn-ir {
       opacity: 1;
-      background: #dfe6e9;
-      color: var(--cor-destaque);
+      background: rgba(210, 172, 71, 0.2);
+      color: #F7EF8A;
     }
 
     .nav-btn-ir:hover {
-      background: var(--cor-destaque) !important;
-      color: white !important;
-      transform: scale(1.1);
+      background: #D2AC47 !important;
+      color: #000 !important;
+      font-weight: 700;
+      transform: scale(1.05);
     }
 
     /* Busca Mapa */
@@ -2441,21 +2501,6 @@
         justify-content: center;
         margin-bottom: 5px;
       }
-    }
-
-    /* --- CORREÇÃO: TEXTO DO FILTRO DO MAPA --- */
-    .map-nav-dropdown .nav-item {
-      color: #333 !important;
-      /* Força cor escura */
-      background-color: white;
-      /* Garante fundo branco */
-    }
-
-    .map-nav-dropdown .nav-item:hover {
-      background-color: #e3f2fd;
-      /* Azul claro ao passar o mouse */
-      color: #1565c0 !important;
-      /* Azul escuro no texto */
     }
 
     /* === NOVO LAYOUT DE LOGIN (V84 Clean + V30 Gold) === */
@@ -3266,10 +3311,514 @@
       .sidebar,
       #loginModal,
       .modal-overlay,
+      #modal-download,
+      #modal-escolha-pdf,
       #loader-api,
       .notification-toast,
       .btn-sair-zen,
       .btn-reabrir-header {
+        display: none !important;
+      }
+    }
+
+    /* Download no menu mobile */
+    .print-mobile-only {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .print-mobile-only {
+        display: flex !important;
+      }
+    }
+
+    /* =================================================================
+       🌟 EVOLUÇÃO DO CABEÇALHO SLIM (28px + RECOLHIMENTO + DARK MENU)
+       ================================================================= */
+
+    /* Garante referência para a lingueta ▼ MENU quando a barra recolher */
+    .main-wrapper {
+      position: relative !important;
+    }
+
+    /* Reduz o espaço vazio em branco acima do título da apostila no iframe */
+    .content {
+      padding: 15px 50px 40px 50px !important;
+    }
+
+    .content h1:first-child {
+      margin-top: 5px !important;
+    }
+
+    /* 1. Barra da Apostila e do Mapa Ultra-Slim (28px) */
+    .study-toolbar,
+    .mindmap-header {
+      height: 28px !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      padding: 0 10px !important;
+      background-color: #141920 !important;
+      border-bottom: 1px solid rgba(210, 172, 71, 0.3) !important;
+      gap: 5px !important;
+      flex-wrap: nowrap !important;
+      transition: transform 0.25s ease-in-out, opacity 0.2s ease !important;
+    }
+
+    /* Efeito de Recolher a Barra Principal (Idêntico ao Mapa Mental) */
+    .study-toolbar.recolhido {
+      transform: translateY(-100%) !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* Lingueta Flutuante "▼ MENU" para reabrir a Barra Principal */
+    .btn-reabrir-toolbar {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #141920;
+      color: #F7EF8A;
+      border: 1px solid rgba(210, 172, 71, 0.4);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 2px 14px;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      display: none;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reabrir-toolbar:hover {
+      background: #1b222c;
+      color: #FFD700;
+      padding-top: 4px;
+    }
+
+    .study-toolbar.recolhido ~ .btn-reabrir-toolbar {
+      display: block;
+      animation: slideDown 0.25s forwards;
+    }
+
+    /* Botão Redondo ▲ de Recolher Barra */
+    .study-toolbar .btn-recolher-topo {
+      padding: 0 !important;
+      width: 18px !important;
+      min-width: 18px !important;
+      height: 18px !important;
+      min-height: 18px !important;
+      max-height: 18px !important;
+      border: none !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #f1f5f9 !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 0.65rem !important;
+      flex-shrink: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .study-toolbar .btn-recolher-topo:hover {
+      background: rgba(210, 172, 71, 0.25) !important;
+      color: #F7EF8A !important;
+      border: 1px solid #F7EF8A !important;
+    }
+
+    /* Rótulo "MATÉRIA:" alinhado com ícone dourado */
+    .study-label {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.4px !important;
+      color: #D2AC47 !important;
+      margin-right: 2px !important;
+      white-space: nowrap !important;
+    }
+
+    /* Divisória vertical sutil entre grupos de botões */
+    .toolbar-divider {
+      width: 1px;
+      height: 15px;
+      background-color: rgba(255, 255, 255, 0.14);
+      margin: 0 3px;
+      flex-shrink: 0;
+    }
+
+    /* 2. Seletor de Matéria Compacto (22px) */
+    #seletor-conteudo {
+      background: #1b222c !important;
+      color: #F7EF8A !important;
+      border: 1px solid rgba(210, 172, 71, 0.5) !important;
+      border-radius: 5px !important;
+      font-weight: 600 !important;
+      font-size: 0.76rem !important;
+      height: 22px !important;
+      min-height: 22px !important;
+      max-height: 22px !important;
+      padding: 0 8px !important;
+      max-width: 220px !important;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+      cursor: pointer !important;
+      transform: none !important;
+      transition: border-color 0.15s ease, background-color 0.15s ease !important;
+    }
+
+    #seletor-conteudo:hover,
+    #seletor-conteudo:focus {
+      border-color: #F7EF8A !important;
+      background-color: #232c38 !important;
+      transform: none !important;
+    }
+
+    #seletor-conteudo option {
+      background-color: #141920 !important;
+      color: #f1f5f9 !important;
+    }
+
+    /* 3. Botão Mapa com a mesma geometria retangular (5px) e 22px de altura */
+    .study-toolbar .mindmap-btn {
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%) !important;
+      color: #000000 !important;
+      font-weight: 800 !important;
+      font-size: 0.76rem !important;
+      border: 1px solid rgba(247, 239, 138, 0.6) !important;
+      border-radius: 5px !important;
+      height: 22px !important;
+      min-height: 22px !important;
+      max-height: 22px !important;
+      padding: 0 10px !important;
+      gap: 5px !important;
+      box-shadow: 0 1px 6px rgba(210, 172, 71, 0.25) !important;
+      white-space: nowrap !important;
+    }
+
+    .study-toolbar .mindmap-btn:hover {
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.55) !important;
+      transform: none !important;
+    }
+
+    /* 4. Botões Secundários Planos (22px) */
+    .study-toolbar .btn-open-sidebar,
+    .study-toolbar .print-btn,
+    .study-toolbar .tts-btn-icon-mobile,
+    .toolbar-extras > .dropdown > .dropbtn,
+    .toolbar-extras > .tts-btn,
+    .toolbar-extras > .logout-btn,
+    .mindmap-header .map-nav-btn,
+    .mindmap-header .btn-map-menu-mobile,
+    .map-toolbar-extras .tool-btn,
+    .mindmap-header .btn-close-map {
+      background: transparent !important;
+      color: #f1f5f9 !important;
+      border: 1px solid transparent !important;
+      border-radius: 5px !important;
+      box-shadow: none !important;
+      font-weight: 600 !important;
+      font-size: 0.8rem !important;
+      height: 28px !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      padding: 0 10px !important;
+      gap: 6px !important;
+      box-sizing: border-box !important;
+      transform: none !important;
+      white-space: nowrap !important;
+      transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease !important;
+    }
+
+    /* Ícones dentro dos botões secundários em tom dourado suave */
+    .study-toolbar .print-btn i,
+    .toolbar-extras > .dropdown > .dropbtn i:first-child,
+    .toolbar-extras > .tts-btn i {
+      color: #D2AC47 !important;
+      font-size: 0.82rem !important;
+      transition: color 0.15s ease !important;
+    }
+
+    /* Seta fina dos menus suspensos (Visual e Ferramentas) */
+    .dropbtn .seta-dropdown {
+      font-size: 0.65rem !important;
+      opacity: 0.7 !important;
+      margin-left: 2px !important;
+      transition: transform 0.2s ease, opacity 0.2s ease !important;
+    }
+
+    .dropdown:hover .dropbtn .seta-dropdown {
+      transform: rotate(180deg) !important;
+      opacity: 1 !important;
+    }
+
+    /* 5. Menus Suspensos Dark Mode (Visual e Ferramentas) */
+    .dropdown-content {
+      background-color: #181e27 !important;
+      min-width: 185px !important;
+      padding: 6px !important;
+      border-radius: 8px !important;
+      border: 1px solid rgba(210, 172, 71, 0.35) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65) !important;
+      top: calc(100% + 4px) !important;
+    }
+
+    /* Ponte invisível para o menu não fechar ao mover o rato da barra para a gaveta */
+    .dropdown-content::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
+
+    .dropdown-content hr {
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      margin: 5px 0 !important;
+    }
+
+    .dropdown-content .tool-btn {
+      background: transparent !important;
+      color: #e2e8f0 !important;
+      border: 1px solid transparent !important;
+      border-radius: 5px !important;
+      height: 30px !important;
+      min-height: 30px !important;
+      max-height: 30px !important;
+      padding: 0 10px !important;
+      margin-bottom: 2px !important;
+      gap: 8px !important;
+      font-weight: 600 !important;
+      font-size: 0.8rem !important;
+      box-shadow: none !important;
+      transform: none !important;
+      justify-content: flex-start !important;
+    }
+
+    .dropdown-content .tool-btn:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .dropdown-content .tool-btn i {
+      width: 16px !important;
+      text-align: center !important;
+      color: #D2AC47 !important;
+      transition: color 0.15s ease !important;
+    }
+
+    .dropdown-content .tool-btn:hover {
+      background-color: rgba(210, 172, 71, 0.14) !important;
+      border-color: rgba(247, 239, 138, 0.3) !important;
+      color: #F7EF8A !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .dropdown-content .tool-btn:hover i {
+      color: #F7EF8A !important;
+    }
+
+    /* Quando uma ferramenta dentro do menu suspenso está ATIVA (Grifar, Borracha, IA, Esquema, Modo Livro) */
+    .dropdown-content .tool-btn.active-tool,
+    .dropdown-content .tool-btn.active-book {
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%) !important;
+      color: #000000 !important;
+      border-color: #FFFFFF !important;
+      font-weight: 800 !important;
+    }
+
+    .dropdown-content .tool-btn.active-tool i,
+    .dropdown-content .tool-btn.active-book i {
+      color: #000000 !important;
+    }
+
+    /* Hover vermelho suave para o botão "Resetar Tudo" dentro de Ferramentas */
+    .dropdown-content .tool-btn.reset-btn:hover {
+      background-color: rgba(231, 76, 60, 0.16) !important;
+      border-color: rgba(255, 107, 107, 0.45) !important;
+      color: #ff6b6b !important;
+    }
+
+    .dropdown-content .tool-btn.reset-btn:hover i {
+      color: #ff6b6b !important;
+    }
+
+    /* Hambúrguer mobile: mantém a área de toque, mas com aparência plana */
+    .study-toolbar .btn-mobile-ops {
+      background: transparent !important;
+      color: #f1f5f9 !important;
+      border: 1px solid transparent !important;
+      border-radius: 4px !important;
+      box-shadow: none !important;
+      height: 28px !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      width: 32px !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      transform: none !important;
+    }
+
+    /* 6. Efeito Hover na Barra Principal */
+    .study-toolbar .btn-open-sidebar:hover,
+    .study-toolbar .print-btn:hover,
+    .study-toolbar .tts-btn-icon-mobile:hover,
+    .toolbar-extras > .dropdown:hover > .dropbtn,
+    .toolbar-extras > .tts-btn:hover,
+    .mindmap-header .map-nav-btn:hover,
+    .mindmap-header .btn-map-menu-mobile:hover,
+    .map-toolbar-extras .tool-btn:hover,
+    .study-toolbar .btn-mobile-ops:hover {
+      border-color: #F7EF8A !important;
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      color: #F7EF8A !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .study-toolbar .print-btn:hover i,
+    .toolbar-extras > .dropdown:hover > .dropbtn i,
+    .toolbar-extras > .tts-btn:hover i {
+      color: #F7EF8A !important;
+    }
+
+    .toolbar-extras > .logout-btn:hover,
+    .mindmap-header .btn-close-map:hover {
+      border-color: #ff6b6b !important;
+      background-color: rgba(231, 76, 60, 0.15) !important;
+      color: #ff6b6b !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    /* 7. Ferramenta ativa na barra */
+    .map-toolbar-extras .tool-btn.active-tool,
+    .toolbar-extras > .tts-btn.tts-ativo {
+      background: linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%) !important;
+      color: #000000 !important;
+      border-color: #FFFFFF !important;
+      font-weight: 800 !important;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.45) !important;
+    }
+
+    .toolbar-extras > .tts-btn.tts-ativo i {
+      color: #000000 !important;
+    }
+
+    /* 8. Caixa de Pesquisa do Mapa Mental (22px) */
+    .mindmap-header .map-search-container {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 4px !important;
+      height: 22px !important;
+      min-height: 22px !important;
+      max-height: 22px !important;
+      box-shadow: none !important;
+    }
+
+    .mindmap-header .map-search-container.ativo {
+      background: rgba(0, 0, 0, 0.45) !important;
+      border-color: #F7EF8A !important;
+    }
+
+    .mindmap-header .map-search-input,
+    .mindmap-header .map-search-container.ativo .map-search-input {
+      color: #f1f5f9 !important;
+    }
+
+    .mindmap-header .map-search-input::placeholder {
+      color: rgba(241, 245, 249, 0.65) !important;
+    }
+
+    /* 9. Desktop: Oculta itens exclusivos do mobile dentro de Ferramentas */
+    @media (min-width: 769px) {
+      .toolbar-extras {
+        flex-grow: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+      }
+
+      .toolbar-extras > .logout-btn {
+        margin-left: auto !important;
+      }
+
+      .dropdown-content .tts-btn-mobile,
+      .dropdown-content hr:nth-of-type(1),
+      .dropdown-content hr:nth-of-type(2) {
+        display: none !important;
+      }
+
+      .mindmap-header .btn-close-map {
+        width: 22px !important;
+        min-width: 22px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+      }
+    }
+
+    /* 10. Mobile */
+    @media (max-width: 768px) {
+      .study-toolbar,
+      .mindmap-header {
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        padding: 0 8px !important;
+      }
+
+      .toolbar-divider {
+        display: none !important;
+      }
+
+      #seletor-conteudo {
+        max-width: none !important;
+        flex-grow: 1 !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+      }
+
+      .study-toolbar .mindmap-btn {
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+      }
+
+      .toolbar-extras {
+        background-color: #141920 !important;
+        border-bottom: 2px solid rgba(210, 172, 71, 0.4) !important;
+      }
+
+      .toolbar-extras > .dropdown > .dropbtn,
+      .toolbar-extras > .tts-btn,
+      .toolbar-extras > .logout-btn {
+        color: #f1f5f9 !important;
+        background: #1b222c !important;
+        border: 1px solid rgba(210, 172, 71, 0.35) !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 10px 12px !important;
+      }
+
+      .toolbar-extras > .tts-btn {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+
+    @media print {
+      .btn-reabrir-toolbar {
         display: none !important;
       }
     }
@@ -3396,63 +3945,69 @@
   </div>
 
   <div class="main-wrapper">
-    <div class="study-toolbar">
-      <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice">☰</button>
-      <span class="study-label">Matéria:</span>
+    <div class="study-toolbar" id="barra-estudo-principal">
+      <button onclick="alternarHeaderEstudo()" class="tool-btn btn-recolher-topo" title="Recolher Barra">▲</button>
+      <button class="btn-open-sidebar" onclick="alternarMenu()" title="Mostrar Índice"><i class="fas fa-bars"></i></button>
+      <span class="study-label"><i class="fas fa-book-open"></i> Matéria:</span>
 
-      <select id="seletor-conteudo" onchange="trocarMateria(this.value)" class="tool-btn"
-        style="cursor:pointer; max-width: 140px;">
+      <select id="seletor-conteudo" onchange="trocarMateria(this.value)" class="tool-btn">
       </select>
 
-      <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn">🧠 Mapa</button>
-      <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF">⬇️ Baixar</button>
+      <button onclick="abrirMapaMental()" class="tool-btn mindmap-btn"><i class="fas fa-project-diagram"></i> Mapa</button>
 
-      <!-- NOVO BOTÃO DE LEITURA DIRETO NO HEADER MOBILE -->
+      <span class="toolbar-divider"></span>
+
+      <button onclick="imprimirApostila()" class="tool-btn print-btn" title="Baixar Apostila PDF"><i class="fas fa-download"></i> Baixar</button>
+
+      <!-- BOTÃO DE LEITURA DIRETO NO HEADER MOBILE -->
       <button class="tool-btn tts-btn-icon-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta"
-        style="display:none; padding: 0 8px; font-size: 1.2rem; background:transparent; border:none; margin-right:5px; cursor: pointer;">🔊</button>
+        style="display:none; padding: 0 8px; font-size: 1.1rem; background:transparent; border:none; margin-right:5px; cursor: pointer;"><i class="fas fa-volume-up"></i></button>
 
-      <button class="btn-mobile-ops" onclick="alternarMenuMobile()">☰</button>
+      <button class="btn-mobile-ops" onclick="alternarMenuMobile()"><i class="fas fa-bars"></i></button>
 
       <div class="toolbar-extras" id="toolbar-opcoes">
 
         <div class="mobile-search-box">
           <input type="text" id="campoBuscaMobile" placeholder="Pesquisar no texto..."
             onkeypress="verificarEnterMobile(event)">
-          <button onclick="executarBuscaMobile()">🔍</button>
+          <button onclick="executarBuscaMobile()"><i class="fas fa-search"></i></button>
         </div>
         <div class="dropdown">
-          <button class="dropbtn">👁️ Visual ▼</button>
+          <button class="dropbtn"><i class="fas fa-eye"></i> Visual <i class="fas fa-chevron-down seta-dropdown"></i></button>
           <div class="dropdown-content">
-            <button onclick="mudarFonte(1)" class="tool-btn">A+ Aumentar Texto</button>
-            <button onclick="mudarFonte(-1)" class="tool-btn">A- Diminuir Texto</button>
-            <button id="btn-livro" onclick="alternarModoLivro()" class="tool-btn">📖 Modo Livro</button>
-            <button onclick="alternarModoZen()" class="tool-btn">🧘 Modo Zen</button>
+            <button onclick="mudarFonte(1)" class="tool-btn"><i class="fas fa-plus"></i> Aumentar Texto</button>
+            <button onclick="mudarFonte(-1)" class="tool-btn"><i class="fas fa-minus"></i> Diminuir Texto</button>
+            <button id="btn-livro" onclick="alternarModoLivro()" class="tool-btn"><i class="fas fa-book"></i> Modo Livro</button>
+            <button onclick="alternarModoZen()" class="tool-btn"><i class="fas fa-expand"></i> Modo Zen</button>
           </div>
         </div>
 
         <div class="dropdown">
-          <button class="dropbtn">⚒️ Ferramentas ▼</button>
+          <button class="dropbtn"><i class="fas fa-tools"></i> Ferramentas <i class="fas fa-chevron-down seta-dropdown"></i></button>
           <div class="dropdown-content">
-            <button id="btn-schema" class="tool-btn schema-btn" onclick="alternarEsquematizacao()">🧩 Esquema</button>
-            <button id="btn-auto" class="tool-btn magic-btn" onclick="alternarAnaliseAutomatica()">✨ IA
+            <button id="btn-schema" class="tool-btn schema-btn" onclick="alternarEsquematizacao()"><i class="fas fa-sitemap"></i> Esquema</button>
+            <button id="btn-auto" class="tool-btn magic-btn" onclick="alternarAnaliseAutomatica()"><i class="fas fa-magic"></i> IA
               Criminal</button>
-            <button id="btn-grifar" class="tool-btn highlight-btn" onclick="alternarModoGrifo()">🖊️ Grifar</button>
-            <button id="btn-borracha" class="tool-btn clear-btn" onclick="alternarModoBorracha()">🧹 Apagar</button>
+            <button id="btn-grifar" class="tool-btn highlight-btn" onclick="alternarModoGrifo()"><i class="fas fa-highlighter"></i> Grifar</button>
+            <button id="btn-borracha" class="tool-btn clear-btn" onclick="alternarModoBorracha()"><i class="fas fa-eraser"></i> Apagar</button>
+            <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
+            <button onclick="imprimirApostila()" class="tool-btn print-mobile-only" title="Baixar Apostila PDF"><i class="fas fa-download"></i> Baixar</button>
             <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
             <!-- Opção de Leitura no mobile -->
             <button class="tool-btn tts-btn-mobile" onclick="toggleLeitura()" title="Ler em Voz Alta"
-              style="background:transparent; border:none; color:black; text-align:left; width:100%;">🔊 Ler em Voz
+              style="background:transparent; border:none; color:black; text-align:left; width:100%;"><i class="fas fa-volume-up"></i> Ler em Voz
               Alta</button>
             <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
-            <button class="tool-btn reset-btn" onclick="abrirModalReset()">⚠️ Resetar Tudo</button>
+            <button class="tool-btn reset-btn" onclick="abrirModalReset()"><i class="fas fa-exclamation-triangle"></i> Resetar Tudo</button>
           </div>
         </div>
 
-        <button class="tool-btn tts-btn" onclick="toggleLeitura()" title="Ler em Voz Alta" id="btnTTS">🔊 Ler</button>
+        <button class="tool-btn tts-btn" onclick="toggleLeitura()" title="Ler em Voz Alta" id="btnTTS"><i class="fas fa-volume-up"></i> Ler</button>
 
-        <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema">🚪 Sair</button>
+        <button class="tool-btn logout-btn" onclick="abrirModalLogout()" title="Sair do Sistema"><i class="fas fa-sign-out-alt"></i> Sair</button>
       </div>
     </div>
+    <button class="btn-reabrir-toolbar" onclick="alternarHeaderEstudo()" title="Mostrar Menu">▼ MENU</button>
 
     <table class="print-table">
       <thead id="header-impressao" style="display: none;">
@@ -3490,28 +4045,25 @@
 
         <div style="position:relative;">
           <button onclick="alternarMenuMapa()" class="map-nav-btn">
-            📍 Filtrar ▼
+            <i class="fas fa-sitemap" style="color:#D2AC47;"></i> Filtrar <i class="fas fa-chevron-down seta-dropdown"></i>
           </button>
           <div id="dropdown-navegacao" class="map-nav-dropdown"></div>
         </div>
 
         <div class="map-search-container" id="box-busca-mapa">
-          <input type="text" id="input-busca-mapa" class="map-search-input" placeholder="Buscar..."
+          <input type="text" id="input-busca-mapa" class="map-search-input" placeholder="Buscar no mapa..."
             oninput="verificarBuscaDigita(event)" onkeydown="verificarEnterBusca(event)">
-          <button onclick="cliqueBotaoBusca(event)" class="map-search-btn" title="Pesquisar">🔍</button>
+          <button onclick="cliqueBotaoBusca(event)" class="map-search-btn" title="Pesquisar no Mapa"><i class="fas fa-search" style="color:#D2AC47; font-size:0.8rem;"></i></button>
         </div>
       </div>
 
-      <button class="btn-map-menu-mobile" onclick="alternarMenuExtrasMapa()">☰</button>
+      <button class="btn-map-menu-mobile" onclick="alternarMenuExtrasMapa()"><i class="fas fa-bars"></i></button>
 
       <div class="map-toolbar-extras" id="map-extras">
-        <div style="display:flex; gap:5px; align-items:center;">
-          <button onclick="ajustarZoomMapa(1.1)" class="tool-btn" style="padding:0 10px; border-radius:13px;">🔍
-            +</button>
-          <button onclick="ajustarZoomMapa(0.9)" class="tool-btn" style="padding:0 10px; border-radius:13px;">🔍
-            -</button>
-          <button onclick="resetarZoomMapa()" class="tool-btn"
-            style="font-size:0.75rem; padding:0 10px; border-radius:13px;">Reset</button>
+        <div style="display:flex; gap:4px; align-items:center;">
+          <button onclick="ajustarZoomMapa(0.9)" class="tool-btn" style="padding:0 8px;" title="Diminuir Zoom (-)"><i class="fas fa-minus" style="color:#D2AC47;"></i></button>
+          <button onclick="resetarZoomMapa()" class="tool-btn" style="font-size:0.74rem; padding:0 8px;" title="Restaurar Zoom Padrão (100%)">100%</button>
+          <button onclick="ajustarZoomMapa(1.1)" class="tool-btn" style="padding:0 8px;" title="Aumentar Zoom (+)"><i class="fas fa-plus" style="color:#D2AC47;"></i></button>
         </div>
         <div style="display:flex; gap:5px; align-items:center;">
           <button onclick="recolherTudoMapa()" class="tool-btn"
@@ -3556,10 +4108,11 @@
       </div>
     </div>
   </div>
+  <!-- ETAPA 1: Modal exibido apenas dentro do Google Sites (iframe) -->
   <div id="modal-download"
-    style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:white; z-index:100000; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5); padding:25px; text-align:center;">
+    style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; max-height:calc(100vh - 40px); overflow-y:auto; box-sizing:border-box; background:white; z-index:100000; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5); padding:25px; text-align:center;">
     <h3 style="margin-top:0; color:#2c3e50;">Aviso de Download</h3>
-    <p style="color:#7f8c8d; margin-bottom:20px; font-size: 0.95rem;">
+    <p style="color:#7f8c8d; margin-bottom:20px; font-size: 0.95rem; text-align:center !important;">
       Devido a restrições do navegador (Google Sites), a impressão foi bloqueada no quadro atual. Por favor, clique no
       botão abaixo para abrir o material em uma <b>nova guia segura</b>.
       Lá, você poderá clicar em "Baixar" normalmente!
@@ -3570,22 +4123,87 @@
       <button onclick="abrirNovaAbaDownload()" class="tool-btn" style="padding:10px 20px;">Abrir Nova Guia</button>
     </div>
   </div>
+
+  <!-- ETAPA 2: Modal de Escolha de Formato exibido na Nova Guia Segura -->
+  <div id="modal-escolha-pdf"
+    style="display:none; position:fixed; top:30px; left:50%; transform:translateX(-50%); width:92%; max-width:430px; max-height:calc(100vh - 60px); overflow-y:auto; box-sizing:border-box; background:#121212; color:#fff; z-index:100000; border-radius:16px; border:1px solid #333; box-shadow:0 12px 35px rgba(0,0,0,0.8); padding:24px; text-align:center;">
+    <h3 style="margin-top:0; margin-bottom:8px; color:#F7EF8A; font-size:1.15rem;">⬇️ Como deseja gerar o PDF?</h3>
+    <p style="color:#ccc; margin-bottom:18px; font-size:0.9rem !important; line-height:1.45 !important; text-align:center !important;">
+      Escolha o formato ideal para o seu estudo:
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+      <!-- OPÇÃO PADRÃO (REGRA): Economia de Tinta -->
+      <button onclick="gerarPdfEscolhido(false)"
+        style="width:100%; padding:12px 16px; border-radius:10px; border:none; background:linear-gradient(135deg, #D2AC47 0%, #F7EF8A 50%, #AE8625 100%); color:#000; font-weight:800; font-size:0.92rem; cursor:pointer; text-align:left; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 12px rgba(210,172,71,0.3);">
+        <span>
+          🖨️ Padrão (Economia de Tinta)<br>
+          <small style="font-weight:600; opacity:0.85; font-size:0.78rem;">Recomendado para impressão (Lei Seca em fundo branco)</small>
+        </span>
+        <span style="font-size:1.1rem;">➔</span>
+      </button>
+
+      <!-- OPÇÃO EXCEÇÃO: Leitura Digital com Card Azul -->
+      <button onclick="gerarPdfEscolhido(true)"
+        style="width:100%; padding:12px 16px; border-radius:10px; border:1px solid #b08d28; background:#162032; color:#e2e8f0; font-weight:700; font-size:0.92rem; cursor:pointer; text-align:left; display:flex; align-items:center; justify-content:space-between;">
+        <span>
+          📱 Leitura Digital (Com Card Azul)<br>
+          <small style="font-weight:400; color:#93c5fd; font-size:0.78rem;">Para ler no PC/Celular offline (Preserva o card azul)</small>
+        </span>
+        <span style="color:#F7EF8A; font-size:1.1rem;">➔</span>
+      </button>
+    </div>
+
+    <button onclick="document.getElementById('modal-escolha-pdf').style.display='none'"
+      style="background:transparent; border:none; color:#999; text-decoration:underline; cursor:pointer; font-size:0.85rem;">
+      Cancelar
+    </button>
+  </div>
   <script>
+    // --- DOWNLOAD / IMPRESSÃO: PADRÃO (PAPEL) x LEITURA DIGITAL (CARD AZUL) ---
+    let _pdfCardAzulAtivo = false;
+
     function imprimirApostila() {
-      // Se estiver rodando dentro do Google Sites (iframe) bloqueamos a impressão nativa falha
+      // Estado padrão sempre limpo antes de abrir a escolha
+      _pdfCardAzulAtivo = false;
+      document.body.classList.remove('pdf-card-azul');
+
+      // ETAPA 1: Dentro do Google Sites (iframe) abre a nova guia segura
       if (window !== window.top) {
         document.getElementById('modal-download').style.display = 'block';
       } else {
-        // Abre a janela de impressão nativa (permitindo Salvar como PDF) na nova aba ou site normal
-        setTimeout(() => { window.print(); }, 100);
+        // ETAPA 2: Na nova guia, oferece a escolha do formato
+        document.getElementById('modal-escolha-pdf').style.display = 'block';
       }
     }
 
-    function abrirNovaAbaDownload() {
-      document.getElementById('modal-download').style.display = 'none';
-      window.open(window.location.href, '_blank');
+    function gerarPdfEscolhido(manterCardAzul) {
+      document.getElementById('modal-escolha-pdf').style.display = 'none';
+
+      _pdfCardAzulAtivo = !!manterCardAzul;
+      document.body.classList.toggle('pdf-card-azul', _pdfCardAzulAtivo);
+
+      setTimeout(() => {
+        window.print();
+      }, 120);
     }
 
+    // Ctrl+P direto no teclado usa sempre a regra padrão econômica
+    window.addEventListener('beforeprint', function () {
+      if (!_pdfCardAzulAtivo) document.body.classList.remove('pdf-card-azul');
+    });
+
+    // Após fechar a impressão, volta sempre ao padrão de economia de tinta
+    window.addEventListener('afterprint', function () {
+      _pdfCardAzulAtivo = false;
+      document.body.classList.remove('pdf-card-azul');
+    });
+
+    function abrirNovaAbaDownload() {
+      document.getElementById('modal-download').style.display = 'none';
+      const novaAba = window.open(window.location.href, '_blank');
+      if (!novaAba) mostrarNotificacao('Permita pop-ups para abrir o download em nova guia.', 'error');
+    }
     // =================================================================
     // ⚙️ CONFIGURAÇÃO UNIVERSAL (MODO URL)
     // =================================================================
@@ -4111,7 +4729,7 @@
 
             if (BIBLIOTECA_LOCAL.length >= 2) {
               BIBLIOTECA_LOCAL.unshift({
-                nome: "📚 Apostila Completa",
+                nome: "Apostila Completa",
                 id: "APOSTILA_COMPLETA",
                 sheetId: ID_DA_PLANILHA,
                 isCompleta: true
@@ -4124,7 +4742,7 @@
             BIBLIOTECA_LOCAL.forEach((item, index) => {
               const opt = document.createElement('option');
               opt.value = index;
-              opt.textContent = item.isCompleta ? item.nome : ("📂 " + item.nome);
+              opt.textContent = item.nome;
               seletor.appendChild(opt);
             });
 
@@ -4192,6 +4810,7 @@
       setupFerramentas();
       ativarArrastarMapa();
       iniciarAtalhos();
+      iniciarMonitorZoomTela();
 
       const savedAuth = localStorage.getItem('leis_isAuthenticated');
       const savedEmail = localStorage.getItem('leis_userEmail');
@@ -5012,9 +5631,62 @@
       }, 300);
     }
 
+    // --- NORMALIZADOR INTELIGENTE DO MAPA MENTAL (EFEITO DOMINÓ + NÓ RAIZ COM NOME DA MATÉRIA) ---
+    function obterNomeMateriaAtualParaMapa() {
+      try {
+        const seletor = document.getElementById('seletor-conteudo');
+        if (seletor && seletor.selectedIndex >= 0) {
+          const opt = seletor.options[seletor.selectedIndex];
+          if (opt && opt.textContent && !opt.disabled) {
+            return opt.textContent.trim();
+          }
+        }
+      } catch (e) { }
+      return "Mapa do Chico";
+    }
+
+    function normalizarTextoMapa(texto) {
+      if (!texto) return "";
+      const linhasBrutas = texto.split('\n');
+      const linhasHash = [];
+
+      linhasBrutas.forEach(linha => {
+        const m = linha.trim().match(/^(#+)\s*(.*)/);
+        if (m && m[2].trim() !== '') {
+          linhasHash.push({ nivel: m[1].length, conteudo: m[2].trim() });
+        }
+      });
+
+      if (linhasHash.length === 0) return texto;
+
+      const minNivel = Math.min(...linhasHash.map(item => item.nivel));
+      const qtdNoTopo = linhasHash.filter(item => item.nivel === minNivel).length;
+
+      let linhasNormalizadas = [];
+
+      if (qtdNoTopo === 1) {
+        const deslocamento = minNivel - 1;
+        linhasNormalizadas = linhasHash.map(item => {
+          const novoNivel = Math.max(1, item.nivel - deslocamento);
+          return '#'.repeat(novoNivel) + ' ' + item.conteudo;
+        });
+      } else {
+        const nomeRaiz = obterNomeMateriaAtualParaMapa();
+        const deslocamento = minNivel - 2;
+        linhasNormalizadas.push('# ' + nomeRaiz);
+        linhasHash.forEach(item => {
+          const novoNivel = Math.max(2, item.nivel - deslocamento);
+          linhasNormalizadas.push('#'.repeat(novoNivel) + ' ' + item.conteudo);
+        });
+      }
+
+      return linhasNormalizadas.join('\n');
+    }
+
     function converterTextoParaArvore(texto) {
       if (!texto) return "";
-      const linhas = texto.split('\n').filter(l => l.trim() !== '');
+      const textoNormalizado = normalizarTextoMapa(texto);
+      const linhas = textoNormalizado.split('\n').filter(l => l.trim() !== '');
       const raiz = []; const niveis = { 0: raiz };
       linhas.forEach(linha => {
         const match = linha.match(/^((#+)\s*(.*))/);
@@ -5023,7 +5695,11 @@
         const no = { texto: cont, filhos: [] };
         if (prof === 1) { raiz.push(no); niveis[1] = [no]; }
         else {
-          const listaPai = niveis[prof - 1];
+          let nivelPai = prof - 1;
+          while (nivelPai >= 1 && (!niveis[nivelPai] || niveis[nivelPai].length === 0)) {
+            nivelPai--;
+          }
+          const listaPai = niveis[nivelPai];
           if (listaPai && listaPai.length > 0) {
             const pai = listaPai[listaPai.length - 1];
             pai.filhos.push(no);
@@ -5035,7 +5711,7 @@
         if (!nos || nos.length === 0) return '';
         let html = '<ul>';
         nos.forEach(no => {
-          const matchArt = no.texto.match(/Art\.?\s*(\d+)/i);
+          const matchArt = no.texto.match(/Arts?\.?\s*(\d+)/i);
           let linkAction = 'javascript:void(0)', classeLink = '';
           if (matchArt) { linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchArt[1]}')`; classeLink = ' style="cursor:pointer; border-bottom:1px solid #999;"'; }
           
@@ -5053,9 +5729,110 @@
       return '<div class="tree">' + gerarHTML(raiz) + '</div>';
     }
 
+    // --- MONITOR DE ZOOM DA TELA (> 120% RECOLHE MENUS AUTOMATICAMENTE) ---
+    let _baseDprTela = parseFloat(sessionStorage.getItem('chico_base_dpr')) || window.devicePixelRatio || 1;
+    if (!sessionStorage.getItem('chico_base_dpr')) {
+      sessionStorage.setItem('chico_base_dpr', _baseDprTela);
+    }
+
+    let _zoomAcima120Ativo = false;
+    let _ultimoZoomDetectado = 1;
+
+    function verificarZoomDaTela() {
+      // 1. Zoom por pinça (celular, tablet ou trackpad)
+      let zoomPinca = 1;
+      if (window.visualViewport && window.visualViewport.scale) {
+        zoomPinca = window.visualViewport.scale;
+      }
+
+      // 2. Zoom pelo navegador no desktop (Ctrl + / Ctrl -)
+      const dprAtual = window.devicePixelRatio || 1;
+
+      // Auto-calibragem: se o aluno resetou o zoom para 100%, reajusta o baseDpr
+      if (dprAtual < _baseDprTela) {
+        _baseDprTela = dprAtual;
+        sessionStorage.setItem('chico_base_dpr', _baseDprTela);
+      }
+
+      const zoomDpr = dprAtual / _baseDprTela;
+
+      // O zoom real é a maior escala aplicada (pinça ou atalho do navegador)
+      const zoomEstimado = Math.max(zoomPinca, zoomDpr);
+
+      if (zoomEstimado > 1.2) {
+        // Dispara de imediato na primeira vez OU se o aluno aumentar ainda mais o zoom após abrir o menu
+        if (!_zoomAcima120Ativo || Math.abs(zoomEstimado - _ultimoZoomDetectado) >= 0.08) {
+          _zoomAcima120Ativo = true;
+          _ultimoZoomDetectado = zoomEstimado;
+          let recolheuAlgo = false;
+
+          // Recolhe o Índice Lateral se estiver aberto
+          if (!document.body.classList.contains('menu-fechado')) {
+            document.body.classList.add('menu-fechado');
+            recolheuAlgo = true;
+          }
+
+          // Recolhe a Barra Superior da Apostila
+          const barraEstudo = document.getElementById('barra-estudo-principal');
+          if (barraEstudo && !barraEstudo.classList.contains('recolhido')) {
+            barraEstudo.classList.add('recolhido');
+            recolheuAlgo = true;
+          }
+
+          // Recolhe a Barra do Mapa Mental se estiver aberto
+          const modalMapa = document.getElementById('modal-mapa');
+          const headerMapa = document.getElementById('header-mapa-conteudo');
+          if (modalMapa && modalMapa.classList.contains('open') && headerMapa && !headerMapa.classList.contains('recolhido')) {
+            headerMapa.classList.add('recolhido');
+            recolheuAlgo = true;
+          }
+
+          if (recolheuAlgo) {
+            mostrarNotificacao("🔍 Zoom > 120%: Menu recolhido para ampliar sua visão.");
+          }
+        }
+      } else {
+        // Quando o zoom volta para 100% ou menos de 120%, destrava o sensor
+        _zoomAcima120Ativo = false;
+        _ultimoZoomDetectado = zoomEstimado;
+      }
+    }
+
+    function iniciarMonitorZoomTela() {
+      // 1. Execução IMEDIATA no carregamento e após acomodação do iframe
+      verificarZoomDaTela();
+      setTimeout(verificarZoomDaTela, 400);
+      setTimeout(verificarZoomDaTela, 1200);
+
+      // 2. Redimensionamento e gesto de pinça contínuo
+      window.addEventListener('resize', verificarZoomDaTela);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', verificarZoomDaTela);
+        window.visualViewport.addEventListener('scroll', verificarZoomDaTela);
+      }
+
+      // 3. Captura imediata no teclado (Ctrl +, Ctrl -, Ctrl 0)
+      window.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0', 'NumpadAdd', 'NumpadSubtract'].includes(e.key)) {
+          setTimeout(verificarZoomDaTela, 120);
+        }
+      });
+
+      // 4. Captura imediata no mouse (Ctrl + Scroll)
+      window.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) {
+          setTimeout(verificarZoomDaTela, 120);
+        }
+      }, { passive: true });
+    }
+
     // --- FUNÇÕES DE APOIO ---
     function fecharMapaMental() { document.getElementById('modal-mapa').classList.remove('open'); }
     function alternarHeaderMapa() { document.getElementById('header-mapa-conteudo').classList.toggle('recolhido'); }
+    function alternarHeaderEstudo() {
+      const barra = document.getElementById('barra-estudo-principal');
+      if (barra) barra.classList.toggle('recolhido');
+    }
     function ativarArrastarMapa() {
       const slider = document.querySelector('.mindmap-content');
       let isDown = false, startX, scrollLeft, scrollTop, startY;
@@ -5551,6 +6328,7 @@
 
     function popularFiltroMapa(texto) {
       if (!texto) return;
+      texto = normalizarTextoMapa(texto);
 
       const visual = document.getElementById('arvore-visual');
       // converterTextoParaArvore já é chamado antes, mas garante atualização
