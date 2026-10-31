@@ -1666,41 +1666,206 @@
       border-color: #2ecc71 !important;
     }
 
-    /* --- DESTAQUE SELETIVO DE PALAVRAS-CHAVE NO MAPA (CORES ADAPTATIVAS) --- */
-    .mindmap-key {
-      font-weight: inherit;
-      color: inherit;
+    /* --- CORES DOS NÍVEIS 5 E 6 (PRESERVA IDENTIDADE NA APOSTILA COMPLETA) --- */
+    .tree>ul>li>ul>li>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #2980b9;
+      color: #333;
     }
 
-    /* 1. ESTADO ATIVO: Peso elegante e sem quebras */
+    .tree>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #8e44ad;
+      color: #333;
+    }
+
+    /* --- ARQUITETURA DE MINI-CARDS ESTRUTURADOS (PADRÃO HEPTABASE / XMIND) --- */
+    .tree li > a.mm-card {
+      text-align: left !important;
+      padding: 10px 14px !important;
+      max-width: 390px !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Cabeçalho Fixo e Blindado do Gatilho (Antes dos dois-pontos) */
+    .mm-card-header,
+    .mm-card-header strong {
+      display: block;
+      font-weight: 800 !important;
+      font-size: 0.92rem;
+      color: #0d3b66 !important;
+    }
+
+    .mm-card-header {
+      border-bottom: 1px solid rgba(13, 59, 102, 0.14);
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 0.15px;
+    }
+
+    .tree > ul > li > a .mm-card-header,
+    .tree > ul > li > a .mm-card-header strong,
+    .tree > ul > li > ul > li > a .mm-card-header,
+    .tree > ul > li > ul > li > a .mm-card-header strong,
+    .node-ativo .mm-card-header,
+    .node-ativo .mm-card-header strong {
+      color: #FFD700 !important;
+      border-bottom-color: rgba(255, 215, 0, 0.28) !important;
+    }
+
+    .node-lido .mm-card-header,
+    .node-lido .mm-card-header strong {
+      color: #2ecc71 !important;
+      border-bottom-color: rgba(46, 204, 113, 0.28) !important;
+    }
+
+    /* Divisórias Inteligentes criadas pela Barra Vertical (|) */
+    .mm-pipe {
+      position: absolute !important;
+      width: 0 !important;
+      height: 0 !important;
+      font-size: 0 !important;
+      line-height: 0 !important;
+      opacity: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .mm-card-row {
+      display: block;
+    }
+
+    /* Fecha visualmente parênteses partidos por barra vertical sem alterar o textContent */
+    .mm-card-row[data-close-paren]::after {
+      content: attr(data-close-paren);
+    }
+
+    .mm-pipe + .mm-card-row {
+      margin-top: 6px;
+      padding-top: 5px;
+      border-top: 1px dashed rgba(0, 0, 0, 0.14);
+    }
+
+    .node-ativo .mm-pipe + .mm-card-row,
+    .node-lido .mm-pipe + .mm-card-row {
+      border-top-color: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Rodapé Semântico Multidisciplinar: Pena, Prazo, Fórmula, Exemplo, Bizu, Parâmetro */
+    .mm-card-row.mm-row-pena {
+      background: rgba(210, 172, 71, 0.15);
+      border-left: 3px solid #b08d28;
+      border-top: none !important;
+      padding: 4px 8px;
+      margin-top: 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .node-ativo .mm-card-row.mm-row-pena,
+    .node-lido .mm-card-row.mm-row-pena {
+      background: rgba(255, 215, 0, 0.14);
+      border-left-color: #FFD700;
+      color: #ffffff;
+    }
+
+    /* Rodapé Semântico de Exceção, Vedação, Pegadinha ou Cuidado */
+    .mm-card-row.mm-row-alerta {
+      background: rgba(231, 76, 60, 0.09);
+      border-left: 3px solid #e74c3c;
+      border-top: none !important;
+      padding: 4px 8px;
+      margin-top: 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .node-ativo .mm-card-row.mm-row-alerta,
+    .node-lido .mm-card-row.mm-row-alerta {
+      background: rgba(231, 76, 60, 0.22);
+      border-left-color: #ff6b6b;
+      color: #ffffff;
+    }
+
+    /* Selo Interativo Universal de Atalho para a Apostila */
+    .tree li > a.mm-has-art:hover::after {
+      content: '📖 2x clique → Apostila';
+      position: absolute;
+      top: -10px;
+      right: 8px;
+      background: #121212;
+      color: #FFD700;
+      border: 1px solid #D2AC47;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    /* --- DESTAQUE SELETIVO E SEMÂNTICO DE PALAVRAS-CHAVE NO MAPA --- */
+    /* Com ✨ Chaves desligado, preserva o negrito natural para hierarquia limpa */
+    .mindmap-key {
+      font-weight: 700;
+      color: #111;
+    }
+
+    .node-ativo .mindmap-key,
+    .node-lido .mindmap-key,
+    .tree > ul > li > a .mindmap-key,
+    .tree > ul > li > ul > li > a .mindmap-key {
+      color: #F7EF8A;
+    }
+
+    /* 1. ESTADO ATIVO DO BOTÃO ✨ CHAVES (ALTERNÂNCIA SEQUENCIAL + SEMÂNTICA DE ALERTA) */
     .chaves-ativas .mindmap-key {
       font-weight: 700 !important;
     }
 
-    /* 2. CAIXAS DE FUNDO CLARO (Padrão do Mapa Mental) */
-    /* 1ª, 3ª, 5ª palavra: Azul Vibrante */
-    .chaves-ativas .tree li > a .mindmap-key:nth-of-type(odd) {
+    /* 2. CAIXAS DE FUNDO CLARO: Alternância Azul / Vermelho + Radar de Restrições/Exceções */
+    .chaves-ativas .tree li > a .mindmap-key.mm-key-odd {
       color: #0038ff !important;
     }
-    /* 2ª, 4ª, 6ª palavra: Vermelho Vivo */
-    .chaves-ativas .tree li > a .mindmap-key:nth-of-type(even) {
+    .chaves-ativas .tree li > a .mindmap-key.mm-key-even {
+      color: #d62828 !important;
+    }
+    .chaves-ativas .tree li > a .mindmap-key.mm-key-alerta {
       color: #e60000 !important;
+      text-decoration: underline;
+      text-decoration-color: rgba(230, 0, 0, 0.35);
     }
 
-    /* 3. CAIXAS DE FUNDO ESCURO (Caixa Ativa, Caixa Lida e Caixa Raiz Vinho) */
-    /* 1ª, 3ª, 5ª palavra: Amarelo Dourado Chico */
-    .chaves-ativas .tree li > a.node-ativo .mindmap-key:nth-of-type(odd),
-    .chaves-ativas .tree li > a.node-lido .mindmap-key:nth-of-type(odd),
-    .chaves-ativas .tree > ul > li > a .mindmap-key:nth-of-type(odd),
-    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key:nth-of-type(odd) {
+    /* 3. CAIXAS DE FUNDO ESCURO (Caixa Ativa, Caixa Lida e Raízes) */
+    .chaves-ativas .tree li > a.node-ativo .mindmap-key.mm-key-odd,
+    .chaves-ativas .tree li > a.node-lido .mindmap-key.mm-key-odd,
+    .chaves-ativas .tree > ul > li > a .mindmap-key.mm-key-odd,
+    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key.mm-key-odd {
       color: #FFD700 !important;
     }
-    /* 2ª, 4ª, 6ª palavra: Verde Lima / Fluorescente */
-    .chaves-ativas .tree li > a.node-ativo .mindmap-key:nth-of-type(even),
-    .chaves-ativas .tree li > a.node-lido .mindmap-key:nth-of-type(even),
-    .chaves-ativas .tree > ul > li > a .mindmap-key:nth-of-type(even),
-    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key:nth-of-type(even) {
+    .chaves-ativas .tree li > a.node-ativo .mindmap-key.mm-key-even,
+    .chaves-ativas .tree li > a.node-lido .mindmap-key.mm-key-even,
+    .chaves-ativas .tree > ul > li > a .mindmap-key.mm-key-even,
+    .chaves-ativas .tree > ul > li > ul > li > a .mindmap-key.mm-key-even {
       color: #00e640 !important;
+    }
+    .chaves-ativas .tree li > a.node-ativo .mindmap-key.mm-key-alerta,
+    .chaves-ativas .tree li > a.node-lido .mindmap-key.mm-key-alerta {
+      color: #ff6b6b !important;
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 107, 107, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .tree li > a.mm-card {
+        max-width: 260px !important;
+        padding: 8px 11px !important;
+      }
     }
 
     /* --- LINHAS CONECTORAS ADAPTÁVEIS AO FUNDO --- */
@@ -5709,18 +5874,104 @@
       });
       function gerarHTML(nos) {
         if (!nos || nos.length === 0) return '';
+        // Radar multidisciplinar de restrições, vedações, exceções e negativas
+        const regexAlertaKey = /\b(n[ãa]o|nunca|jamais|nem\b|sem\b|inexiste\w*|incomunic\w*|inaplic\w*|inadmiss\w*|indeleg\w*|irrevog\w*|irretrat\w*|imprescrit\w*|inafian[çc]\w*|insuscet\w*|invari[áa]v\w*|vedad\w*|proibid\w*|exceto|exce[çc][ãa]o|salvo|dispensa\w*|isent\w*|prescind\w*|imprescind\w*|facultativ\w*|opcional|incorret\w*|errad\w*|fals\w*)\b/i;
+
+        // Gatilhos multidisciplinares para Rodapé Dourado (Métrica/Síntese/Exemplo) e Rodapé de Alerta
+        const regexRowDestaque = /^(?:Pena|Prazo|Teto|Multa|Reclus[ãa]o|Deten[çc][ãa]o|Regra|F[óo]rmula|Macete|Bizu|Exemplo|Ex\.|Par[âa]metro|Valor|Dose|Frequ[êe]ncia|Propor[çc][ãa]o|Resultado|Conclus[ãa]o|S[íi]ntese|\+\s*\d)/i;
+        const regexRowAlerta = /^(?:Exce[çc][ãa]o|Exceto|Salvo|Vedad\w*|Proibid\w*|Aten[çc][ãa]o|Cuidado|Conflito|Pegadinha|Erro\b|N[ãa]o confundir|Observa[çc][ãa]o|Obs\.|Restri[çc][ãa]o)/i;
+
         let html = '<ul>';
         nos.forEach(no => {
-          const matchArt = no.texto.match(/Arts?\.?\s*(\d+)/i);
-          let linkAction = 'javascript:void(0)', classeLink = '';
-          if (matchArt) { linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchArt[1]}')`; classeLink = ' style="cursor:pointer; border-bottom:1px solid #999;"'; }
-          
-          // Envolve os termos entre asteriscos na classe controlada pelo botão
-          const textoFormatado = limparMarcacoesCitacao(no.texto)
+          // Suporta tanto Artigos (Art. X) quanto Tópicos/Itens de apostilas gerais (Item 1.2 / Tópico 2.1)
+          const matchRef = no.texto.match(/(?:Arts?\.?|Item|T[óo]pico)\s*(\d+(?:[\.\-]\d+)*)/i);
+          let linkAction = 'javascript:void(0)';
+          let classesCard = [];
+          let attrTitle = '';
+
+          if (matchRef) {
+            linkAction = `javascript:fecharMapaMental(); irParaArtigo('${matchRef[1]}')`;
+            classesCard.push('mm-has-art');
+            attrTitle = ` title="Duplo clique para ir à referência (${matchRef[0]}) na apostila"`;
+          }
+
+          // 1. Converte negritos em tags strong provisórias e formata itálicos
+          let textoFormatado = limparMarcacoesCitacao(no.texto)
             .replace(/\*\*(.*?)\*\*/g, '<strong class="mindmap-key">$1</strong>')
             .replace(/(^|[^\*])\*([^\*\s][^\*]*?)\*(?!\*)/g, '$1<em>$2</em>');
 
-          html += `<li><a href="${linkAction}"${classeLink}>${textoFormatado}</a>`;
+          // 2. Identifica se é um Mini-Card de Estudo
+          const textoPuro = no.texto.replace(/\*\*/g, '').trim();
+          const temBarra = textoPuro.includes(' | ');
+          const temGatilhoDoisPontos = /^[^:|]{2,75}:\s+\S/.test(textoPuro);
+          const ehMiniCard = temBarra || (temGatilhoDoisPontos && (no.filhos.length === 0 || textoPuro.length > 45));
+
+          if (ehMiniCard) {
+            classesCard.push('mm-card');
+
+            // 3. Isola e blinda o Cabeçalho do Card (removendo mindmap-key do título para não mudar de cor no ✨ Chaves)
+            if (temGatilhoDoisPontos) {
+              if (/^<strong[^>]*>[^<]*?:<\/strong>/.test(textoFormatado)) {
+                textoFormatado = textoFormatado.replace(/^<strong[^>]*>([^<]*?:)<\/strong>(\s*)/, '<span class="mm-card-header"><strong>$1</strong></span>$2');
+              } else if (/^<strong[^>]*>[^<]*?<\/strong>\s*(?:\([^)]*\)\s*)?:/.test(textoFormatado)) {
+                textoFormatado = textoFormatado.replace(/^<strong[^>]*>([^<]*?)<\/strong>(\s*(?:\([^)]*\)\s*)?:)(\s*)/, '<span class="mm-card-header"><strong>$1$2</strong></span>$3');
+              } else {
+                textoFormatado = textoFormatado.replace(/^([^:|<]{2,75}:)(\s*)/, '<span class="mm-card-header">$1</span>$2');
+              }
+            }
+
+            // 4. Converte cada barra vertical (|) em blocos visuais e corrige parênteses partidos
+            if (textoFormatado.includes('|')) {
+              const partes = textoFormatado.split(/(\s*\|\s*)/);
+              let htmlPartes = '';
+              let parentesesAbertos = 0;
+
+              for (let p = 0; p < partes.length; p++) {
+                let trecho = partes[p];
+                if (/^\s*\|\s*$/.test(trecho)) {
+                  htmlPartes += `<span class="mm-pipe">${trecho}</span>`;
+                } else if (trecho !== '') {
+                  const trechoSemTags = trecho.replace(/<[^>]+>/g, '').trim();
+                  const qtdAbre = (trechoSemTags.match(/\(/g) || []).length;
+                  const qtdFecha = (trechoSemTags.match(/\)/g) || []).length;
+
+                  let attrCloseParen = '';
+                  if (parentesesAbertos > 0 && qtdFecha > qtdAbre && /\)\s*$/.test(trecho)) {
+                    // Oculta visualmente o ")" órfão no final da linha mantendo-o no textContent
+                    trecho = trecho.replace(/(\)\s*)$/, '<span class="mm-pipe">$1</span>');
+                    parentesesAbertos = Math.max(0, parentesesAbertos - (qtdFecha - qtdAbre));
+                  } else if (qtdAbre > qtdFecha) {
+                    // Fecha visualmente o parêntese antes da quebra de linha
+                    parentesesAbertos += (qtdAbre - qtdFecha);
+                    attrCloseParen = ' data-close-paren=")"';
+                  }
+
+                  let clsRow = 'mm-card-row';
+                  if (p > 0) {
+                    if (regexRowDestaque.test(trechoSemTags)) {
+                      clsRow += ' mm-row-pena';
+                    } else if (regexRowAlerta.test(trechoSemTags)) {
+                      clsRow += ' mm-row-alerta';
+                    }
+                  }
+                  htmlPartes += `<span class="${clsRow}"${attrCloseParen}>${trecho}</span>`;
+                }
+              }
+              textoFormatado = htmlPartes;
+            }
+          }
+
+          // 5. Numera sequencialmente os mindmap-key do corpo (mm-key-odd / mm-key-even) e aplica alerta semântico
+          let contadorKey = 0;
+          textoFormatado = textoFormatado.replace(/<strong class="mindmap-key">([\s\S]*?)<\/strong>/g, (m, conteudo) => {
+            contadorKey++;
+            const clsParidade = (contadorKey % 2 === 1) ? 'mm-key-odd' : 'mm-key-even';
+            const clsAlerta = regexAlertaKey.test(conteudo) ? ' mm-key-alerta' : '';
+            return `<strong class="mindmap-key ${clsParidade}${clsAlerta}">${conteudo}</strong>`;
+          });
+
+          const attrClass = classesCard.length > 0 ? ` class="${classesCard.join(' ')}"` : '';
+          html += `<li><a href="${linkAction}"${attrClass}${attrTitle}>${textoFormatado}</a>`;
           if (no.filhos.length > 0) html += gerarHTML(no.filhos);
           html += '</li>';
         });
