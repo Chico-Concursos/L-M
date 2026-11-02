@@ -1666,7 +1666,7 @@
       border-color: #2ecc71 !important;
     }
 
-    /* --- CORES DOS NÍVEIS 5 E 6 (PRESERVA IDENTIDADE NA APOSTILA COMPLETA) --- */
+    /* --- CORES DOS NÍVEIS 5 A 8 (PRESERVA IDENTIDADE NA APOSTILA COMPLETA) --- */
     .tree>ul>li>ul>li>ul>li>ul>li>ul>li>a {
       background: #fff;
       border-left: 4px solid #2980b9;
@@ -1676,6 +1676,18 @@
     .tree>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>a {
       background: #fff;
       border-left: 4px solid #8e44ad;
+      color: #333;
+    }
+
+    .tree>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #16a085;
+      color: #333;
+    }
+
+    .tree>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>ul>li>a {
+      background: #fff;
+      border-left: 4px solid #d35400;
       color: #333;
     }
 
@@ -2031,6 +2043,20 @@
       font-size: 0.7rem !important;
       padding-left: 54px !important;
       border-left: 3px solid #64748b !important;
+      color: #94a3b8 !important;
+    }
+
+    .nav-nivel-7 {
+      font-size: 0.69rem !important;
+      padding-left: 62px !important;
+      border-left: 3px solid #16a085 !important;
+      color: #94a3b8 !important;
+    }
+
+    .nav-nivel-8 {
+      font-size: 0.68rem !important;
+      padding-left: 70px !important;
+      border-left: 3px solid #d35400 !important;
       color: #94a3b8 !important;
     }
 
@@ -6601,7 +6627,7 @@
 
       const linhasRaw = texto.split('\n').filter(l => l.trim().startsWith('#'));
       const dados = linhasRaw.map((linha, index) => {
-        const match = linha.match(/^(#{1,6})\s+(.*)/);
+        const match = linha.match(/^(#{1,8})\s+(.*)/);
         if (!match) return null;
         return {
           nivel: match[1].length,
@@ -6626,6 +6652,8 @@
         if (item.nivel === 4) icone = "🔸 ";
         if (item.nivel === 5) icone = "▪️ ";
         if (item.nivel === 6) icone = "▫️ ";
+        if (item.nivel === 7) icone = "∙ ";
+        if (item.nivel === 8) icone = "◦ ";
 
         if (ehPai) {
           div.innerHTML = `
@@ -6874,7 +6902,7 @@
             const numRef = matchArt[1];
             const idFormatado = "art_id_" + numRef.replace(/[º\.]/g, '').trim();
             const idApostila = "art_" + numRef.toString().replace(/\./g, '_');
-            const alvo = document.getElementById(idFormatado) || document.getElementById(idApostila);
+            const alvo = document.getElementById(idFormatado) || document.getElementById(idApostila) || document.getElementById(idApostila + 'º');
             if (alvo) {
               msgConf.innerText = `Deseja sair do Mapa para ler o conteúdo do Tópico/Artigo ${numRef}?`;
               if (modalConf) {
